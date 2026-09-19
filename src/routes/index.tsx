@@ -291,7 +291,7 @@ function TranslatePage() {
             />
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
-                {copyButton("source", source)}
+                {listenButton("source", source, from)}
                 <span className="text-xs text-muted-foreground">
                   {source.length} {t("translate.characters")}
                 </span>
@@ -300,7 +300,7 @@ function TranslatePage() {
                 {loading && (
                   <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
                 )}
-                {listenButton("source", source, from)}
+                {copyButton("source", source)}
               </div>
             </div>
           </section>
