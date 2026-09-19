@@ -236,7 +236,7 @@ function TranslatePage() {
                         setActive(targets.length);
                       }}
                       onBlur={() => setAdding(false)}
-                      className="h-9 cursor-pointer appearance-none rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground outline-none"
+                      className="h-9 cursor-pointer rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground outline-none"
                     >
                       <option value="" disabled>
                         Select language
