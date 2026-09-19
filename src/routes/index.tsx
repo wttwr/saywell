@@ -395,13 +395,13 @@ function TranslatePage() {
         ) : mode === "side" ? (
           <div className="overflow-x-auto">
             <div className="relative flex min-w-full items-stretch">
-              <section className="flex min-w-[260px] flex-1 flex-col pr-10">
+              <section className="flex min-w-[260px] flex-1 flex-col pr-8">
                 {sourceBody}
               </section>
               <div className="absolute left-1/2 top-1 z-10 -translate-x-1/2">
                 {SwapControl}
               </div>
-              <div className="flex flex-1 divide-x divide-border pl-10">
+              <div className="flex flex-1 divide-x divide-border pl-8">
                 {targets.map((lang, i) => (
                   <div key={lang} className="flex min-w-[260px] flex-1 px-6 last:pr-0">
                     {targetPanel(lang, i)}
