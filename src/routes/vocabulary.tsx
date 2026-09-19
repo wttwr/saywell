@@ -14,7 +14,7 @@ export const Route = createFileRoute("/vocabulary")({
       {
         name: "description",
         content:
-          "Browse, filter and search the words, phrasal verbs and expressions you want to learn.",
+          "Browse, filter and search the words and expressions you want to learn.",
       },
       { property: "og:title", content: "Vocabulary — Words and expressions worth keeping" },
       {
