@@ -199,8 +199,8 @@ function DictionaryPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("vocab.searchPlaceholder")}
-            aria-label={t("vocab.searchPlaceholder")}
+            placeholder="Type a word, phrasal verb, expression, or abbreviation..."
+            aria-label="Search input"
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
           />
           {loading && (
