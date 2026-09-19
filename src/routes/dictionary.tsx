@@ -364,7 +364,7 @@ function DictionaryPage() {
               {t("vocab.entry")}
             </p>
             <div className="mt-3 rounded-2xl bg-secondary/40 p-5 md:p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+              <div className="flex flex-col gap-4">
                 <div className="min-w-0">
                   <p className="text-2xl text-foreground">{entry.text}</p>
                   {entry.transliteration && (
@@ -376,7 +376,7 @@ function DictionaryPage() {
                     {t(TYPE_KEYS[entry.type])}
                   </span>
                 </div>
-                <div className="flex shrink-0 items-start gap-4">
+                <div className="flex items-start gap-4">
                   {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
                 </div>
 
