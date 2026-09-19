@@ -128,6 +128,13 @@ function DictionaryPage() {
       return;
     }
 
+    if (looksLikeSentence(text)) {
+      setEntry(null);
+      setError(t("vocab.sentenceNotAllowed"));
+      setLoading(false);
+      return;
+    }
+
     const timer = setTimeout(() => {
       setLoading(true);
       setError(null);
