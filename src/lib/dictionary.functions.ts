@@ -196,6 +196,13 @@ export const lookUpWord = createServerFn({ method: "POST" })
       entry.detectedLanguage = detected;
       entry.languageMismatch = true;
     }
+    const original = data.text.trim();
+    if (
+      matchType === "corrected" &&
+      entry.text.toLowerCase() !== original.toLowerCase()
+    ) {
+      entry.correctedFrom = original;
+    }
     const translit = str(parsed["transliteration"]);
     const note = str(parsed["note"]);
     const expandedForm = str(parsed["expandedForm"]);
@@ -209,5 +216,5 @@ export const lookUpWord = createServerFn({ method: "POST" })
       const imageUrl = await findImage(imageQuery);
       if (imageUrl) entry.imageUrl = imageUrl;
     }
-    return entry;
+    return { entry };
   });
