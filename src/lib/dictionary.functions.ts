@@ -113,8 +113,10 @@ export const lookUpWord = createServerFn({ method: "POST" })
     if (!meaning) throw new Error("No dictionary entry found for that word.");
 
     const rawType = str(parsed["type"]);
-    const type: DictionaryEntry["type"] =
-      rawType === "phrasal_verb" || rawType === "expression" ? rawType : "single_word";
+    const validTypes: DictionaryEntry["type"][] = ["single_word", "phrasal_verb", "expression", "abbreviation"];
+    const type: DictionaryEntry["type"] = validTypes.includes(rawType as DictionaryEntry["type"])
+      ? (rawType as DictionaryEntry["type"])
+      : "single_word";
 
     const senses = (Array.isArray(parsed["senses"]) ? parsed["senses"] : [])
       .map(asSense)
