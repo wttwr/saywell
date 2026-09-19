@@ -170,17 +170,8 @@ function DictionaryPage() {
           // Ignore stale results from an earlier query.
           if (query.trim() !== text) return;
           setEntry(result);
-          saveEntry({
-            language: result.language,
-            entry_text: result.text,
-            type: result.type,
-            meaning: result.meaning,
-            ...(result.expandedForm ? { expanded_form: result.expandedForm } : {}),
-            ...(result.etymology ? { etymology: result.etymology } : {}),
-            ...(result.imageUrl ? { image_url: result.imageUrl } : {}),
-            ...(result.transliteration ? { transliteration: result.transliteration } : {}),
-          });
         })
+
         .catch((e) => {
           if (query.trim() === text) {
             setError(e instanceof Error ? e.message : "Could not look up that word.");
