@@ -271,6 +271,9 @@ function DictionaryPage() {
                             {sense.partOfSpeech}
                           </span>
                         )}
+                        {" "}
+                        {
+                        )}
                         {sense.definition}
                       </p>
                       {sense.example && (
