@@ -5,11 +5,13 @@ import {
   ChevronDown,
   Copy,
   Loader2,
+  Save,
   Search,
   Trash2,
   Volume2,
   VolumeX,
 } from "lucide-react";
+
 
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
