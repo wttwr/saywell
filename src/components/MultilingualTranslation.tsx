@@ -103,7 +103,8 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const visible = languages.filter((l) => l !== entry.language);
+  // The entry's own language always appears first, labeled as the source.
+  const visible = [entry.language, ...languages.filter((l) => l !== entry.language)];
 
   return (
     <section className="mt-10">
@@ -158,13 +159,25 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
         <div className="mt-5 -mx-1 overflow-x-auto">
           <div className="flex min-w-full gap-8 px-1 pb-2">
             {visible.map((l) => {
-              const state = items[l];
+              const isSource = l === entry.language;
+              const state: ItemState | undefined = isSource
+                ? {
+                    loading: false,
+                    translation: source,
+                    ...(entry.transliteration
+                      ? { transliteration: entry.transliteration }
+                      : {}),
+                  }
+                : items[l];
               const id = `dict-mt:${l}:${source}`;
               const playing = speech.playingId === id;
               const failed = speech.errorId === id;
               return (
                 <div key={l} className="min-w-[9rem] shrink-0">
-                  <p className="text-xs text-muted-foreground">{l}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {l}
+                    {isSource && ` · ${t("translate.sourceLabel")}`}
+                  </p>
                   {state?.loading ? (
                     <Loader2 className="mt-2 size-4 animate-spin text-muted-foreground" />
                   ) : state?.error ? (
