@@ -116,8 +116,9 @@ export const lookUpWord = createServerFn({ method: "POST" })
       'Add "etymology" (1-2 readable sentences on the origin and how the meaning developed) only when you are confident it is accurate; otherwise leave it empty. Never invent one.',
       'If the entry refers to a tangible, visually identifiable physical object (dog, chair, violin), set "imageQuery" to the English Wikipedia article title for that object; for abstract words, expressions or abbreviations leave it empty.',
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
+      'If the input is a real entry, set "matchType" to "exact". If it is misspelled, incomplete or malformed but you are confident which entry was intended, set "matchType" to "corrected" and build the entry for the intended word. If several different words are equally plausible, set "matchType" to "ambiguous", leave the entry fields empty and list 2-4 plausible entries in "suggestions".',
       "Keep everything short and calm. No markdown.",
-      'Reply with ONLY a JSON object: {"text":"headword","detectedLanguage":"English","languageConfident":false,"transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
+      'Reply with ONLY a JSON object: {"text":"headword","matchType":"exact","suggestions":[],"detectedLanguage":"English","languageConfident":false,"transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
     ].join(" ");
 
 
