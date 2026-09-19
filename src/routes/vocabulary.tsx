@@ -34,6 +34,17 @@ const TYPE_KEYS: Record<VocabularyType, TranslationKey> = {
   expression: "vocab.type.expression",
 };
 
+function defaultVocabularyLanguage(lang: AppLanguage): string {
+  switch (lang) {
+    case "it":
+      return "Italian";
+    case "zh":
+      return "Chinese (Simplified)";
+    default:
+      return "English";
+  }
+}
+
 function SelectPill({
   value,
   display,
