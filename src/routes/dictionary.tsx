@@ -122,12 +122,18 @@ function DictionaryPage() {
   const { entries: saved, saveEntry, removeEntry } = useDictionaryStore();
 
   const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
+  const [shortcuts, setShortcuts] = useState<string[]>([
+    "English",
+    "Italian",
+    "Chinese (Simplified)",
+  ]);
   const [query, setQuery] = useState("");
   const [savedQuery, setSavedQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     setLanguage(defaultDictionaryLanguage(lang));
@@ -256,10 +262,53 @@ function DictionaryPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("vocab.subtitle")}</p>
         </header>
 
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
-          <SelectPill label={t("vocab.language")} value={language} onChange={setLanguage} />
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
+            <SelectPill label={t("vocab.language")} value={language} onChange={setLanguage} />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            <span className="text-sm text-muted-foreground">{t("vocab.changeTo")}</span>
+            {shortcuts.map((s) => (
+              <button
+                key={s}
+                onClick={() => setLanguage(s)}
+                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                  s === language
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+            <div className="relative inline-flex">
+              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+                + {t("translate.add")}
+              </span>
+              <select
+                aria-label={t("translate.addLanguage")}
+                value=""
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
+                  e.target.value = "";
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              >
+                <option value="" disabled>
+                  {t("translate.addLanguage")}
+                </option>
+                {LANGUAGES.map((o) => (
+                  <option key={o} value={o} disabled={shortcuts.includes(o)}>
+                    {shortcuts.includes(o) ? `✓ ${o}` : o}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
+
 
         <div className="mt-8 flex items-center gap-3 border-b border-border pb-3">
           <Search className="size-4 shrink-0 text-muted-foreground" />

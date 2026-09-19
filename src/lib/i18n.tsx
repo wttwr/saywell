@@ -18,8 +18,10 @@ const en = {
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up a word, keep the ones worth learning.",
   "vocab.language": "Language",
+  "vocab.changeTo": "Change to",
   "vocab.typeLabel": "Type",
   "vocab.type.all": "All",
+
   "vocab.type.single_word": "Single word",
   "vocab.type.phrasal_verb": "Phrasal verb",
   "vocab.type.expression": "Expression",
@@ -116,8 +118,10 @@ const it: Record<TranslationKey, string> = {
   "vocab.title": "Dizionario",
   "vocab.subtitle": "Cerca una parola e salva quelle che vuoi imparare.",
   "vocab.language": "Lingua",
+  "vocab.changeTo": "Cambia in",
   "vocab.typeLabel": "Tipo",
   "vocab.type.all": "Tutti",
+
   "vocab.type.single_word": "Parola singola",
   "vocab.type.phrasal_verb": "Verbo frasale",
   "vocab.type.expression": "Espressione",
@@ -211,8 +215,10 @@ const zh: Record<TranslationKey, string> = {
   "vocab.title": "词典",
   "vocab.subtitle": "查询单词，保存你想记住的。",
   "vocab.language": "语言",
+  "vocab.changeTo": "切换至",
   "vocab.typeLabel": "类型",
   "vocab.type.all": "全部",
+
   "vocab.type.single_word": "单词",
   "vocab.type.phrasal_verb": "短语动词",
   "vocab.type.expression": "固定表达",
