@@ -27,31 +27,36 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   const [items, setItems] = useState<Record<string, ItemState>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const sourceLanguage = entry.language;
+  const source = entry.text;
+
   // Remembered selection (client-only, avoids hydration mismatch).
+  // The current source language is always excluded from the target list.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as unknown;
         if (Array.isArray(parsed) && parsed.every((v) => typeof v === "string")) {
-          setLanguages(parsed as string[]);
+          setLanguages((parsed as string[]).filter((l) => l !== sourceLanguage));
+          return;
         }
       }
     } catch {
       /* ignore */
     }
-  }, []);
+    setLanguages(DEFAULT_LANGUAGES.filter((l) => l !== sourceLanguage));
+  }, [sourceLanguage]);
 
   const persist = (next: string[]) => {
-    setLanguages(next);
+    const filtered = next.filter((l) => l !== sourceLanguage);
+    setLanguages(filtered);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
     } catch {
       /* ignore */
     }
   };
-
-  const source = entry.text;
 
   const fetchFor = (target: string, cancelledRef: { current: boolean }) => {
     setItems((prev) => ({ ...prev, [target]: { loading: true } }));
@@ -88,14 +93,13 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
 
   useEffect(() => {
     const ref = { current: false };
-    const pending = languages.filter((l) => l !== entry.language);
-    setItems(Object.fromEntries(pending.map((l) => [l, { loading: true }])));
-    pending.forEach((target) => fetchFor(target, ref));
+    setItems(Object.fromEntries(languages.map((l) => [l, { loading: true }])));
+    languages.forEach((target) => fetchFor(target, ref));
     return () => {
       ref.current = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, entry.language, entry.type, languages.join("|")]);
+  }, [source, sourceLanguage, entry.type, languages.join("|")]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
@@ -104,12 +108,15 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   };
 
   // The entry's own language always appears first, labeled as the source.
-  const visible = [entry.language, ...languages.filter((l) => l !== entry.language)];
+  const visible = [sourceLanguage, ...languages];
 
   return (
     <section className="mt-10">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         {t("vocab.multilingual")}
+      </p>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        {t("vocab.sourceLanguage").replace("{language}", sourceLanguage)}
       </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -146,7 +153,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             <option value="" disabled>
               {t("translate.addLanguage")}
             </option>
-            {LANGUAGES.map((o) => (
+            {LANGUAGES.filter((o) => o !== sourceLanguage).map((o) => (
               <option key={o} value={o} disabled={languages.includes(o)}>
                 {languages.includes(o) ? `✓ ${o}` : o}
               </option>
