@@ -291,14 +291,17 @@ function TranslatePage() {
             />
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
-                {listenButton("source", source, from)}
+                {copyButton("source", source)}
                 <span className="text-xs text-muted-foreground">
                   {source.length} {t("translate.characters")}
                 </span>
               </div>
-              {loading && (
-                <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
-              )}
+              <div className="flex items-center gap-4">
+                {loading && (
+                  <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
+                )}
+                {listenButton("source", source, from)}
+              </div>
             </div>
           </section>
 
@@ -338,12 +341,12 @@ function TranslatePage() {
             <div className="mt-6 min-h-56 md:min-h-72">{resultBody(activeLang)}</div>
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+              {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
               {listenButton(
                 `target:${activeLang ?? ""}`,
                 activeLang ? (results[activeLang] ?? "") : "",
                 activeLang,
               )}
-              {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
             </div>
           </section>
         </div>
