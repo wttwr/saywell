@@ -138,6 +138,13 @@ function AppNav() {
         >
           {t("nav.check")}
         </Link>
+        <Link
+          to="/style"
+          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
+        >
+          {t("nav.style")}
+        </Link>
 
         <div className="ml-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
           <Globe className="size-4" />
