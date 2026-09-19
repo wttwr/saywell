@@ -163,7 +163,16 @@ export const lookUpWord = createServerFn({ method: "POST" })
     };
     const translit = str(parsed["transliteration"]);
     const note = str(parsed["note"]);
+    const expandedForm = str(parsed["expandedForm"]);
+    const etymology = str(parsed["etymology"]);
+    const imageQuery = str(parsed["imageQuery"]);
     if (translit) entry.transliteration = translit;
     if (note) entry.note = note;
+    if (expandedForm && type === "abbreviation") entry.expandedForm = expandedForm;
+    if (etymology) entry.etymology = etymology;
+    if (imageQuery) {
+      const imageUrl = await findImage(imageQuery);
+      if (imageUrl) entry.imageUrl = imageUrl;
+    }
     return entry;
   });
