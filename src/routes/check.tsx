@@ -34,6 +34,12 @@ function statusTone(status: CheckResult["status"]) {
   return "bg-secondary text-secondary-foreground";
 }
 
+function labelTone(label: string) {
+  if (label === "Typo") return "border-border bg-muted text-muted-foreground";
+  if (label === "Naturalness") return "border-primary/25 bg-primary/10 text-primary";
+  return "border-border bg-secondary text-secondary-foreground";
+}
+
 function CheckPage() {
   const runCheck = useServerFn(checkText);
 
@@ -174,7 +180,7 @@ function CheckPage() {
                         {(issue.labels ?? []).map((label) => (
                           <span
                             key={label}
-                            className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground"
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${labelTone(label)}`}
                           >
                             {label}
                           </span>
