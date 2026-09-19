@@ -93,14 +93,13 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
 
   useEffect(() => {
     const ref = { current: false };
-    const pending = languages.filter((l) => l !== entry.language);
-    setItems(Object.fromEntries(pending.map((l) => [l, { loading: true }])));
-    pending.forEach((target) => fetchFor(target, ref));
+    setItems(Object.fromEntries(languages.map((l) => [l, { loading: true }])));
+    languages.forEach((target) => fetchFor(target, ref));
     return () => {
       ref.current = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, entry.language, entry.type, languages.join("|")]);
+  }, [source, sourceLanguage, entry.type, languages.join("|")]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
