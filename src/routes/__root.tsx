@@ -146,7 +146,7 @@ function AppNav() {
           {t("nav.style")}
         </Link>
         <Link
-          to="/vocabulary"
+          to="/dictionary"
           className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
         >
