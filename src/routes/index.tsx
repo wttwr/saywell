@@ -82,6 +82,10 @@ function TranslatePage() {
   const [targets, setTargets] = useState<string[]>(["Chinese (Simplified)", "Italian"]);
   const [active, setActive] = useState(0);
   const [results, setResults] = useState<Record<string, string>>({});
+  const [alternatives, setAlternatives] = useState<
+    Record<string, { text: string; note?: string }[]>
+  >({});
+  const [showAllAlts, setShowAllAlts] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
@@ -89,6 +93,8 @@ function TranslatePage() {
 
   const available = useMemo(() => LANGUAGES.filter((l) => !targets.includes(l)), [targets]);
   const activeLang = targets[active];
+  const activeAlternatives = activeLang ? (alternatives[activeLang] ?? []) : [];
+  const visibleAlternatives = showAllAlts ? activeAlternatives : activeAlternatives.slice(0, 3);
 
   const removeTarget = (lang: string) => {
     setTargets((prev) => {
@@ -113,12 +119,14 @@ function TranslatePage() {
     setTargets((prev) => prev.map((l, i) => (i === active ? from : l)));
     setSource(translated);
     setResults(translated ? { [from]: previousSource } : {});
+    setAlternatives({});
   };
 
   useEffect(() => {
     const trimmed = source.trim();
     if (!trimmed || targets.length === 0) {
       setResults({});
+      setAlternatives({});
       setError(null);
       return;
     }
@@ -130,6 +138,8 @@ function TranslatePage() {
         try {
           const data = await translate({ data: { text: trimmed, from, targets } });
           setResults(data.results);
+          setAlternatives(data.alternatives ?? {});
+          setShowAllAlts(false);
         } catch (e) {
           setError(e instanceof Error ? e.message : t("translate.error"));
         } finally {
@@ -344,6 +354,38 @@ function TranslatePage() {
               )}
               {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
             </div>
+
+            {!loading && !error && activeAlternatives.length > 0 && (
+              <div className="mt-8 border-t border-border pt-6">
+                <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("translate.alternatives")}
+                </h2>
+                <ul className="mt-4 space-y-4">
+                  {visibleAlternatives.map((alt, i) => (
+                    <li key={`${alt.text}-${i}`} className="flex flex-col gap-1.5">
+                      <p className="whitespace-pre-wrap text-base leading-relaxed text-foreground">
+                        {alt.text}
+                      </p>
+                      {alt.note && (
+                        <span className="text-xs text-muted-foreground">{alt.note}</span>
+                      )}
+                      <div className="flex items-center gap-4">
+                        {listenButton(`alt:${activeLang ?? ""}:${i}`, alt.text, activeLang, true)}
+                        {copyButton(`alt:${activeLang ?? ""}:${i}`, alt.text, true)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {activeAlternatives.length > 3 && (
+                  <button
+                    onClick={() => setShowAllAlts((v) => !v)}
+                    className="mt-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showAllAlts ? t("translate.showLess") : t("translate.showMore")}
+                  </button>
+                )}
+              </div>
+            )}
           </section>
         </div>
 

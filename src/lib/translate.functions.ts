@@ -30,7 +30,14 @@ export const translateText = createServerFn({ method: "POST" })
             content:
               "You are a professional translator. Translate the user's text faithfully and naturally. " +
               sourceNote +
-              " Reply with ONLY a JSON object mapping each requested target language name to its translation. No markdown, no commentary.",
+              " Reply with ONLY a JSON object of the form " +
+              '{"<language name>": {"translation": "...", "alternatives": [{"text": "...", "note": "..."}]}}. ' +
+              "The note is optional and must be a short neutral remark such as 'More common in everyday speech', " +
+              "'Slightly more formal', 'More literal' or 'More concise'. " +
+              "Only include alternatives that are genuinely useful: meaningfully different wording, structure or idiom, " +
+              "still accurate, grammatical and natural. Return an empty alternatives array when the only sensible " +
+              "renderings would be near-identical, purely cosmetic, or uncertain. Never invent variety. " +
+              "At most 4 alternatives per language. No markdown, no commentary.",
           },
           {
             role: "user",
@@ -48,7 +55,7 @@ export const translateText = createServerFn({ method: "POST" })
     const raw = json.choices?.[0]?.message?.content ?? "";
     const cleaned = raw.replace(/```json|```/g, "").trim();
 
-    let parsed: Record<string, string>;
+    let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(cleaned);
     } catch {
@@ -56,8 +63,32 @@ export const translateText = createServerFn({ method: "POST" })
     }
 
     const results: Record<string, string> = {};
+    const alternatives: Record<string, { text: string; note?: string }[]> = {};
+
     for (const target of data.targets) {
-      results[target] = parsed[target] ?? Object.values(parsed)[0] ?? "";
+      const entry = (parsed[target] ?? Object.values(parsed)[0]) as unknown;
+      if (typeof entry === "string") {
+        results[target] = entry;
+        alternatives[target] = [];
+        continue;
+      }
+      const obj = (entry ?? {}) as { translation?: unknown; alternatives?: unknown };
+      results[target] = typeof obj.translation === "string" ? obj.translation : "";
+      const list = Array.isArray(obj.alternatives) ? obj.alternatives : [];
+      alternatives[target] = list
+        .map((a): { text: string; note?: string } => {
+          if (typeof a === "string") return { text: a };
+          const o = (a ?? {}) as { text?: unknown; note?: unknown };
+          const text = typeof o.text === "string" ? o.text : "";
+          const note = typeof o.note === "string" && o.note.trim() ? o.note.trim() : "";
+          return note ? { text, note } : { text };
+        })
+        .filter(
+          (a) =>
+            a.text.trim().length > 0 &&
+            a.text.trim() !== (results[target] ?? "").trim(),
+        )
+        .slice(0, 4);
     }
-    return { results };
+    return { results, alternatives };
   });
