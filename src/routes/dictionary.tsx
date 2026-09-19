@@ -122,12 +122,18 @@ function DictionaryPage() {
   const { entries: saved, saveEntry, removeEntry } = useDictionaryStore();
 
   const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
+  const [shortcuts, setShortcuts] = useState<string[]>([
+    "English",
+    "Italian",
+    "Chinese (Simplified)",
+  ]);
   const [query, setQuery] = useState("");
   const [savedQuery, setSavedQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     setLanguage(defaultDictionaryLanguage(lang));
