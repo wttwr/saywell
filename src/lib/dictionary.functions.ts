@@ -22,6 +22,7 @@ function looksLikeSentence(text: string): boolean {
 const schema = z.object({
   text: z.string().min(1).max(200),
   language: z.string().min(1),
+  explanationLanguage: z.string().min(1).default("English"),
 }).refine((val) => !looksLikeSentence(val.text), {
   message: "Dictionary supports words, phrasal verbs, expressions, and abbreviations, but not full sentences.",
 });
@@ -39,9 +40,34 @@ export type DictionaryEntry = {
   transliteration?: string;
   type: "single_word" | "phrasal_verb" | "expression" | "abbreviation";
   meaning: string;
+  expandedForm?: string;
+  etymology?: string;
+  imageUrl?: string;
   senses: DictionarySense[];
   note?: string;
 };
+
+/** Looks for a free, relevant photo on Wikipedia. Returns undefined when none fits. */
+async function findImage(query: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (!res.ok) return undefined;
+    const json = (await res.json()) as {
+      type?: string;
+      thumbnail?: { source?: string };
+      originalimage?: { source?: string };
+    };
+    if (json.type === "disambiguation") return undefined;
+    const url = json.originalimage?.source ?? json.thumbnail?.source;
+    return typeof url === "string" && url.startsWith("https://") ? url : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
@@ -70,12 +96,17 @@ export const lookUpWord = createServerFn({ method: "POST" })
       "The user may look up a single word, a phrasal verb, a fixed expression, or an abbreviation.",
       "Do not treat full sentences as dictionary entries.",
       "If the input is written in another language, interpret it as the closest equivalent in the target language and use that as the headword.",
-      "Give a short plain-English meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its English translation.",
+      `Write the meaning, definitions, example translations, etymology and any note in ${data.explanationLanguage}. Keep the headword and the example sentences in ${data.language}.`,
+      "Give a short meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its translation.",
       `Classify the item as "single_word", "phrasal_verb", "expression" or "abbreviation".`,
+      'If the item is an abbreviation or acronym, set "expandedForm" to its full expanded form; otherwise leave it empty.',
+      'Add "etymology" (1-2 readable sentences on the origin and how the meaning developed) only when you are confident it is accurate; otherwise leave it empty. Never invent one.',
+      'If the entry refers to a tangible, visually identifiable physical object (dog, chair, violin), set "imageQuery" to the English Wikipedia article title for that object; for abstract words, expressions or abbreviations leave it empty.',
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
       "Keep everything short and calm. No markdown.",
-      'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short english meaning","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
+      'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
     ].join(" ");
+
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -132,7 +163,16 @@ export const lookUpWord = createServerFn({ method: "POST" })
     };
     const translit = str(parsed["transliteration"]);
     const note = str(parsed["note"]);
+    const expandedForm = str(parsed["expandedForm"]);
+    const etymology = str(parsed["etymology"]);
+    const imageQuery = str(parsed["imageQuery"]);
     if (translit) entry.transliteration = translit;
     if (note) entry.note = note;
+    if (expandedForm && type === "abbreviation") entry.expandedForm = expandedForm;
+    if (etymology) entry.etymology = etymology;
+    if (imageQuery) {
+      const imageUrl = await findImage(imageQuery);
+      if (imageUrl) entry.imageUrl = imageUrl;
+    }
     return entry;
   });
