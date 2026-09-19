@@ -36,7 +36,7 @@ const en = {
   "vocab.save": "Save",
   "vocab.savedDone": "Saved",
   "vocab.remove": "Remove",
-  "vocab.sentenceNotAllowed": "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
+  "vocab.sentenceNotAllowed": "Dictionary supports words, phrasal verbs, expressions, and abbreviations, but not full sentences.",
 
 
 
@@ -130,7 +130,7 @@ const it: Record<TranslationKey, string> = {
   "vocab.save": "Salva",
   "vocab.savedDone": "Salvata",
   "vocab.remove": "Rimuovi",
-  "vocab.sentenceNotAllowed": "Sembra una frase. Prova una parola singola, un verbo frasale, un'espressione o un'abbreviazione.",
+  "vocab.sentenceNotAllowed": "Il dizionario supporta parole, verbi frasali, espressioni e abbreviazioni, ma non frasi complete.",
 
 
 
@@ -221,7 +221,7 @@ const zh: Record<TranslationKey, string> = {
   "vocab.save": "保存",
   "vocab.savedDone": "已保存",
   "vocab.remove": "删除",
-  "vocab.sentenceNotAllowed": "这看起来像一个句子。请尝试输入单个单词、短语动词、固定表达或缩写。",
+  "vocab.sentenceNotAllowed": "词典支持单词、短语动词、固定表达和缩写，但不支持完整句子。",
 
 
 

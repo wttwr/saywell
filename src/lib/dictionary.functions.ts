@@ -23,7 +23,7 @@ const schema = z.object({
   text: z.string().min(1).max(200),
   language: z.string().min(1),
 }).refine((val) => !looksLikeSentence(val.text), {
-  message: "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
+  message: "Dictionary supports words, phrasal verbs, expressions, and abbreviations, but not full sentences.",
 });
 
 export type DictionarySense = {
