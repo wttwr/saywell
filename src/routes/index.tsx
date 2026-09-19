@@ -120,6 +120,17 @@ function TranslatePage() {
     return () => clearTimeout(timeout);
   }, [source, from, targets, translate]);
 
+  useEffect(() => {
+    if (!adding) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (addRef.current && !addRef.current.contains(e.target as Node)) {
+        setAdding(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [adding]);
+
   const onCopy = async () => {
     if (!translation) return;
     await navigator.clipboard.writeText(translation);
