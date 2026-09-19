@@ -108,12 +108,15 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   };
 
   // The entry's own language always appears first, labeled as the source.
-  const visible = [entry.language, ...languages.filter((l) => l !== entry.language)];
+  const visible = [sourceLanguage, ...languages];
 
   return (
     <section className="mt-10">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         {t("vocab.multilingual")}
+      </p>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        {t("vocab.sourceLanguage").replace("{language}", sourceLanguage)}
       </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
