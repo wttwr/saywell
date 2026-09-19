@@ -70,6 +70,10 @@ function StylePage() {
 
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("English");
+  const [shortcuts, setShortcuts] = useState<string[]>([
+    "Italian",
+    "Chinese (Simplified)",
+  ]);
   const [result, setResult] = useState<StyleResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
