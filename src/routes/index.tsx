@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Copy, Plus, X } from "lucide-react";
 
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
@@ -86,32 +86,38 @@ function TranslatePage() {
     });
   };
 
-  const onTranslate = async () => {
-    setError(null);
-    if (!source.trim()) {
-      setError("Enter some text to translate.");
+  useEffect(() => {
+    const trimmed = source.trim();
+    if (!trimmed || targets.length === 0) {
+      setResults({});
+      setError(null);
       return;
     }
-    if (targets.length === 0) {
-      setError("Add at least one target language.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await translate({
-        data: {
-          text: source.trim(),
-          from: from === "Detect language" ? "auto" : from,
-          targets,
-        },
-      });
-      setResults(data.results);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    const timeout = setTimeout(() => {
+      const run = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const data = await translate({
+            data: {
+              text: trimmed,
+              from: from === "Detect language" ? "auto" : from,
+              targets,
+            },
+          });
+          setResults(data.results);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      run();
+    }, 700);
+
+    return () => clearTimeout(timeout);
+  }, [source, from, targets, translate]);
 
   const onCopy = async () => {
     if (!translation) return;
@@ -149,13 +155,9 @@ function TranslatePage() {
             />
             <div className="mt-6 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">{source.length} characters</span>
-              <button
-                onClick={onTranslate}
-                disabled={loading}
-                className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
-              >
-                {loading ? "Translating..." : "Translate"}
-              </button>
+              {loading && (
+                <span className="text-xs text-muted-foreground">Translating...</span>
+              )}
             </div>
           </section>
 
