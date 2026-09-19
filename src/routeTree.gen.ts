@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckRouteImport } from './routes/check'
 import { Route as DictionaryRouteImport } from './routes/dictionary'
 import { Route as StyleRouteImport } from './routes/style'
-import { Route as VocabularyRouteImport } from './routes/vocabulary'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,25 +34,18 @@ const StyleRoute = StyleRouteImport.update({
   path: '/style',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VocabularyRoute = VocabularyRouteImport.update({
-  id: '/vocabulary',
-  path: '/vocabulary',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
   '/style': typeof StyleRoute
-  '/vocabulary': typeof VocabularyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
   '/style': typeof StyleRoute
-  '/vocabulary': typeof VocabularyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,14 +53,13 @@ export interface FileRoutesById {
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
   '/style': typeof StyleRoute
-  '/vocabulary': typeof VocabularyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/check' | '/dictionary' | '/style' | '/vocabulary'
+  fullPaths: '/' | '/check' | '/dictionary' | '/style'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/check' | '/dictionary' | '/style' | '/vocabulary'
-  id: '__root__' | '/' | '/check' | '/dictionary' | '/style' | '/vocabulary'
+  to: '/' | '/check' | '/dictionary' | '/style'
+  id: '__root__' | '/' | '/check' | '/dictionary' | '/style'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,7 +67,6 @@ export interface RootRouteChildren {
   CheckRoute: typeof CheckRoute
   DictionaryRoute: typeof DictionaryRoute
   StyleRoute: typeof StyleRoute
-  VocabularyRoute: typeof VocabularyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,13 +99,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StyleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/vocabulary': {
-      id: '/vocabulary'
-      path: '/vocabulary'
-      fullPath: '/vocabulary'
-      preLoaderRoute: typeof VocabularyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -124,7 +107,6 @@ const rootRouteChildren: RootRouteChildren = {
   CheckRoute: CheckRoute,
   DictionaryRoute: DictionaryRoute,
   StyleRoute: StyleRoute,
-  VocabularyRoute: VocabularyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
