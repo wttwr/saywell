@@ -37,7 +37,7 @@ export const Route = createFileRoute("/dictionary")({
   component: DictionaryPage,
 });
 
-const TYPE_KEYS: Record<DictionaryType, TranslationKey> = {
+const TYPE_KEYS: Record<DictionaryEntry["type"], TranslationKey> = {
   single_word: "vocab.type.single_word",
   phrasal_verb: "vocab.type.phrasal_verb",
   expression: "vocab.type.expression",
