@@ -168,7 +168,8 @@ function DictionaryPage() {
       })
         .then((result) => {
           if (cancelled) return;
-          setEntry(result);
+          setEntry(result.entry);
+          setSuggestions(result.suggestions ?? []);
         })
         .catch((e) => {
           if (cancelled) return;
