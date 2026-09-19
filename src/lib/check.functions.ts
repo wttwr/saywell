@@ -74,7 +74,13 @@ export const checkText = createServerFn({ method: "POST" })
       throw new Error("Could not read the result. Please try again.");
     }
 
-    const issues = Array.isArray(parsed.issues) ? parsed.issues : [];
+    const valid = ["Grammar", "Typo", "Naturalness"] as const;
+    const issues = (Array.isArray(parsed.issues) ? parsed.issues : []).map((issue) => {
+      const labels = (Array.isArray(issue.labels) ? issue.labels : []).filter((l) =>
+        (valid as readonly string[]).includes(l),
+      );
+      return { ...issue, labels: labels.length ? labels : ["Grammar" as const] };
+    });
     const status =
       parsed.status === "Looks good" ||
       parsed.status === "A few issues found" ||
