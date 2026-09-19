@@ -340,6 +340,9 @@ function TranslatePage() {
 
         {mode === "carousel" ? (
           <div className="relative grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
+            <div className="absolute left-1/2 top-1 z-10 hidden -translate-x-1/2 md:block">
+              {SwapControl}
+            </div>
             <section className="order-1 flex flex-col md:order-1 md:pr-10">{sourceBody}</section>
 
             <section
