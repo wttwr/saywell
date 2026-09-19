@@ -208,6 +208,8 @@ const zh: Record<TranslationKey, string> = {
   "vocab.type.single_word": "单词",
   "vocab.type.phrasal_verb": "短语动词",
   "vocab.type.expression": "固定表达",
+  "vocab.type.abbreviation": "缩写",
+
   "vocab.searchPlaceholder": "输入单词、短语动词、固定表达或缩写……",
   "vocab.emptyTitle": "还没有保存的词",
   "vocab.emptyBody": "在上方查询单词，保存你想记住的。",
