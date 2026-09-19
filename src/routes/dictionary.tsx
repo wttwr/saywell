@@ -136,51 +136,55 @@ function DictionaryPage() {
     setLanguage(defaultDictionaryLanguage(lang));
   }, [lang]);
 
-  // Instant lookup: debounce while typing and re-run when the language changes.
+  // Instant lookup: stay quiet while typing, validate only after a pause.
   useEffect(() => {
     const text = query.trim();
+
+    // Typing (or clearing) always hides the previous warning immediately.
+    setError(null);
+
     if (!text) {
       setEntry(null);
-      setError(null);
       setLoading(false);
       return;
     }
 
-    if (looksLikeSentence(text)) {
-      setEntry(null);
-      setError(t("vocab.sentenceNotAllowed"));
-      setLoading(false);
-      return;
-    }
+    let cancelled = false;
 
     const timer = setTimeout(() => {
+      if (looksLikeSentence(text)) {
+        setEntry(null);
+        setError(t("vocab.sentenceNotAllowed"));
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
-      setError(null);
       setEntry(null);
 
       lookUpWord({
         data: { text, language, explanationLanguage: explanationLanguage(lang) },
       })
         .then((result) => {
-          // Ignore stale results from an earlier query.
-          if (query.trim() !== text) return;
+          if (cancelled) return;
           setEntry(result);
         })
-
         .catch((e) => {
-          if (query.trim() === text) {
-            setError(e instanceof Error ? e.message : "Could not look up that word.");
-          }
+          if (cancelled) return;
+          setError(e instanceof Error ? e.message : "Could not look up that word.");
         })
         .finally(() => {
-          if (query.trim() === text) {
-            setLoading(false);
-          }
+          if (cancelled) return;
+          setLoading(false);
         });
-    }, 600);
+    }, 900);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [query, language, lang]);
+
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
