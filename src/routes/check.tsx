@@ -38,7 +38,7 @@ function CheckPage() {
   const runCheck = useServerFn(checkText);
 
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState("Finnish");
+  const [language, setLanguage] = useState("English");
   const [result, setResult] = useState<CheckResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
