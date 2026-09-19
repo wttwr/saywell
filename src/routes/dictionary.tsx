@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   ChevronDown,
   Copy,
   Loader2,
   Search,
-  Trash2,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -14,7 +13,6 @@ import {
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
-import { useVocabulary, type VocabularyType } from "@/lib/vocabulary";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
 
 export const Route = createFileRoute("/dictionary")({
@@ -38,7 +36,7 @@ export const Route = createFileRoute("/dictionary")({
   component: DictionaryPage,
 });
 
-const TYPE_KEYS: Record<VocabularyType, TranslationKey> = {
+const TYPE_KEYS: Record<"single_word" | "phrasal_verb" | "expression", TranslationKey> = {
   single_word: "vocab.type.single_word",
   phrasal_verb: "vocab.type.phrasal_verb",
   expression: "vocab.type.expression",
@@ -89,7 +87,6 @@ function SelectPill({
 function DictionaryPage() {
   const { t, lang } = useI18n();
   const speech = useSpeech();
-  const { items, addItem, removeItem } = useVocabulary();
 
   const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
   const [query, setQuery] = useState("");
@@ -139,49 +136,13 @@ function DictionaryPage() {
     return () => clearTimeout(timer);
   }, [query, language]);
 
-  const inLanguage = useMemo(
-    () => items.filter((i) => i.language === language),
-    [items, language],
-  );
-
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return inLanguage;
-    return inLanguage.filter(
-      (i) => i.text.toLowerCase().includes(q) || i.meaning.toLowerCase().includes(q),
-    );
-  }, [inLanguage, query]);
-
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const alreadySaved =
-    entry !== null &&
-    items.some(
-      (i) =>
-        i.language === entry.language &&
-        i.text.toLowerCase() === entry.text.toLowerCase(),
-    );
-
-  const saveEntry = () => {
-    if (!entry || alreadySaved) return;
-    addItem({
-      language: entry.language,
-      text: entry.text,
-      meaning: entry.meaning,
-      type: entry.type,
-    });
-  };
-
-  const actionButton = (
-    id: string,
-    text: string,
-    itemLanguage: string,
-    compact = false,
-  ) => {
+  const actionButton = (id: string, text: string, itemLanguage: string) => {
     const playing = speech.playingId === id;
     const failed = speech.errorId === id;
     return (
@@ -200,7 +161,7 @@ function DictionaryPage() {
           ) : (
             <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
           )}
-          {!compact && (playing ? t("translate.stop") : t("translate.listen"))}
+          {playing ? t("translate.stop") : t("translate.listen")}
         </button>
         <button
           onClick={() => onCopy(id, text)}
@@ -209,7 +170,7 @@ function DictionaryPage() {
           className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           {copiedId === id ? <Check className="size-4" /> : <Copy className="size-4" />}
-          {!compact && (copiedId === id ? t("translate.copied") : t("translate.copy"))}
+          {copiedId === id ? t("translate.copied") : t("translate.copy")}
         </button>
         {failed && (
           <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
@@ -297,63 +258,9 @@ function DictionaryPage() {
               {entry.note && (
                 <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
               )}
-
-              <button
-                onClick={saveEntry}
-                disabled={alreadySaved}
-                className="mt-6 rounded-full border border-border px-4 py-1.5 text-sm text-foreground transition-colors hover:bg-secondary disabled:opacity-50"
-              >
-                {alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
-              </button>
             </div>
           </section>
         )}
-
-        <section className="mt-12">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            {t("vocab.saved")} · {language}
-          </p>
-
-          {inLanguage.length === 0 ? (
-            <div className="mt-6">
-              <p className="text-base font-medium text-foreground">{t("vocab.emptyTitle")}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t("vocab.emptyBody")}</p>
-            </div>
-          ) : matches.length === 0 ? (
-            <p className="mt-6 text-base text-muted-foreground">{t("vocab.noMatches")}</p>
-          ) : (
-            <ul className="mt-2 divide-y divide-border">
-              {matches.map((item) => {
-                const id = `vocab:${item.id}`;
-                return (
-                  <li
-                    key={item.id}
-                    className="flex flex-col gap-3 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-lg text-foreground">{item.text}</p>
-                      <p className="mt-0.5 text-sm text-muted-foreground">{item.meaning}</p>
-                      <span className="mt-2 inline-block rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
-                        {t(TYPE_KEYS[item.type])}
-                      </span>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-4">
-                      {actionButton(id, item.text, item.language, true)}
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        title={t("vocab.remove")}
-                        aria-label={t("vocab.remove")}
-                        className="text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
       </div>
     </main>
   );
