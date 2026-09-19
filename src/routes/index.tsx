@@ -82,6 +82,10 @@ function TranslatePage() {
   const [targets, setTargets] = useState<string[]>(["Chinese (Simplified)", "Italian"]);
   const [active, setActive] = useState(0);
   const [results, setResults] = useState<Record<string, string>>({});
+  const [alternatives, setAlternatives] = useState<
+    Record<string, { text: string; note?: string }[]>
+  >({});
+  const [showAllAlts, setShowAllAlts] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
