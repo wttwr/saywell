@@ -254,10 +254,6 @@ function TranslatePage() {
     );
   };
 
-  const allLanguages: { lang: string; text: string; isSource: boolean }[] = [
-    { lang: from, text: source, isSource: true },
-    ...targets.map((lang) => ({ lang, text: results[lang] ?? "", isSource: false })),
-  ];
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -351,36 +347,6 @@ function TranslatePage() {
           </section>
         </div>
 
-        <section className="mt-16 border-t border-border pt-10">
-          <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-            {t("translate.allLanguages")}
-          </h2>
-          <div className="mt-6 flex flex-col divide-y divide-border">
-            {allLanguages.map(({ lang, text, isSource }) => (
-              <div key={`${isSource ? "src" : "tgt"}:${lang}`} className="py-6 first:pt-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">{lang}</span>
-                  {isSource && (
-                    <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] text-muted-foreground">
-                      {t("translate.sourceLabel")}
-                    </span>
-                  )}
-                </div>
-                <p
-                  className={`mt-2 whitespace-pre-wrap text-lg leading-relaxed ${
-                    text ? "text-foreground" : "text-muted-foreground/50"
-                  }`}
-                >
-                  {text || t("translate.emptyTranslation")}
-                </p>
-                <div className="mt-3 flex items-center gap-4">
-                  {listenButton(`all:${isSource ? "src" : "tgt"}:${lang}`, text, lang, true)}
-                  {copyButton(`all:${lang}`, text, true)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     </main>
   );
