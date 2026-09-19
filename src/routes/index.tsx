@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
+  ChevronDown,
   Columns3,
   Copy,
   Plus,
@@ -56,19 +57,53 @@ function LanguageSelect({
   options: readonly string[];
   label: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [open]);
+
+  if (open) {
+    return (
+      <div ref={ref}>
+        <select
+          autoFocus
+          aria-label={label}
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(false);
+          }}
+          onBlur={() => setOpen(false)}
+          className="cursor-pointer rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground outline-none"
+        >
+          {options.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
   return (
-    <select
+    <button
       aria-label={label}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="cursor-pointer rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+      onClick={() => setOpen(true)}
+      className="flex cursor-pointer items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
     >
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {o}
-        </option>
-      ))}
-    </select>
+      {value}
+      <ChevronDown className="size-3.5 opacity-60" />
+    </button>
   );
 }
 
