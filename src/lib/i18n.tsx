@@ -37,6 +37,10 @@ const en = {
   "vocab.savedDone": "Saved",
   "vocab.remove": "Remove",
   "vocab.sentenceNotAllowed": "Dictionary supports words, phrasal verbs, expressions, and abbreviations, but not full sentences.",
+  "vocab.expandedForm": "Expanded form",
+  "vocab.etymology": "Etymology",
+  "vocab.searchSaved": "Search dictionary...",
+  "vocab.savedEntries": "Saved entries",
 
 
 
@@ -131,6 +135,10 @@ const it: Record<TranslationKey, string> = {
   "vocab.savedDone": "Salvata",
   "vocab.remove": "Rimuovi",
   "vocab.sentenceNotAllowed": "Il dizionario supporta parole, verbi frasali, espressioni e abbreviazioni, ma non frasi complete.",
+  "vocab.expandedForm": "Forma estesa",
+  "vocab.etymology": "Etimologia",
+  "vocab.searchSaved": "Cerca nel dizionario...",
+  "vocab.savedEntries": "Voci salvate",
 
 
 
@@ -222,6 +230,10 @@ const zh: Record<TranslationKey, string> = {
   "vocab.savedDone": "已保存",
   "vocab.remove": "删除",
   "vocab.sentenceNotAllowed": "词典支持单词、短语动词、固定表达和缩写，但不支持完整句子。",
+  "vocab.expandedForm": "完整形式",
+  "vocab.etymology": "词源",
+  "vocab.searchSaved": "搜索词典……",
+  "vocab.savedEntries": "已保存的词条",
 
 
 
