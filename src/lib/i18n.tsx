@@ -16,7 +16,7 @@ const en = {
   "nav.appLanguage": "App language",
 
   "vocab.title": "Dictionary",
-  "vocab.subtitle": "Look up a word, phrasal verb, expression or abbreviation, keep the ones worth learning.",
+  "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations, and keep the ones worth learning.",
   "vocab.language": "Language",
   "vocab.changeTo": "Change to",
   "vocab.typeLabel": "Type",
