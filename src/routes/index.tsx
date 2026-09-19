@@ -68,6 +68,7 @@ function TranslatePage() {
   const [copied, setCopied] = useState(false);
   const [adding, setAdding] = useState(false);
   const touchX = useRef<number | null>(null);
+  const addRef = useRef<HTMLDivElement>(null);
 
   const available = useMemo(() => LANGUAGES.filter((l) => !targets.includes(l)), [targets]);
   const activeLang = targets[active];
