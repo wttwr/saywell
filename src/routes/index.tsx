@@ -10,12 +10,15 @@ import {
   Plus,
   RectangleHorizontal,
   Rows3,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { useSpeech } from "@/lib/speech";
 
 type DisplayMode = "carousel" | "side" | "stacked";
 
@@ -83,6 +86,7 @@ function LanguageSelect({
 function TranslatePage() {
   const translate = useServerFn(translateText);
   const { t } = useI18n();
+  const speech = useSpeech();
 
   const [source, setSource] = useState("");
   const [from, setFrom] = useState("English");
@@ -217,6 +221,35 @@ function TranslatePage() {
     </button>
   );
 
+  const listenButton = (id: string, text: string, language: string | undefined) => {
+    const playing = speech.playingId === id;
+    const failed = speech.errorId === id;
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => language && speech.speak(id, text, language)}
+          disabled={!language || !text.trim()}
+          title={playing ? t("translate.stop") : t("translate.listen")}
+          aria-label={playing ? t("translate.stop") : t("translate.listen")}
+          aria-pressed={playing}
+          className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
+            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {failed ? (
+            <VolumeX className="size-4" />
+          ) : (
+            <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
+          )}
+          {playing ? t("translate.stop") : t("translate.listen")}
+        </button>
+        {failed && (
+          <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
+        )}
+      </div>
+    );
+  };
+
   const sourceBody = (
     <>
       <div className="flex h-11 items-center">
@@ -233,10 +266,13 @@ function TranslatePage() {
         placeholder={t("translate.placeholder")}
         className="mt-6 min-h-40 w-full flex-1 resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
       />
-      <div className="mt-6 flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">
-          {source.length} {t("translate.characters")}
-        </span>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-4">
+          {listenButton("source", source, from)}
+          <span className="text-xs text-muted-foreground">
+            {source.length} {t("translate.characters")}
+          </span>
+        </div>
         {loading && (
           <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
         )}
@@ -278,6 +314,7 @@ function TranslatePage() {
     </button>
   );
 
+
   const targetPanel = (lang: string, index: number) => (
     <section key={lang} className="flex min-w-0 flex-1 flex-col">
       <div className="flex h-11 items-center gap-1">
@@ -304,7 +341,10 @@ function TranslatePage() {
         )}
       </div>
       <div className="mt-6 min-h-32 flex-1">{resultBody(lang)}</div>
-      <div className="mt-6 flex items-center justify-end">{copyButton(lang)}</div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        {listenButton(`target:${lang}`, results[lang] ?? "", lang)}
+        {copyButton(lang)}
+      </div>
     </section>
   );
 
@@ -389,7 +429,14 @@ function TranslatePage() {
 
               <div className="mt-6 min-h-56 md:min-h-72">{resultBody(activeLang)}</div>
 
-              <div className="mt-6 flex items-center justify-end">{copyButton(activeLang)}</div>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+                {listenButton(
+                  `target:${activeLang ?? ""}`,
+                  activeLang ? (results[activeLang] ?? "") : "",
+                  activeLang,
+                )}
+                {copyButton(activeLang)}
+              </div>
             </section>
           </div>
         ) : mode === "side" ? (
