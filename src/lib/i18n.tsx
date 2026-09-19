@@ -204,7 +204,7 @@ const zh: Record<TranslationKey, string> = {
   "vocab.type.single_word": "单词",
   "vocab.type.phrasal_verb": "短语动词",
   "vocab.type.expression": "固定表达",
-  "vocab.searchPlaceholder": "查询单词或表达…",
+  "vocab.searchPlaceholder": "输入单词、短语动词、固定表达或缩写……",
   "vocab.emptyTitle": "还没有保存的词",
   "vocab.emptyBody": "在上方查询单词，保存你想记住的。",
   "vocab.noMatches": "没有匹配的收藏 — 试试直接查询",
@@ -215,6 +215,8 @@ const zh: Record<TranslationKey, string> = {
   "vocab.save": "保存",
   "vocab.savedDone": "已保存",
   "vocab.remove": "删除",
+  "vocab.sentenceNotAllowed": "这看起来像一个句子。请尝试输入单个单词、短语动词、固定表达或缩写。",
+
 
 
   "translate.title": "Lingua",
