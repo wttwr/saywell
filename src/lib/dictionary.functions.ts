@@ -218,3 +218,70 @@ export const lookUpWord = createServerFn({ method: "POST" })
     }
     return { entry };
   });
+
+const translateSchema = z.object({
+  text: z.string().min(1).max(200),
+  sourceLanguage: z.string().min(1),
+  targetLanguage: z.string().min(1),
+  type: z.string().default("single_word"),
+});
+
+export type LexicalTranslation = {
+  language: string;
+  translation: string;
+  transliteration?: string;
+};
+
+/** Translates one dictionary entry (word, phrasal verb, expression, abbreviation) into one language. */
+export const translateLexicalItem = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => translateSchema.parse(data))
+  .handler(async ({ data }): Promise<LexicalTranslation> => {
+    const apiKey = process.env["LOVABLE_API_KEY"];
+    if (!apiKey) throw new Error("The translation service is not configured.");
+
+    const system = [
+      `Translate a single lexical item from ${data.sourceLanguage} into ${data.targetLanguage}.`,
+      `The item is a ${data.type.replace("_", " ")}.`,
+      "Translate it as a lexical item (dictionary equivalent), never as an unrelated full sentence.",
+      "For abbreviations, give the meaning or the common equivalent expression in the target language; if the same abbreviation is commonly used there, you may give it instead.",
+      "Give only the single most natural equivalent, short.",
+      "If the target language uses a non-Latin script, add a transliteration; otherwise leave it empty.",
+      'Reply with ONLY a JSON object: {"translation":"...","transliteration":""}. No markdown.',
+    ].join(" ");
+
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: data.text },
+        ],
+      }),
+    });
+
+    if (res.status === 429)
+      throw new Error("Too many requests right now. Please try again shortly.");
+    if (res.status === 402) throw new Error("Credits are exhausted.");
+    if (!res.ok) throw new Error("Could not translate that item.");
+
+    const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+    const cleaned = (json.choices?.[0]?.message?.content ?? "")
+      .replace(/```json|```/g, "")
+      .trim();
+
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      throw new Error("Could not read the translation.");
+    }
+
+    const translation = str(parsed["translation"]);
+    if (!translation) throw new Error("Could not translate that item.");
+    const result: LexicalTranslation = { language: data.targetLanguage, translation };
+    const translit = str(parsed["transliteration"]);
+    if (translit) result.transliteration = translit;
+    return result;
+  });
