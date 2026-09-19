@@ -26,7 +26,6 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   const [languages, setLanguages] = useState<string[]>(DEFAULT_LANGUAGES);
   const [items, setItems] = useState<Record<string, ItemState>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [nonce, setNonce] = useState<Record<string, number>>({});
 
   // Remembered selection (client-only, avoids hydration mismatch).
   useEffect(() => {
@@ -54,56 +53,49 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
 
   const source = entry.text;
 
-  useEffect(() => {
-    setItems((prev) => {
-      const next: Record<string, ItemState> = {};
-      for (const l of languages) next[l] = prev[l] ?? { loading: true };
-      return next;
-    });
-  }, [languages, source]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const pending = languages.filter((l) => l !== entry.language);
-
-    setItems(Object.fromEntries(pending.map((l) => [l, { loading: true }])));
-
-    pending.forEach((target) => {
-      translateLexicalItem({
-        data: {
-          text: source,
-          sourceLanguage: entry.language,
-          targetLanguage: target,
-          type: entry.type,
-        },
+  const fetchFor = (target: string, cancelledRef: { current: boolean }) => {
+    setItems((prev) => ({ ...prev, [target]: { loading: true } }));
+    translateLexicalItem({
+      data: {
+        text: source,
+        sourceLanguage: entry.language,
+        targetLanguage: target,
+        type: entry.type,
+      },
+    })
+      .then((res) => {
+        if (cancelledRef.current) return;
+        setItems((prev) => ({
+          ...prev,
+          [target]: {
+            loading: false,
+            translation: res.translation,
+            ...(res.transliteration ? { transliteration: res.transliteration } : {}),
+          },
+        }));
       })
-        .then((res) => {
-          if (cancelled) return;
-          setItems((prev) => ({
-            ...prev,
-            [target]: {
-              loading: false,
-              translation: res.translation,
-              ...(res.transliteration ? { transliteration: res.transliteration } : {}),
-            },
-          }));
-        })
-        .catch((e) => {
-          if (cancelled) return;
-          setItems((prev) => ({
-            ...prev,
-            [target]: {
-              loading: false,
-              error: e instanceof Error ? e.message : "Could not translate.",
-            },
-          }));
-        });
-    });
+      .catch((e) => {
+        if (cancelledRef.current) return;
+        setItems((prev) => ({
+          ...prev,
+          [target]: {
+            loading: false,
+            error: e instanceof Error ? e.message : "Could not translate.",
+          },
+        }));
+      });
+  };
 
+  useEffect(() => {
+    const ref = { current: false };
+    const pending = languages.filter((l) => l !== entry.language);
+    setItems(Object.fromEntries(pending.map((l) => [l, { loading: true }])));
+    pending.forEach((target) => fetchFor(target, ref));
     return () => {
-      cancelled = true;
+      ref.current = true;
     };
-  }, [source, entry.language, entry.type, languages, nonce]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source, entry.language, entry.type, languages.join("|")]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
@@ -177,7 +169,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
                     <Loader2 className="mt-2 size-4 animate-spin text-muted-foreground" />
                   ) : state?.error ? (
                     <button
-                      onClick={() => setNonce((p) => ({ ...p, [l]: (p[l] ?? 0) + 1 }))}
+                      onClick={() => fetchFor(l, { current: false })}
                       className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <RotateCw className="size-3.5" />
