@@ -91,7 +91,6 @@ function TranslatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
   const [mode, setMode] = useState<DisplayMode>("carousel");
   const touchX = useRef<number | null>(null);
   const addRef = useRef<HTMLDivElement>(null);
