@@ -10,12 +10,15 @@ import {
   Plus,
   RectangleHorizontal,
   Rows3,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { useSpeech } from "@/lib/speech";
 
 type DisplayMode = "carousel" | "side" | "stacked";
 
