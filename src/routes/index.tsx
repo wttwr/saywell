@@ -409,6 +409,7 @@ function TranslatePage() {
           <div>
             <div className="flex flex-col divide-y divide-border">
               <section className="flex flex-col pb-8">{sourceBody}</section>
+              <div className="flex justify-center py-3">{SwapControl}</div>
               {targets.map((lang, i) => (
                 <div key={lang} className="flex py-8 last:pb-0">
                   {targetPanel(lang, i)}
