@@ -36,7 +36,7 @@ const en = {
   "vocab.save": "Save",
   "vocab.savedDone": "Saved",
   "vocab.remove": "Remove",
-  "vocab.sentenceNotAllowed": "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
+  "vocab.sentenceNotAllowed": "Dictionary supports words, phrasal verbs, expressions, and abbreviations, but not full sentences.",
 
 
 
