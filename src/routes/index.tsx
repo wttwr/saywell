@@ -13,14 +13,16 @@ import {
 
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
+import { useI18n, type TranslationKey } from "@/lib/i18n";
 
 type DisplayMode = "carousel" | "side" | "stacked";
 
-const MODES: { id: DisplayMode; label: string; Icon: typeof Columns3 }[] = [
-  { id: "carousel", label: "Carousel", Icon: RectangleHorizontal },
-  { id: "side", label: "Side by side", Icon: Columns3 },
-  { id: "stacked", label: "Stacked", Icon: Rows3 },
+const MODES: { id: DisplayMode; labelKey: TranslationKey; Icon: typeof Columns3 }[] = [
+  { id: "carousel", labelKey: "mode.carousel", Icon: RectangleHorizontal },
+  { id: "side", labelKey: "mode.side", Icon: Columns3 },
+  { id: "stacked", labelKey: "mode.stacked", Icon: Rows3 },
 ];
+
 
 
 export const Route = createFileRoute("/")({

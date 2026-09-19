@@ -8,6 +8,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Globe } from "lucide-react";
+
+import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i18n";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
