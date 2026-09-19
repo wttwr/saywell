@@ -340,7 +340,10 @@ function TranslatePage() {
         )}
       </div>
       <div className="mt-6 min-h-32 flex-1">{resultBody(lang)}</div>
-      <div className="mt-6 flex items-center justify-end">{copyButton(lang)}</div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        {listenButton(`target:${lang}`, results[lang] ?? "", lang)}
+        {copyButton(lang)}
+      </div>
     </section>
   );
 
@@ -425,7 +428,14 @@ function TranslatePage() {
 
               <div className="mt-6 min-h-56 md:min-h-72">{resultBody(activeLang)}</div>
 
-              <div className="mt-6 flex items-center justify-end">{copyButton(activeLang)}</div>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+                {listenButton(
+                  `target:${activeLang ?? ""}`,
+                  activeLang ? (results[activeLang] ?? "") : "",
+                  activeLang,
+                )}
+                {copyButton(activeLang)}
+              </div>
             </section>
           </div>
         ) : mode === "side" ? (
