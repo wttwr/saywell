@@ -109,7 +109,7 @@ export const lookUpWord = createServerFn({ method: "POST" })
       'If the entry refers to a tangible, visually identifiable physical object (dog, chair, violin), set "imageQuery" to the English Wikipedia article title for that object; for abstract words, expressions or abbreviations leave it empty.',
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
       "Keep everything short and calm. No markdown.",
-      'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
+      'Reply with ONLY a JSON object: {"text":"headword","detectedLanguage":"English","languageConfident":false,"transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
     ].join(" ");
 
 
