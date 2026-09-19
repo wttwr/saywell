@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   ChevronDown,
   Copy,
   Loader2,
   Search,
+  Trash2,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -14,6 +15,7 @@ import { LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
+import { useDictionaryStore, type DictionaryType } from "@/lib/dictionary-store";
 
 export const Route = createFileRoute("/dictionary")({
   head: () => ({
@@ -22,12 +24,12 @@ export const Route = createFileRoute("/dictionary")({
       {
         name: "description",
         content:
-          "Look up any word or expression, see its meaning and examples, and save the ones you want to learn.",
+          "Look up any word, phrasal verb, expression or abbreviation, see its meaning, origin and examples, and browse the ones you kept.",
       },
       { property: "og:title", content: "Dictionary — Look up words and keep them" },
       {
         property: "og:description",
-        content: "Meanings, examples and pronunciation, with a saved list of your own.",
+        content: "Meanings, expanded forms, etymology and pronunciation, with your own saved list.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -36,7 +38,7 @@ export const Route = createFileRoute("/dictionary")({
   component: DictionaryPage,
 });
 
-const TYPE_KEYS: Record<"single_word" | "phrasal_verb" | "expression" | "abbreviation", TranslationKey> = {
+const TYPE_KEYS: Record<DictionaryType, TranslationKey> = {
   single_word: "vocab.type.single_word",
   phrasal_verb: "vocab.type.phrasal_verb",
   expression: "vocab.type.expression",
@@ -67,6 +69,17 @@ function defaultDictionaryLanguage(lang: AppLanguage): string {
       return "Italian";
     case "zh":
       return "Chinese (Simplified)";
+    default:
+      return "English";
+  }
+}
+
+function explanationLanguage(lang: AppLanguage): string {
+  switch (lang) {
+    case "it":
+      return "Italian";
+    case "zh":
+      return "Simplified Chinese";
     default:
       return "English";
   }
@@ -106,9 +119,11 @@ function SelectPill({
 function DictionaryPage() {
   const { t, lang } = useI18n();
   const speech = useSpeech();
+  const { entries: saved, saveEntry, removeEntry } = useDictionaryStore();
 
   const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
   const [query, setQuery] = useState("");
+  const [savedQuery, setSavedQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
   const [loading, setLoading] = useState(false);
@@ -140,12 +155,23 @@ function DictionaryPage() {
       setError(null);
       setEntry(null);
 
-      lookUpWord({ data: { text, language } })
+      lookUpWord({
+        data: { text, language, explanationLanguage: explanationLanguage(lang) },
+      })
         .then((result) => {
           // Ignore stale results from an earlier query.
-          if (query.trim() === text) {
-            setEntry(result);
-          }
+          if (query.trim() !== text) return;
+          setEntry(result);
+          saveEntry({
+            language: result.language,
+            entry_text: result.text,
+            type: result.type,
+            meaning: result.meaning,
+            ...(result.expandedForm ? { expanded_form: result.expandedForm } : {}),
+            ...(result.etymology ? { etymology: result.etymology } : {}),
+            ...(result.imageUrl ? { image_url: result.imageUrl } : {}),
+            ...(result.transliteration ? { transliteration: result.transliteration } : {}),
+          });
         })
         .catch((e) => {
           if (query.trim() === text) {
@@ -160,7 +186,17 @@ function DictionaryPage() {
     }, 600);
 
     return () => clearTimeout(timer);
-  }, [query, language]);
+  }, [query, language, lang]);
+
+  const filteredSaved = useMemo(() => {
+    const q = savedQuery.trim().toLowerCase();
+    if (!q) return saved;
+    return saved.filter((e) =>
+      [e.entry_text, e.meaning, e.expanded_form ?? ""].some((v) =>
+        v.toLowerCase().includes(q),
+      ),
+    );
+  }, [saved, savedQuery]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
@@ -168,7 +204,12 @@ function DictionaryPage() {
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const actionButton = (id: string, text: string, itemLanguage: string) => {
+  const actionButton = (
+    id: string,
+    text: string,
+    itemLanguage: string,
+    compact = false,
+  ) => {
     const playing = speech.playingId === id;
     const failed = speech.errorId === id;
     return (
@@ -187,7 +228,7 @@ function DictionaryPage() {
           ) : (
             <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
           )}
-          {playing ? t("translate.stop") : t("translate.listen")}
+          {!compact && (playing ? t("translate.stop") : t("translate.listen"))}
         </button>
         <button
           onClick={() => onCopy(id, text)}
@@ -196,9 +237,9 @@ function DictionaryPage() {
           className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           {copiedId === id ? <Check className="size-4" /> : <Copy className="size-4" />}
-          {copiedId === id ? t("translate.copied") : t("translate.copy")}
+          {!compact && (copiedId === id ? t("translate.copied") : t("translate.copy"))}
         </button>
-        {failed && (
+        {failed && !compact && (
           <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
         )}
       </div>
@@ -250,13 +291,32 @@ function DictionaryPage() {
                       {entry.transliteration}
                     </p>
                   )}
-                  <p className="mt-2 text-base text-foreground/80">{entry.meaning}</p>
                   <span className="mt-3 inline-block rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
                     {t(TYPE_KEYS[entry.type])}
                   </span>
                 </div>
                 {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
               </div>
+
+              {entry.expandedForm && (
+                <div className="mt-5">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {t("vocab.expandedForm")}
+                  </p>
+                  <p className="mt-1 text-base text-foreground">{entry.expandedForm}</p>
+                </div>
+              )}
+
+              <p className="mt-5 text-base text-foreground/80">{entry.meaning}</p>
+
+              {entry.imageUrl && (
+                <img
+                  src={entry.imageUrl}
+                  alt={entry.text}
+                  loading="lazy"
+                  className="mt-5 max-h-64 w-full rounded-xl object-cover"
+                />
+              )}
 
               {entry.senses.length > 0 && (
                 <ul className="mt-5 space-y-4 border-t border-border pt-5">
@@ -281,12 +341,83 @@ function DictionaryPage() {
                 </ul>
               )}
 
+              {entry.etymology && (
+                <div className="mt-5 border-t border-border pt-5">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {t("vocab.etymology")}
+                  </p>
+                  <p className="mt-1 text-sm text-foreground/80">{entry.etymology}</p>
+                </div>
+              )}
+
               {entry.note && (
                 <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
               )}
             </div>
           </section>
         )}
+
+        <section className="mt-16 border-t border-border pt-8">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            {t("vocab.savedEntries")}
+          </p>
+
+          <div className="mt-4 flex items-center gap-3 border-b border-border pb-3">
+            <Search className="size-4 shrink-0 text-muted-foreground" />
+            <input
+              value={savedQuery}
+              onChange={(e) => setSavedQuery(e.target.value)}
+              placeholder={t("vocab.searchSaved")}
+              aria-label={t("vocab.searchSaved")}
+              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
+            />
+          </div>
+
+          {filteredSaved.length === 0 ? (
+            <div className="mt-6">
+              <p className="text-sm text-foreground">
+                {saved.length === 0 ? t("vocab.emptyTitle") : t("vocab.noMatches")}
+              </p>
+              {saved.length === 0 && (
+                <p className="mt-1 text-sm text-muted-foreground">{t("vocab.emptyBody")}</p>
+              )}
+            </div>
+          ) : (
+            <ul className="mt-2 divide-y divide-border">
+              {filteredSaved.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-base text-foreground">{item.entry_text}</span>
+                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
+                        {t(TYPE_KEYS[item.type])}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{item.language}</span>
+                    </div>
+                    {item.expanded_form && (
+                      <p className="mt-1 text-sm text-foreground/80">{item.expanded_form}</p>
+                    )}
+                    <p className="mt-1 text-sm text-muted-foreground">{item.meaning}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-4">
+                    {actionButton(`saved:${item.id}`, item.entry_text, item.language, true)}
+                    <button
+                      onClick={() => removeEntry(item.id)}
+                      title={t("vocab.remove")}
+                      aria-label={t("vocab.remove")}
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </main>
   );
