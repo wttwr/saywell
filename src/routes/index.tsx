@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ArrowLeftRight,
   Check,
   ChevronDown,
   Columns3,
@@ -127,17 +126,6 @@ function TranslatePage() {
     setActive(targets.length);
   };
 
-  const swapLanguages = () => {
-    const lang = targets[active];
-    if (!lang) return;
-    const translated = results[lang] ?? "";
-    const previousSource = source;
-    setFrom(lang);
-    setTargets((prev) => prev.map((l, i) => (i === active ? from : l)));
-    setSource(translated);
-    setResults(translated ? { [from]: previousSource } : {});
-  };
-
   useEffect(() => {
     const trimmed = source.trim();
     if (!trimmed || targets.length === 0) {
@@ -203,18 +191,6 @@ function TranslatePage() {
         ))}
       </select>
     </div>
-  );
-
-  const SwapControl = (
-    <button
-      onClick={swapLanguages}
-      title={t("translate.swap")}
-      aria-label={t("translate.swap")}
-      disabled={!targets[active]}
-      className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
-    >
-      <ArrowLeftRight className="size-4" />
-    </button>
   );
 
   const sourceBody = (
@@ -340,9 +316,6 @@ function TranslatePage() {
 
         {mode === "carousel" ? (
           <div className="relative grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
-            <div className="absolute left-1/2 top-1 z-10 hidden -translate-x-1/2 md:block">
-              {SwapControl}
-            </div>
             <section className="order-1 flex flex-col md:order-1 md:pr-10">{sourceBody}</section>
 
             <section
@@ -396,7 +369,6 @@ function TranslatePage() {
           <div className="overflow-x-auto">
             <div className="flex min-w-full items-stretch divide-x divide-border">
               <section className="flex min-w-[260px] flex-1 flex-col pr-6">{sourceBody}</section>
-              <div className="flex items-start px-3 pt-1">{SwapControl}</div>
               {targets.map((lang, i) => (
                 <div key={lang} className="flex min-w-[260px] flex-1 px-6 last:pr-0">
                   {targetPanel(lang, i)}
@@ -409,7 +381,6 @@ function TranslatePage() {
           <div>
             <div className="flex flex-col divide-y divide-border">
               <section className="flex flex-col pb-8">{sourceBody}</section>
-              <div className="flex justify-center py-3">{SwapControl}</div>
               {targets.map((lang, i) => (
                 <div key={lang} className="flex py-8 last:pb-0">
                   {targetPanel(lang, i)}
