@@ -154,8 +154,17 @@ export const lookUpWord = createServerFn({ method: "POST" })
       throw new Error("Could not read the result. Please try again.");
     }
 
+    const matchType = str(parsed["matchType"]).toLowerCase();
+    const suggestions = (Array.isArray(parsed["suggestions"]) ? parsed["suggestions"] : [])
+      .map(str)
+      .filter(Boolean)
+      .slice(0, 4);
+
     const meaning = str(parsed["meaning"]);
-    if (!meaning) throw new Error("No dictionary entry found for that word.");
+    if (matchType === "ambiguous" || !meaning) {
+      if (suggestions.length > 0) return { entry: null, suggestions };
+      if (!meaning) throw new Error("No dictionary entry found for that word.");
+    }
 
     const rawType = str(parsed["type"]);
     const validTypes: DictionaryEntry["type"][] = ["single_word", "phrasal_verb", "expression", "abbreviation"];
