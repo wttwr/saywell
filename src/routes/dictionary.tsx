@@ -36,11 +36,30 @@ export const Route = createFileRoute("/dictionary")({
   component: DictionaryPage,
 });
 
-const TYPE_KEYS: Record<"single_word" | "phrasal_verb" | "expression", TranslationKey> = {
+const TYPE_KEYS: Record<"single_word" | "phrasal_verb" | "expression" | "abbreviation", TranslationKey> = {
   single_word: "vocab.type.single_word",
   phrasal_verb: "vocab.type.phrasal_verb",
   expression: "vocab.type.expression",
+  abbreviation: "vocab.type.abbreviation",
 };
+
+function looksLikeSentence(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (/[;:!?]/.test(trimmed)) return true;
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length > 6) return true;
+  if (/\.\s/.test(trimmed) || (/\./.test(trimmed) && words.length > 1)) return true;
+  const clauseMarkers = [
+    " i ", " you ", " he ", " she ", " it ", " we ", " they ",
+    " is ", " are ", " was ", " were ", " am ",
+    " has ", " have ", " had ", " do ", " does ", " did ",
+    " will ", " would ", " could ", " should ", " may ", " might ", " can ",
+    " cannot ", " can't ", " don't ", " doesn't ", " didn't ",
+  ];
+  const lower = ` ${trimmed.toLowerCase()} `;
+  return clauseMarkers.some((m) => lower.includes(m));
+}
 
 function defaultDictionaryLanguage(lang: AppLanguage): string {
   switch (lang) {
