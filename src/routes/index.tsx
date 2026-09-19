@@ -221,6 +221,35 @@ function TranslatePage() {
     </button>
   );
 
+  const listenButton = (id: string, text: string, language: string | undefined) => {
+    const playing = speech.playingId === id;
+    const failed = speech.errorId === id;
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => language && speech.speak(id, text, language)}
+          disabled={!language || !text.trim()}
+          title={playing ? t("translate.stop") : t("translate.listen")}
+          aria-label={playing ? t("translate.stop") : t("translate.listen")}
+          aria-pressed={playing}
+          className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
+            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {failed ? (
+            <VolumeX className="size-4" />
+          ) : (
+            <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
+          )}
+          {playing ? t("translate.stop") : t("translate.listen")}
+        </button>
+        {failed && (
+          <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
+        )}
+      </div>
+    );
+  };
+
   const sourceBody = (
     <>
       <div className="flex h-11 items-center">
@@ -285,34 +314,6 @@ function TranslatePage() {
     </button>
   );
 
-  const listenButton = (id: string, text: string, language: string | undefined) => {
-    const playing = speech.playingId === id;
-    const failed = speech.errorId === id;
-    return (
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => language && speech.speak(id, text, language)}
-          disabled={!language || !text.trim()}
-          title={playing ? t("translate.stop") : t("translate.listen")}
-          aria-label={playing ? t("translate.stop") : t("translate.listen")}
-          aria-pressed={playing}
-          className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
-            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {failed ? (
-            <VolumeX className="size-4" />
-          ) : (
-            <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
-          )}
-          {playing ? t("translate.stop") : t("translate.listen")}
-        </button>
-        {failed && (
-          <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
-        )}
-      </div>
-    );
-  };
 
   const targetPanel = (lang: string, index: number) => (
     <section key={lang} className="flex min-w-0 flex-1 flex-col">
