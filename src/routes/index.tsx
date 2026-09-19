@@ -86,32 +86,38 @@ function TranslatePage() {
     });
   };
 
-  const onTranslate = async () => {
-    setError(null);
-    if (!source.trim()) {
-      setError("Enter some text to translate.");
+  useEffect(() => {
+    const trimmed = source.trim();
+    if (!trimmed || targets.length === 0) {
+      setResults({});
+      setError(null);
       return;
     }
-    if (targets.length === 0) {
-      setError("Add at least one target language.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await translate({
-        data: {
-          text: source.trim(),
-          from: from === "Detect language" ? "auto" : from,
-          targets,
-        },
-      });
-      setResults(data.results);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    const timeout = setTimeout(() => {
+      const run = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const data = await translate({
+            data: {
+              text: trimmed,
+              from: from === "Detect language" ? "auto" : from,
+              targets,
+            },
+          });
+          setResults(data.results);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      run();
+    }, 700);
+
+    return () => clearTimeout(timeout);
+  }, [source, from, targets, translate]);
 
   const onCopy = async () => {
     if (!translation) return;
