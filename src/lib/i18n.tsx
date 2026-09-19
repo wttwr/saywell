@@ -23,7 +23,7 @@ const en = {
   "vocab.type.single_word": "Single word",
   "vocab.type.phrasal_verb": "Phrasal verb",
   "vocab.type.expression": "Expression",
-  "vocab.searchPlaceholder": "Look up a word or expression...",
+  "vocab.searchPlaceholder": "Type a word, phrasal verb, expression, or abbreviation...",
   "vocab.emptyTitle": "Nothing saved yet",
   "vocab.emptyBody": "Look up a word above and save the ones you want to keep.",
   "vocab.noMatches": "Nothing saved matches that — look it up instead",
@@ -34,6 +34,8 @@ const en = {
   "vocab.save": "Save",
   "vocab.savedDone": "Saved",
   "vocab.remove": "Remove",
+  "vocab.sentenceNotAllowed": "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
+
 
 
 
