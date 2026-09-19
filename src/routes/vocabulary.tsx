@@ -146,8 +146,7 @@ function VocabularyPage() {
         </div>
 
         <p className="mt-6 text-xs uppercase tracking-wide text-muted-foreground">
-          {language} ·{" "}
-          {type === "all" ? t("vocab.type.all") : t(TYPE_KEYS[type])}
+          {language}
         </p>
 
         {inLanguage.length === 0 ? (
