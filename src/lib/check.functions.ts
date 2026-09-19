@@ -10,7 +10,7 @@ export type CheckIssue = {
   original: string;
   suggestion: string;
   reason: string;
-  labels: ("Grammar" | "Naturalness")[];
+  labels: ("Grammar" | "Typo" | "Naturalness")[];
 };
 
 export type CheckResult = {
@@ -34,7 +34,12 @@ export const checkText = createServerFn({ method: "POST" })
       "If both the original and an alternative are correct and natural, keep the original.",
       "If the text is already correct and natural, return status 'Looks good', corrected = null and an empty issues array.",
       "Otherwise return status 'A few issues found' (1-2 minor issues) or 'Changes recommended' (more/serious issues), a corrected version with only the necessary edits, and one issue entry per meaningful change.",
-      "Each issue: original (the exact original word or phrase), suggestion, reason (short, clear), labels (array containing 'Grammar' and/or 'Naturalness').",
+      "Each issue: original (the exact original word or phrase), suggestion, reason (short, clear), labels (array of issue types).",
+      "Classify each issue as exactly one of three types: 'Grammar', 'Typo' or 'Naturalness'.",
+      "Grammar: the sentence breaks a grammatical or structural rule (tense, verb form, subject-verb agreement, articles, prepositions, word order, missing required element, sentence structure).",
+      "Typo: accidental writing mistakes rather than language-knowledge problems (misspellings, repeated letters, missing or extra letters, obvious typing slips). Never label a clear typo as Grammar or Naturalness.",
+      "Naturalness: understandable or grammatically possible, but the wording is unusual or unidiomatic for fluent speakers in that context.",
+      "Choose the single most appropriate type for each issue. Do NOT add both Grammar and Naturalness by default; use two labels only in the rare case where one issue genuinely belongs to both categories.",
       "Write summary and reasons in English.",
       'Reply with ONLY a JSON object: {"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
     ].join(" ");
