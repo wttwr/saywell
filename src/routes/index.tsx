@@ -395,7 +395,7 @@ function TranslatePage() {
         ) : mode === "side" ? (
           <div className="overflow-x-auto">
             <div className="relative flex min-w-full items-stretch">
-              <section className="flex min-w-[260px] flex-1 flex-col border-r border-border pr-10">
+              <section className="flex min-w-[260px] flex-1 flex-col pr-10">
                 {sourceBody}
               </section>
               <div className="absolute left-1/2 top-1 z-10 -translate-x-1/2">
