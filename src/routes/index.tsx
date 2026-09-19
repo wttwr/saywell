@@ -222,7 +222,7 @@ function TranslatePage() {
                     {targets.length > 1 && (
                       <span
                         role="button"
-                        aria-label={`Remove ${lang}`}
+                        aria-label={`${t("translate.remove")} ${lang}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           removeTarget(lang);
@@ -238,7 +238,7 @@ function TranslatePage() {
                   {adding && available.length > 0 ? (
                     <select
                       autoFocus
-                      aria-label="Add target language"
+                      aria-label={t("translate.addLanguage")}
                       value=""
                       onChange={(e) => {
                         const lang = e.target.value;
@@ -251,7 +251,7 @@ function TranslatePage() {
                       className="h-9 cursor-pointer rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground outline-none"
                     >
                       <option value="" disabled>
-                        Select language
+                        {t("translate.selectLanguage")}
                       </option>
                       {available.map((l) => (
                         <option key={l} value={l}>
@@ -261,12 +261,12 @@ function TranslatePage() {
                     </select>
                   ) : (
                     <button
-                      aria-label="Add target language"
+                      aria-label={t("translate.addLanguage")}
                       onClick={() => setAdding(true)}
                       disabled={available.length === 0}
                       className="flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
                     >
-                      <Plus className="size-4" /> Add
+                      <Plus className="size-4" /> {t("translate.add")}
                     </button>
                   )}
                 </div>
@@ -288,7 +288,9 @@ function TranslatePage() {
                   {translation}
                 </p>
               ) : (
-                <p className="text-xl leading-relaxed text-muted-foreground/50">Translation</p>
+                <p className="text-xl leading-relaxed text-muted-foreground/50">
+                  {t("translate.emptyTranslation")}
+                </p>
               )}
             </div>
 
@@ -299,7 +301,7 @@ function TranslatePage() {
                 className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
               >
                 {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                {copied ? "Copied" : "Copy"}
+                {copied ? t("translate.copied") : t("translate.copy")}
               </button>
             </div>
           </section>
