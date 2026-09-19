@@ -1,24 +1,279 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useRef, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, Copy, Plus, X } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
+import { translateText } from "@/lib/translate.functions";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Lingua — Translate text into many languages at once" },
+      {
+        name: "description",
+        content:
+          "Paste text once and translate it into several languages at the same time, then swipe between results.",
+      },
+      { property: "og:title", content: "Lingua — Multi-language text translator" },
+      {
+        property: "og:description",
+        content:
+          "A calm, focused translator: one source text, many target languages, instant switching between results.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: TranslatePage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function LanguageSelect({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly string[];
+  label: string;
+}) {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+    <select
+      aria-label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="cursor-pointer rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function TranslatePage() {
+  const translate = useServerFn(translateText);
+
+  const [source, setSource] = useState("");
+  const [from, setFrom] = useState("Detect language");
+  const [targets, setTargets] = useState<string[]>(["Finnish"]);
+  const [active, setActive] = useState(0);
+  const [results, setResults] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const touchX = useRef<number | null>(null);
+
+  const available = useMemo(() => LANGUAGES.filter((l) => !targets.includes(l)), [targets]);
+  const activeLang = targets[active];
+  const translation = activeLang ? (results[activeLang] ?? "") : "";
+
+  const go = (dir: -1 | 1) => {
+    if (targets.length < 2) return;
+    setActive((i) => (i + dir + targets.length) % targets.length);
+  };
+
+  const removeTarget = (lang: string) => {
+    setTargets((prev) => {
+      const next = prev.filter((l) => l !== lang);
+      setActive((i) => Math.max(0, Math.min(i, next.length - 1)));
+      return next;
+    });
+  };
+
+  const onTranslate = async () => {
+    setError(null);
+    if (!source.trim()) {
+      setError("Enter some text to translate.");
+      return;
+    }
+    if (targets.length === 0) {
+      setError("Add at least one target language.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await translate({
+        data: {
+          text: source.trim(),
+          from: from === "Detect language" ? "auto" : from,
+          targets,
+        },
+      });
+      setResults(data.results);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onCopy = async () => {
+    if (!translation) return;
+    await navigator.clipboard.writeText(translation);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  };
+
+  return (
+    <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-10 md:mb-14">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Lingua</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            One text, as many languages as you need.
+          </p>
+        </header>
+
+        <div className="grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
+          {/* Source — right on desktop, first on mobile */}
+          <section className="order-1 flex flex-col md:order-2 md:pl-10">
+            <div className="flex h-11 items-center">
+              <LanguageSelect
+                label="Source language"
+                value={from}
+                onChange={setFrom}
+                options={SOURCE_LANGUAGES}
+              />
+            </div>
+            <textarea
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              placeholder="Type or paste text here..."
+              className="mt-6 min-h-56 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 md:min-h-72"
+            />
+            <div className="mt-6 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">{source.length} characters</span>
+              <button
+                onClick={onTranslate}
+                disabled={loading}
+                className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+              >
+                {loading ? "Translating..." : "Translate"}
+              </button>
+            </div>
+          </section>
+
+          {/* Target — left on desktop */}
+          <section
+            className="order-2 flex flex-col md:order-1 md:pr-10"
+            onTouchStart={(e) => (touchX.current = e.touches[0]?.clientX ?? null)}
+            onTouchEnd={(e) => {
+              if (touchX.current === null) return;
+              const dx = (e.changedTouches[0]?.clientX ?? touchX.current) - touchX.current;
+              if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+              touchX.current = null;
+            }}
+          >
+            <div className="flex h-11 items-center gap-1">
+              {targets.length > 1 && (
+                <button
+                  aria-label="Previous language"
+                  onClick={() => go(-1)}
+                  className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  <ChevronLeft className="size-4" />
+                </button>
+              )}
+
+              <div className="flex flex-1 items-center gap-1 overflow-x-auto">
+                {targets.map((lang, i) => (
+                  <button
+                    key={lang}
+                    onClick={() => setActive(i)}
+                    className={`group flex shrink-0 items-center gap-1 rounded-full px-4 py-2 text-sm transition-colors ${
+                      i === active
+                        ? "bg-accent font-medium text-accent-foreground"
+                        : "text-muted-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {lang}
+                    {targets.length > 1 && (
+                      <span
+                        role="button"
+                        aria-label={`Remove ${lang}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeTarget(lang);
+                        }}
+                        className="opacity-40 transition-opacity hover:opacity-100"
+                      >
+                        <X className="size-3.5" />
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {targets.length > 1 && (
+                <button
+                  aria-label="Next language"
+                  onClick={() => go(1)}
+                  className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  <ChevronRight className="size-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="mt-6 min-h-56 md:min-h-72">
+              {loading ? (
+                <div className="space-y-3">
+                  <div className="h-5 w-3/4 animate-pulse rounded bg-secondary" />
+                  <div className="h-5 w-2/3 animate-pulse rounded bg-secondary" />
+                  <div className="h-5 w-1/2 animate-pulse rounded bg-secondary" />
+                </div>
+              ) : error ? (
+                <p className="text-base text-destructive">{error}</p>
+              ) : translation ? (
+                <p className="whitespace-pre-wrap text-xl leading-relaxed text-foreground">
+                  {translation}
+                </p>
+              ) : (
+                <p className="text-xl leading-relaxed text-muted-foreground/50">Translation</p>
+              )}
+            </div>
+
+            <div className="mt-6 flex items-center justify-between">
+              {adding && available.length > 0 ? (
+                <LanguageSelect
+                  label="Add target language"
+                  value=""
+                  onChange={(v) => {
+                    if (!v) return;
+                    setTargets((p) => [...p, v]);
+                    setActive(targets.length);
+                    setAdding(false);
+                  }}
+                  options={["", ...available]}
+                />
+              ) : (
+                <button
+                  onClick={() => setAdding(true)}
+                  disabled={available.length === 0}
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+                >
+                  <Plus className="size-4" /> Add language
+                </button>
+              )}
+
+              <button
+                onClick={onCopy}
+                disabled={!translation}
+                className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+              >
+                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
   );
 }
