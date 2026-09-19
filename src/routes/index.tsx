@@ -121,7 +121,6 @@ function TranslatePage() {
   };
 
   const addTarget = (lang: string) => {
-    setAdding(false);
     if (!lang) return;
     setTargets((p) => [...p, lang]);
     setActive(targets.length);
