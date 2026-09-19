@@ -78,7 +78,7 @@ function TranslatePage() {
   const translate = useServerFn(translateText);
 
   const [source, setSource] = useState("");
-  const [from, setFrom] = useState("Detect language");
+  const [from, setFrom] = useState("English");
   const [targets, setTargets] = useState<string[]>(["Finnish"]);
   const [active, setActive] = useState(0);
   const [results, setResults] = useState<Record<string, string>>({});
@@ -122,7 +122,7 @@ function TranslatePage() {
           const data = await translate({
             data: {
               text: trimmed,
-              from: from === "Detect language" ? "auto" : from,
+              from,
               targets,
             },
           });

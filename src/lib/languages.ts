@@ -31,4 +31,4 @@ export const LANGUAGES = [
   "Romanian",
 ] as const;
 
-export const SOURCE_LANGUAGES = ["Detect language", ...LANGUAGES];
+export const SOURCE_LANGUAGES = [...LANGUAGES];
