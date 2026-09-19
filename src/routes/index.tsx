@@ -117,12 +117,14 @@ function TranslatePage() {
     setTargets((prev) => prev.map((l, i) => (i === active ? from : l)));
     setSource(translated);
     setResults(translated ? { [from]: previousSource } : {});
+    setAlternatives({});
   };
 
   useEffect(() => {
     const trimmed = source.trim();
     if (!trimmed || targets.length === 0) {
       setResults({});
+      setAlternatives({});
       setError(null);
       return;
     }
@@ -134,6 +136,8 @@ function TranslatePage() {
         try {
           const data = await translate({ data: { text: trimmed, from, targets } });
           setResults(data.results);
+          setAlternatives(data.alternatives ?? {});
+          setShowAllAlts(false);
         } catch (e) {
           setError(e instanceof Error ? e.message : t("translate.error"));
         } finally {
