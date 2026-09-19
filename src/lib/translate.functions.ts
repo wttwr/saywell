@@ -76,13 +76,12 @@ export const translateText = createServerFn({ method: "POST" })
       results[target] = typeof obj.translation === "string" ? obj.translation : "";
       const list = Array.isArray(obj.alternatives) ? obj.alternatives : [];
       alternatives[target] = list
-        .map((a) => {
+        .map((a): { text: string; note?: string } => {
           if (typeof a === "string") return { text: a };
           const o = (a ?? {}) as { text?: unknown; note?: unknown };
-          return {
-            text: typeof o.text === "string" ? o.text : "",
-            note: typeof o.note === "string" && o.note.trim() ? o.note.trim() : undefined,
-          };
+          const text = typeof o.text === "string" ? o.text : "";
+          const note = typeof o.note === "string" && o.note.trim() ? o.note.trim() : "";
+          return note ? { text, note } : { text };
         })
         .filter(
           (a) =>
