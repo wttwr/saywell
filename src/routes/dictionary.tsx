@@ -4,6 +4,7 @@ import {
   Check,
   ChevronDown,
   Copy,
+  Info,
   Loader2,
   Search,
   Volume2,
@@ -310,6 +311,16 @@ function DictionaryPage() {
 
         {entry && (
           <section className="mt-10">
+            {entry.languageMismatch && entry.detectedLanguage && (
+              <p className="mb-4 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
+                <Info className="mt-0.5 size-4 shrink-0" />
+                <span>
+                  {t("vocab.languageMismatch")
+                    .replaceAll("{detected}", entry.detectedLanguage)
+                    .replaceAll("{selected}", language)}
+                </span>
+              </p>
+            )}
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
               {t("vocab.entry")}
             </p>
