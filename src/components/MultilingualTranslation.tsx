@@ -27,31 +27,36 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   const [items, setItems] = useState<Record<string, ItemState>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const sourceLanguage = entry.language;
+  const source = entry.text;
+
   // Remembered selection (client-only, avoids hydration mismatch).
+  // The current source language is always excluded from the target list.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as unknown;
         if (Array.isArray(parsed) && parsed.every((v) => typeof v === "string")) {
-          setLanguages(parsed as string[]);
+          setLanguages((parsed as string[]).filter((l) => l !== sourceLanguage));
+          return;
         }
       }
     } catch {
       /* ignore */
     }
-  }, []);
+    setLanguages(DEFAULT_LANGUAGES.filter((l) => l !== sourceLanguage));
+  }, [sourceLanguage]);
 
   const persist = (next: string[]) => {
-    setLanguages(next);
+    const filtered = next.filter((l) => l !== sourceLanguage);
+    setLanguages(filtered);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
     } catch {
       /* ignore */
     }
   };
-
-  const source = entry.text;
 
   const fetchFor = (target: string, cancelledRef: { current: boolean }) => {
     setItems((prev) => ({ ...prev, [target]: { loading: true } }));
