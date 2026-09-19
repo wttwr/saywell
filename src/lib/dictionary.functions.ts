@@ -22,6 +22,7 @@ function looksLikeSentence(text: string): boolean {
 const schema = z.object({
   text: z.string().min(1).max(200),
   language: z.string().min(1),
+  explanationLanguage: z.string().min(1).default("English"),
 }).refine((val) => !looksLikeSentence(val.text), {
   message: "Dictionary supports words, phrasal verbs, expressions, and abbreviations, but not full sentences.",
 });
@@ -39,9 +40,34 @@ export type DictionaryEntry = {
   transliteration?: string;
   type: "single_word" | "phrasal_verb" | "expression" | "abbreviation";
   meaning: string;
+  expandedForm?: string;
+  etymology?: string;
+  imageUrl?: string;
   senses: DictionarySense[];
   note?: string;
 };
+
+/** Looks for a free, relevant photo on Wikipedia. Returns undefined when none fits. */
+async function findImage(query: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (!res.ok) return undefined;
+    const json = (await res.json()) as {
+      type?: string;
+      thumbnail?: { source?: string };
+      originalimage?: { source?: string };
+    };
+    if (json.type === "disambiguation") return undefined;
+    const url = json.originalimage?.source ?? json.thumbnail?.source;
+    return typeof url === "string" && url.startsWith("https://") ? url : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
