@@ -96,12 +96,17 @@ export const lookUpWord = createServerFn({ method: "POST" })
       "The user may look up a single word, a phrasal verb, a fixed expression, or an abbreviation.",
       "Do not treat full sentences as dictionary entries.",
       "If the input is written in another language, interpret it as the closest equivalent in the target language and use that as the headword.",
-      "Give a short plain-English meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its English translation.",
+      `Write the meaning, definitions, example translations, etymology and any note in ${data.explanationLanguage}. Keep the headword and the example sentences in ${data.language}.`,
+      "Give a short meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its translation.",
       `Classify the item as "single_word", "phrasal_verb", "expression" or "abbreviation".`,
+      'If the item is an abbreviation or acronym, set "expandedForm" to its full expanded form; otherwise leave it empty.',
+      'Add "etymology" (1-2 readable sentences on the origin and how the meaning developed) only when you are confident it is accurate; otherwise leave it empty. Never invent one.',
+      'If the entry refers to a tangible, visually identifiable physical object (dog, chair, violin), set "imageQuery" to the English Wikipedia article title for that object; for abstract words, expressions or abbreviations leave it empty.',
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
       "Keep everything short and calm. No markdown.",
-      'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short english meaning","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
+      'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
     ].join(" ");
+
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
