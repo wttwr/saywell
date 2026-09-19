@@ -23,6 +23,8 @@ const en = {
   "vocab.type.single_word": "Single word",
   "vocab.type.phrasal_verb": "Phrasal verb",
   "vocab.type.expression": "Expression",
+  "vocab.type.abbreviation": "Abbreviation",
+
   "vocab.searchPlaceholder": "Type a word, phrasal verb, expression, or abbreviation...",
   "vocab.emptyTitle": "Nothing saved yet",
   "vocab.emptyBody": "Look up a word above and save the ones you want to keep.",
