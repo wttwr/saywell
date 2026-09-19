@@ -129,6 +129,7 @@ function DictionaryPage() {
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -143,6 +144,8 @@ function DictionaryPage() {
 
     // Typing (or clearing) always hides the previous warning immediately.
     setError(null);
+
+    setSuggestions([]);
 
     if (!text) {
       setEntry(null);
@@ -162,13 +165,15 @@ function DictionaryPage() {
 
       setLoading(true);
       setEntry(null);
+      setSuggestions([]);
 
       lookUpWord({
         data: { text, language, explanationLanguage: explanationLanguage(lang) },
       })
         .then((result) => {
           if (cancelled) return;
-          setEntry(result);
+          setEntry(result.entry);
+          setSuggestions(result.suggestions ?? []);
         })
         .catch((e) => {
           if (cancelled) return;
@@ -309,15 +314,48 @@ function DictionaryPage() {
 
         {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
+        {!loading && !error && suggestions.length > 0 && (
+          <section className="mt-8 rounded-xl bg-secondary/50 px-4 py-3">
+            <p className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              <span>
+                {t("vocab.noExactMatch")} {t("vocab.didYouMean")}
+              </span>
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setQuery(s)}
+                  className="rounded-full bg-secondary px-3.5 py-1.5 text-sm text-secondary-foreground transition-colors hover:text-foreground"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
         {entry && (
           <section className="mt-10">
-            {entry.languageMismatch && entry.detectedLanguage && (
+            {(entry.languageMismatch || entry.correctedFrom) && (
               <p className="mb-4 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
                 <Info className="mt-0.5 size-4 shrink-0" />
-                <span>
-                  {t("vocab.languageMismatch")
-                    .replaceAll("{detected}", entry.detectedLanguage)
-                    .replaceAll("{selected}", language)}
+                <span className="space-y-1">
+                  {entry.correctedFrom && (
+                    <span className="block">
+                      {t("vocab.nearestMatch")
+                        .replaceAll("{input}", entry.correctedFrom)
+                        .replaceAll("{match}", entry.text)}
+                    </span>
+                  )}
+                  {entry.languageMismatch && entry.detectedLanguage && (
+                    <span className="block">
+                      {t("vocab.languageMismatch")
+                        .replaceAll("{detected}", entry.detectedLanguage)
+                        .replaceAll("{selected}", language)}
+                    </span>
+                  )}
                 </span>
               </p>
             )}
