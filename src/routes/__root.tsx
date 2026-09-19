@@ -114,32 +114,58 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function AppNav() {
+  const { t, lang, setLang } = useI18n();
+
+  return (
+    <div className="bg-background px-5 pt-6 md:px-10 md:pt-8">
+      <nav className="mx-auto flex max-w-6xl items-center gap-1">
+        <Link
+          to="/"
+          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
+          activeOptions={{ exact: true }}
+        >
+          {t("nav.translate")}
+        </Link>
+        <Link
+          to="/check"
+          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
+        >
+          {t("nav.check")}
+        </Link>
+
+        <div className="ml-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+          <Globe className="size-4" />
+          <select
+            aria-label={t("nav.appLanguage")}
+            value={lang}
+            onChange={(e) => setLang(e.target.value as AppLanguage)}
+            className="cursor-pointer bg-transparent text-sm outline-none"
+          >
+            {APP_LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </nav>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="bg-background px-5 pt-6 md:px-10 md:pt-8">
-        <nav className="mx-auto flex max-w-6xl items-center gap-1">
-          <Link
-            to="/"
-            className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-            activeOptions={{ exact: true }}
-          >
-            Translate
-          </Link>
-          <Link
-            to="/check"
-            className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-          >
-            Check
-          </Link>
-        </nav>
-      </div>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <I18nProvider>
+        <AppNav />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
