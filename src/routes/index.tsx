@@ -269,7 +269,7 @@ function TranslatePage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("translate.subtitle")}</p>
         </header>
 
-        <div className="relative grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
+        <div className="relative grid gap-10 md:grid-cols-2">
           <div className="absolute left-1/2 top-1 z-10 hidden -translate-x-1/2 md:block">
             {SwapControl}
           </div>
