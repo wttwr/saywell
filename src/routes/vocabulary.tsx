@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, Copy, Search, Volume2, VolumeX } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/languages";
-import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
-import { useVocabulary, VOCABULARY_TYPES, type VocabularyType } from "@/lib/vocabulary";
+import { useVocabulary, type VocabularyType } from "@/lib/vocabulary";
 
 export const Route = createFileRoute("/vocabulary")({
   head: () => ({
@@ -14,12 +14,12 @@ export const Route = createFileRoute("/vocabulary")({
       {
         name: "description",
         content:
-          "Browse, filter and search the words, phrasal verbs and expressions you want to learn.",
+          "Browse, filter and search the words and expressions you want to learn.",
       },
       { property: "og:title", content: "Vocabulary — Words and expressions worth keeping" },
       {
         property: "og:description",
-        content: "Filter by language and type, search instantly, and listen to every item.",
+        content: "Filter by language, search instantly, and listen to every item.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -33,6 +33,17 @@ const TYPE_KEYS: Record<VocabularyType, TranslationKey> = {
   phrasal_verb: "vocab.type.phrasal_verb",
   expression: "vocab.type.expression",
 };
+
+function defaultVocabularyLanguage(lang: AppLanguage): string {
+  switch (lang) {
+    case "it":
+      return "Italian";
+    case "zh":
+      return "Chinese (Simplified)";
+    default:
+      return "English";
+  }
+}
 
 function SelectPill({
   value,
@@ -70,14 +81,17 @@ function SelectPill({
 }
 
 function VocabularyPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const speech = useSpeech();
   const { items } = useVocabulary();
 
-  const [language, setLanguage] = useState("Finnish");
-  const [type, setType] = useState<"all" | VocabularyType>("all");
+  const [language, setLanguage] = useState(() => defaultVocabularyLanguage(lang));
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLanguage(defaultVocabularyLanguage(lang));
+  }, [lang]);
 
   const inLanguage = useMemo(
     () => items.filter((i) => i.language === language),
@@ -86,23 +100,18 @@ function VocabularyPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return inLanguage.filter((i) => {
-      if (type !== "all" && i.type !== type) return false;
-      if (!q) return true;
-      return i.text.toLowerCase().includes(q) || i.meaning.toLowerCase().includes(q);
-    });
-  }, [inLanguage, type, query]);
+    if (!q) return inLanguage;
+    return inLanguage.filter(
+      (i) =>
+        i.text.toLowerCase().includes(q) || i.meaning.toLowerCase().includes(q),
+    );
+  }, [inLanguage, query]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1600);
   };
-
-  const typeOptions = [
-    { value: "all", label: t("vocab.type.all") },
-    ...VOCABULARY_TYPES.map((v) => ({ value: v, label: t(TYPE_KEYS[v]) })),
-  ];
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -114,29 +123,15 @@ function VocabularyPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("vocab.subtitle")}</p>
         </header>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
-            <SelectPill
-              label={t("vocab.language")}
-              value={language}
-              display={language}
-              onChange={setLanguage}
-              options={LANGUAGES.map((l) => ({ value: l, label: l }))}
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{t("vocab.typeLabel")}</span>
-            <SelectPill
-              label={t("vocab.typeLabel")}
-              value={type}
-              display={
-                type === "all" ? t("vocab.type.all") : t(TYPE_KEYS[type])
-              }
-              onChange={(v) => setType(v as "all" | VocabularyType)}
-              options={typeOptions}
-            />
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
+          <SelectPill
+            label={t("vocab.language")}
+            value={language}
+            display={language}
+            onChange={setLanguage}
+            options={LANGUAGES.map((l) => ({ value: l, label: l }))}
+          />
         </div>
 
         <div className="mt-8 flex items-center gap-3 border-b border-border pb-3">
@@ -151,8 +146,7 @@ function VocabularyPage() {
         </div>
 
         <p className="mt-6 text-xs uppercase tracking-wide text-muted-foreground">
-          {language} ·{" "}
-          {type === "all" ? t("vocab.type.all") : t(TYPE_KEYS[type])}
+          {language}
         </p>
 
         {inLanguage.length === 0 ? (
