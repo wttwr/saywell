@@ -45,6 +45,10 @@ export type DictionaryEntry = {
   imageUrl?: string;
   senses: DictionarySense[];
   note?: string;
+  /** Language actually used for the entry (detected when it differs from the selected one). */
+  detectedLanguage?: string;
+  /** True only when detection is confident the input is in another language. */
+  languageMismatch?: boolean;
 };
 
 /** Looks for a free, relevant photo on Wikipedia. Returns undefined when none fits. */
@@ -95,7 +99,8 @@ export const lookUpWord = createServerFn({ method: "POST" })
       `You are a concise learner's dictionary for ${data.language}.`,
       "The user may look up a single word, a phrasal verb, a fixed expression, or an abbreviation.",
       "Do not treat full sentences as dictionary entries.",
-      "If the input is written in another language, interpret it as the closest equivalent in the target language and use that as the headword.",
+      `First detect the language the user actually typed. Set "detectedLanguage" to that language name in English (for example "English", "Italian"). Never translate the input: always define exactly what the user typed, in its own language.`,
+      `If the input is clearly not ${data.language}, build the whole entry in the detected language and set "languageConfident" to true. If the item exists in ${data.language} too, or detection is uncertain, keep ${data.language} as the detected language and set "languageConfident" to false.`,
       `Write the meaning, definitions, example translations, etymology and any note in ${data.explanationLanguage}. Keep the headword and the example sentences in ${data.language}.`,
       "Give a short meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its translation.",
       `Classify the item as "single_word", "phrasal_verb", "expression" or "abbreviation".`,
@@ -104,7 +109,7 @@ export const lookUpWord = createServerFn({ method: "POST" })
       'If the entry refers to a tangible, visually identifiable physical object (dog, chair, violin), set "imageQuery" to the English Wikipedia article title for that object; for abstract words, expressions or abbreviations leave it empty.',
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
       "Keep everything short and calm. No markdown.",
-      'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
+      'Reply with ONLY a JSON object: {"text":"headword","detectedLanguage":"English","languageConfident":false,"transliteration":"...","type":"single_word","meaning":"short meaning","expandedForm":"","etymology":"","imageQuery":"","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
     ].join(" ");
 
 
@@ -154,13 +159,25 @@ export const lookUpWord = createServerFn({ method: "POST" })
       .filter((s): s is DictionarySense => s !== null)
       .slice(0, 3);
 
+    const detected = str(parsed["detectedLanguage"]);
+    const confident = parsed["languageConfident"] === true;
+    const mismatch =
+      confident &&
+      detected.length > 0 &&
+      detected.toLowerCase() !== data.language.toLowerCase();
+    const usedLanguage = mismatch ? detected : data.language;
+
     const entry: DictionaryEntry = {
       text: str(parsed["text"]) || data.text.trim(),
-      language: data.language,
+      language: usedLanguage,
       type,
       meaning,
       senses,
     };
+    if (mismatch) {
+      entry.detectedLanguage = detected;
+      entry.languageMismatch = true;
+    }
     const translit = str(parsed["transliteration"]);
     const note = str(parsed["note"]);
     const expandedForm = str(parsed["expandedForm"]);
