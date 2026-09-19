@@ -81,14 +81,17 @@ function SelectPill({
 }
 
 function VocabularyPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const speech = useSpeech();
   const { items } = useVocabulary();
 
-  const [language, setLanguage] = useState("Finnish");
-  const [type, setType] = useState<"all" | VocabularyType>("all");
+  const [language, setLanguage] = useState(() => defaultVocabularyLanguage(lang));
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLanguage(defaultVocabularyLanguage(lang));
+  }, [lang]);
 
   const inLanguage = useMemo(
     () => items.filter((i) => i.language === language),
@@ -97,23 +100,18 @@ function VocabularyPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return inLanguage.filter((i) => {
-      if (type !== "all" && i.type !== type) return false;
-      if (!q) return true;
-      return i.text.toLowerCase().includes(q) || i.meaning.toLowerCase().includes(q);
-    });
-  }, [inLanguage, type, query]);
+    if (!q) return inLanguage;
+    return inLanguage.filter(
+      (i) =>
+        i.text.toLowerCase().includes(q) || i.meaning.toLowerCase().includes(q),
+    );
+  }, [inLanguage, query]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1600);
   };
-
-  const typeOptions = [
-    { value: "all", label: t("vocab.type.all") },
-    ...VOCABULARY_TYPES.map((v) => ({ value: v, label: t(TYPE_KEYS[v]) })),
-  ];
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
