@@ -1,9 +1,29 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+function looksLikeSentence(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (/[;:!?]/.test(trimmed)) return true;
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length > 6) return true;
+  if (/\.\s/.test(trimmed) || (/\./.test(trimmed) && words.length > 1)) return true;
+  const clauseMarkers = [
+    " i ", " you ", " he ", " she ", " it ", " we ", " they ",
+    " is ", " are ", " was ", " were ", " am ",
+    " has ", " have ", " had ", " do ", " does ", " did ",
+    " will ", " would ", " could ", " should ", " may ", " might ", " can ",
+    " cannot ", " can't ", " don't ", " doesn't ", " didn't ",
+  ];
+  const lower = ` ${trimmed.toLowerCase()} `;
+  return clauseMarkers.some((m) => lower.includes(m));
+}
+
 const schema = z.object({
   text: z.string().min(1).max(200),
   language: z.string().min(1),
+}).refine((val) => !looksLikeSentence(val.text), {
+  message: "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
 });
 
 export type DictionarySense = {
