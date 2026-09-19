@@ -204,6 +204,18 @@ function TranslatePage() {
     </div>
   );
 
+  const SwapControl = (
+    <button
+      onClick={swapLanguages}
+      title={t("translate.swap")}
+      aria-label={t("translate.swap")}
+      disabled={!targets[active]}
+      className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+    >
+      <ArrowLeftRight className="size-4" />
+    </button>
+  );
+
   const sourceBody = (
     <>
       <div className="flex h-11 items-center">
