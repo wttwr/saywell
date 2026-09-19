@@ -153,7 +153,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             <option value="" disabled>
               {t("translate.addLanguage")}
             </option>
-            {LANGUAGES.map((o) => (
+            {LANGUAGES.filter((o) => o !== sourceLanguage).map((o) => (
               <option key={o} value={o} disabled={languages.includes(o)}>
                 {languages.includes(o) ? `✓ ${o}` : o}
               </option>
