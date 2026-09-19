@@ -396,6 +396,7 @@ function TranslatePage() {
           <div className="overflow-x-auto">
             <div className="flex min-w-full items-stretch divide-x divide-border">
               <section className="flex min-w-[260px] flex-1 flex-col pr-6">{sourceBody}</section>
+              <div className="flex items-start px-3 pt-1">{SwapControl}</div>
               {targets.map((lang, i) => (
                 <div key={lang} className="flex min-w-[260px] flex-1 px-6 last:pr-0">
                   {targetPanel(lang, i)}
