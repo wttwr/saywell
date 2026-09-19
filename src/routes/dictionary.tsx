@@ -5,11 +5,13 @@ import {
   ChevronDown,
   Copy,
   Loader2,
+  Save,
   Search,
   Trash2,
   Volume2,
   VolumeX,
 } from "lucide-react";
+
 
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
@@ -168,17 +170,8 @@ function DictionaryPage() {
           // Ignore stale results from an earlier query.
           if (query.trim() !== text) return;
           setEntry(result);
-          saveEntry({
-            language: result.language,
-            entry_text: result.text,
-            type: result.type,
-            meaning: result.meaning,
-            ...(result.expandedForm ? { expanded_form: result.expandedForm } : {}),
-            ...(result.etymology ? { etymology: result.etymology } : {}),
-            ...(result.imageUrl ? { image_url: result.imageUrl } : {}),
-            ...(result.transliteration ? { transliteration: result.transliteration } : {}),
-          });
         })
+
         .catch((e) => {
           if (query.trim() === text) {
             setError(e instanceof Error ? e.message : "Could not look up that word.");
@@ -251,6 +244,40 @@ function DictionaryPage() {
       </div>
     );
   };
+
+  const saveButton = (entry: DictionaryEntry) => {
+    const alreadySaved = saved.some(
+      (e) =>
+        e.language === entry.language &&
+        e.entry_text.toLowerCase() === entry.text.toLowerCase(),
+    );
+    return (
+      <button
+        onClick={() =>
+          saveEntry({
+            language: entry.language,
+            entry_text: entry.text,
+            type: entry.type,
+            meaning: entry.meaning,
+            ...(entry.expandedForm ? { expanded_form: entry.expandedForm } : {}),
+            ...(entry.etymology ? { etymology: entry.etymology } : {}),
+            ...(entry.imageUrl ? { image_url: entry.imageUrl } : {}),
+            ...(entry.transliteration ? { transliteration: entry.transliteration } : {}),
+          })
+        }
+        disabled={alreadySaved}
+        title={alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
+        aria-label={alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
+        className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
+          alreadySaved ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <Save className="size-4" />
+        {alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
+      </button>
+    );
+  };
+
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -344,7 +371,11 @@ function DictionaryPage() {
                     {t(TYPE_KEYS[entry.type])}
                   </span>
                 </div>
-                {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
+                <div className="flex shrink-0 items-start gap-4">
+                  {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
+                  {saveButton(entry)}
+                </div>
+
               </div>
 
               {entry.expandedForm && (
