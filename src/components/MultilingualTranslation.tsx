@@ -156,83 +156,92 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
       </div>
 
       {visible.length > 0 && (
-        <div className="mt-5 -mx-1 overflow-x-auto">
-          <div className="flex min-w-full gap-8 px-1 pb-2">
-            {visible.map((l) => {
-              const isSource = l === entry.language;
-              const state: ItemState | undefined = isSource
-                ? {
-                    loading: false,
-                    translation: source,
-                    ...(entry.transliteration
-                      ? { transliteration: entry.transliteration }
-                      : {}),
-                  }
-                : items[l];
-              const id = `dict-mt:${l}:${source}`;
-              const playing = speech.playingId === id;
-              const failed = speech.errorId === id;
-              return (
-                <div key={l} className="min-w-[9rem] shrink-0">
-                  <p className="text-xs text-muted-foreground">
+        <div className="mt-5 flex flex-col gap-3">
+          {visible.map((l) => {
+            const isSource = l === entry.language;
+            const state: ItemState | undefined = isSource
+              ? {
+                  loading: false,
+                  translation: source,
+                  ...(entry.transliteration
+                    ? { transliteration: entry.transliteration }
+                    : {}),
+                }
+              : items[l];
+            const id = `dict-mt:${l}:${source}`;
+            const playing = speech.playingId === id;
+            const failed = speech.errorId === id;
+            return (
+              <div
+                key={l}
+                className="flex items-start gap-4 rounded-xl border border-border/60 bg-secondary/30 px-4 py-3"
+              >
+                <div className="w-36 shrink-0 pt-0.5">
+                  <p className="text-xs font-medium text-muted-foreground">
                     {l}
                     {isSource && ` · ${t("translate.sourceLabel")}`}
                   </p>
+                </div>
+
+                <div className="min-w-0 flex-1">
                   {state?.loading ? (
-                    <Loader2 className="mt-2 size-4 animate-spin text-muted-foreground" />
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
                   ) : state?.error ? (
                     <button
                       onClick={() => fetchFor(l, { current: false })}
-                      className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <RotateCw className="size-3.5" />
                       {t("vocab.retry")}
                     </button>
                   ) : (
                     <>
-                      <p className="mt-1 text-lg text-foreground">{state?.translation}</p>
+                      <p className="text-lg leading-snug text-foreground">
+                        {state?.translation}
+                      </p>
                       {state?.transliteration && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                           {state.transliteration}
                         </p>
                       )}
-                      <div className="mt-2 flex items-center gap-3">
-                        <button
-                          onClick={() => speech.speak(id, state?.translation ?? "", l)}
-                          title={playing ? t("translate.stop") : t("translate.listen")}
-                          aria-label={`${playing ? t("translate.stop") : t("translate.listen")} ${l}`}
-                          aria-pressed={playing}
-                          className={`transition-colors ${
-                            playing
-                              ? "text-foreground"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          {failed ? (
-                            <VolumeX className="size-4" />
-                          ) : (
-                            <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => onCopy(id, state?.translation ?? "")}
-                          title={t("translate.copy")}
-                          aria-label={`${t("translate.copy")} ${l}`}
-                          className="text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                          {copiedId === id ? (
-                            <Check className="size-4" />
-                          ) : (
-                            <Copy className="size-4" />
-                          )}
-                        </button>
-                      </div>
                     </>
                   )}
                 </div>
-              );
-            })}
-          </div>
+
+                <div className="flex shrink-0 items-center gap-2 pt-0.5">
+                  <button
+                    onClick={() => speech.speak(id, state?.translation ?? "", l)}
+                    title={playing ? t("translate.stop") : t("translate.listen")}
+                    aria-label={`${playing ? t("translate.stop") : t("translate.listen")} ${l}`}
+                    aria-pressed={playing}
+                    className={`rounded-md p-1.5 transition-colors ${
+                      playing
+                        ? "bg-secondary text-foreground"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    {failed ? (
+                      <VolumeX className="size-4" />
+                    ) : (
+                      <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => onCopy(id, state?.translation ?? "")}
+                    title={t("translate.copy")}
+                    aria-label={`${t("translate.copy")} ${l}`}
+                    className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    {copiedId === id ? (
+                      <Check className="size-4" />
+                    ) : (
+                      <Copy className="size-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </section>
