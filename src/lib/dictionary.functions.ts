@@ -37,7 +37,7 @@ export type DictionaryEntry = {
   text: string;
   language: string;
   transliteration?: string;
-  type: "single_word" | "phrasal_verb" | "expression";
+  type: "single_word" | "phrasal_verb" | "expression" | "abbreviation";
   meaning: string;
   senses: DictionarySense[];
   note?: string;
