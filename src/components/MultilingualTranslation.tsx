@@ -156,44 +156,47 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
       </div>
 
       {visible.length > 0 && (
-        <div className="mt-5 space-y-4">
-          {visible.map((l) => {
-            const isSource = l === entry.language;
-            const state: ItemState | undefined = isSource
-              ? {
-                  loading: false,
-                  translation: source,
-                  ...(entry.transliteration
-                    ? { transliteration: entry.transliteration }
-                    : {}),
-                }
-              : items[l];
-            const id = `dict-mt:${l}:${source}`;
-            const playing = speech.playingId === id;
-            const failed = speech.errorId === id;
-            return (
-              <div
-                key={l}
-                className="rounded-2xl bg-secondary/40 p-4 md:p-5"
-              >
-                <div className="flex items-center justify-between gap-4">
+        <div className="mt-5 -mx-1 overflow-x-auto">
+          <div className="flex min-w-full gap-8 px-1 pb-2">
+            {visible.map((l) => {
+              const isSource = l === entry.language;
+              const state: ItemState | undefined = isSource
+                ? {
+                    loading: false,
+                    translation: source,
+                    ...(entry.transliteration
+                      ? { transliteration: entry.transliteration }
+                      : {}),
+                  }
+                : items[l];
+              const id = `dict-mt:${l}:${source}`;
+              const playing = speech.playingId === id;
+              const failed = speech.errorId === id;
+              return (
+                <div key={l} className="min-w-[9rem] shrink-0">
                   <p className="text-xs text-muted-foreground">
                     {l}
                     {isSource && ` · ${t("translate.sourceLabel")}`}
                   </p>
-                  <div className="flex items-center gap-3">
-                    {state?.loading ? (
-                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                    ) : state?.error ? (
-                      <button
-                        onClick={() => fetchFor(l, { current: false })}
-                        className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        <RotateCw className="size-3.5" />
-                        {t("vocab.retry")}
-                      </button>
-                    ) : (
-                      <>
+                  {state?.loading ? (
+                    <Loader2 className="mt-2 size-4 animate-spin text-muted-foreground" />
+                  ) : state?.error ? (
+                    <button
+                      onClick={() => fetchFor(l, { current: false })}
+                      className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <RotateCw className="size-3.5" />
+                      {t("vocab.retry")}
+                    </button>
+                  ) : (
+                    <>
+                      <p className="mt-1 text-lg text-foreground">{state?.translation}</p>
+                      {state?.transliteration && (
+                        <p className="text-xs text-muted-foreground">
+                          {state.transliteration}
+                        </p>
+                      )}
+                      <div className="mt-2 flex items-center gap-3">
                         <button
                           onClick={() => speech.speak(id, state?.translation ?? "", l)}
                           title={playing ? t("translate.stop") : t("translate.listen")}
@@ -223,23 +226,13 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
                             <Copy className="size-4" />
                           )}
                         </button>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-                {!state?.loading && !state?.error && (
-                  <>
-                    <p className="mt-2 text-lg text-foreground">{state?.translation}</p>
-                    {state?.transliteration && (
-                      <p className="text-xs text-muted-foreground">
-                        {state.transliteration}
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
     </section>
