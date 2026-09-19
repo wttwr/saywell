@@ -5,6 +5,7 @@ import { Check as CheckIcon, Copy } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
+import { useI18n, type TranslationKey } from "@/lib/i18n";
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -42,6 +43,7 @@ function labelTone(label: string) {
 
 function CheckPage() {
   const runCheck = useServerFn(checkText);
+  const { t } = useI18n();
 
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("English");
@@ -69,7 +71,7 @@ function CheckPage() {
       const data = await runCheck({ data: { text: trimmed, language } });
       setResult(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "The check failed. Please try again.");
+      setError(e instanceof Error ? e.message : t("check.error"));
     } finally {
       setLoading(false);
     }
@@ -86,16 +88,16 @@ function CheckPage() {
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
       <div className="mx-auto max-w-3xl">
         <header className="mb-10">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Check</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            See whether your writing is correct and sounds natural.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {t("check.title")}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("check.subtitle")}</p>
         </header>
 
         <div className="flex h-11 items-center gap-3">
-          <span className="text-sm text-muted-foreground">Language</span>
+          <span className="text-sm text-muted-foreground">{t("check.language")}</span>
           <select
-            aria-label="Language"
+            aria-label={t("check.language")}
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
             className="cursor-pointer rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
@@ -112,18 +114,20 @@ function CheckPage() {
           ref={textareaRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type or paste a sentence or paragraph..."
+          placeholder={t("check.placeholder")}
           className="mt-6 min-h-56 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
         />
 
         <div className="mt-6 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">{text.length} characters</span>
+          <span className="text-xs text-muted-foreground">
+            {text.length} {t("check.characters")}
+          </span>
           <button
             onClick={onCheck}
             disabled={loading || !canCheck}
             className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            {loading ? "Checking..." : "Check"}
+            {loading ? t("check.checking") : t("check.button")}
           </button>
         </div>
 
@@ -143,7 +147,7 @@ function CheckPage() {
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
               >
-                {result.status}
+                {t(`status.${result.status}` as TranslationKey)}
               </span>
               {result.summary && (
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
@@ -155,13 +159,15 @@ function CheckPage() {
             {result.corrected && (
               <div>
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-medium text-muted-foreground">Suggested version</h2>
+                  <h2 className="text-sm font-medium text-muted-foreground">
+                    {t("check.suggestedVersion")}
+                  </h2>
                   <button
                     onClick={onCopy}
                     className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {copied ? <CheckIcon className="size-4" /> : <Copy className="size-4" />}
-                    {copied ? "Copied" : "Copy"}
+                    {copied ? t("check.copied") : t("check.copy")}
                   </button>
                 </div>
                 <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
@@ -172,7 +178,7 @@ function CheckPage() {
 
             {result.issues.length > 0 && (
               <div>
-                <h2 className="text-sm font-medium text-muted-foreground">Reasons</h2>
+                <h2 className="text-sm font-medium text-muted-foreground">{t("check.reasons")}</h2>
                 <ul className="mt-4 space-y-8">
                   {result.issues.map((issue, i) => (
                     <li key={i} className="border-t border-border pt-6">
@@ -182,14 +188,14 @@ function CheckPage() {
                             key={label}
                             className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${labelTone(label)}`}
                           >
-                            {label}
+                            {t(`label.${label}` as TranslationKey)}
                           </span>
                         ))}
                       </div>
                       <dl className="mt-4 space-y-3 text-base leading-relaxed">
                         <div>
                           <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Original
+                            {t("check.original")}
                           </dt>
                           <dd className="text-foreground/70 line-through decoration-muted-foreground/40">
                             {issue.original}
@@ -197,13 +203,13 @@ function CheckPage() {
                         </div>
                         <div>
                           <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Suggestion
+                            {t("check.suggestion")}
                           </dt>
                           <dd className="font-medium text-foreground">{issue.suggestion}</dd>
                         </div>
                         <div>
                           <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Reason
+                            {t("check.reason")}
                           </dt>
                           <dd className="text-muted-foreground">{issue.reason}</dd>
                         </div>

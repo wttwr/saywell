@@ -13,14 +13,16 @@ import {
 
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
+import { useI18n, type TranslationKey } from "@/lib/i18n";
 
 type DisplayMode = "carousel" | "side" | "stacked";
 
-const MODES: { id: DisplayMode; label: string; Icon: typeof Columns3 }[] = [
-  { id: "carousel", label: "Carousel", Icon: RectangleHorizontal },
-  { id: "side", label: "Side by side", Icon: Columns3 },
-  { id: "stacked", label: "Stacked", Icon: Rows3 },
+const MODES: { id: DisplayMode; labelKey: TranslationKey; Icon: typeof Columns3 }[] = [
+  { id: "carousel", labelKey: "mode.carousel", Icon: RectangleHorizontal },
+  { id: "side", labelKey: "mode.side", Icon: Columns3 },
+  { id: "stacked", labelKey: "mode.stacked", Icon: Rows3 },
 ];
+
 
 
 export const Route = createFileRoute("/")({
@@ -74,6 +76,7 @@ function LanguageSelect({
 
 function TranslatePage() {
   const translate = useServerFn(translateText);
+  const { t } = useI18n();
 
   const [source, setSource] = useState("");
   const [from, setFrom] = useState("English");
@@ -126,7 +129,7 @@ function TranslatePage() {
           });
           setResults(data.results);
         } catch (e) {
-          setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
+          setError(e instanceof Error ? e.message : t("translate.error"));
         } finally {
           setLoading(false);
         }
@@ -159,10 +162,10 @@ function TranslatePage() {
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
       <div className="mx-auto max-w-6xl">
         <header className="mb-10 md:mb-14">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Lingua</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            One text, as many languages as you need.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {t("translate.title")}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("translate.subtitle")}</p>
         </header>
 
         <div className="grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
@@ -170,7 +173,7 @@ function TranslatePage() {
           <section className="order-1 flex flex-col md:order-1 md:pr-10">
             <div className="flex h-11 items-center">
               <LanguageSelect
-                label="Source language"
+                label={t("translate.sourceLanguage")}
                 value={from}
                 onChange={setFrom}
                 options={SOURCE_LANGUAGES}
@@ -179,13 +182,15 @@ function TranslatePage() {
             <textarea
               value={source}
               onChange={(e) => setSource(e.target.value)}
-              placeholder="Type or paste text here..."
+              placeholder={t("translate.placeholder")}
               className="mt-6 min-h-56 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 md:min-h-72"
             />
             <div className="mt-6 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{source.length} characters</span>
+              <span className="text-xs text-muted-foreground">
+                {source.length} {t("translate.characters")}
+              </span>
               {loading && (
-                <span className="text-xs text-muted-foreground">Translating...</span>
+                <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
               )}
             </div>
           </section>
@@ -217,7 +222,7 @@ function TranslatePage() {
                     {targets.length > 1 && (
                       <span
                         role="button"
-                        aria-label={`Remove ${lang}`}
+                        aria-label={`${t("translate.remove")} ${lang}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           removeTarget(lang);
@@ -233,7 +238,7 @@ function TranslatePage() {
                   {adding && available.length > 0 ? (
                     <select
                       autoFocus
-                      aria-label="Add target language"
+                      aria-label={t("translate.addLanguage")}
                       value=""
                       onChange={(e) => {
                         const lang = e.target.value;
@@ -246,7 +251,7 @@ function TranslatePage() {
                       className="h-9 cursor-pointer rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground outline-none"
                     >
                       <option value="" disabled>
-                        Select language
+                        {t("translate.selectLanguage")}
                       </option>
                       {available.map((l) => (
                         <option key={l} value={l}>
@@ -256,12 +261,12 @@ function TranslatePage() {
                     </select>
                   ) : (
                     <button
-                      aria-label="Add target language"
+                      aria-label={t("translate.addLanguage")}
                       onClick={() => setAdding(true)}
                       disabled={available.length === 0}
                       className="flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
                     >
-                      <Plus className="size-4" /> Add
+                      <Plus className="size-4" /> {t("translate.add")}
                     </button>
                   )}
                 </div>
@@ -283,7 +288,9 @@ function TranslatePage() {
                   {translation}
                 </p>
               ) : (
-                <p className="text-xl leading-relaxed text-muted-foreground/50">Translation</p>
+                <p className="text-xl leading-relaxed text-muted-foreground/50">
+                  {t("translate.emptyTranslation")}
+                </p>
               )}
             </div>
 
@@ -294,7 +301,7 @@ function TranslatePage() {
                 className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
               >
                 {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                {copied ? "Copied" : "Copy"}
+                {copied ? t("translate.copied") : t("translate.copy")}
               </button>
             </div>
           </section>
