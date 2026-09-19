@@ -16,6 +16,7 @@ import { LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
+import { MultilingualTranslation } from "@/components/MultilingualTranslation";
 
 export const Route = createFileRoute("/dictionary")({
   head: () => ({
@@ -437,6 +438,7 @@ function DictionaryPage() {
                 <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
               )}
             </div>
+            <MultilingualTranslation entry={entry} />
           </section>
         )}
 

@@ -17,6 +17,9 @@ const en = {
 
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations.",
+  "vocab.multilingual": "Multilingual translation",
+  "vocab.translateTo": "Translate to",
+  "vocab.retry": "Retry",
   "vocab.language": "Language",
   "vocab.changeTo": "Change to",
   "vocab.typeLabel": "Type",
@@ -121,6 +124,9 @@ const it: Record<TranslationKey, string> = {
 
   "vocab.title": "Dizionario",
   "vocab.subtitle": "Cerca una parola e salva quelle che vuoi imparare.",
+  "vocab.multilingual": "Traduzione multilingue",
+  "vocab.translateTo": "Traduci in",
+  "vocab.retry": "Riprova",
   "vocab.language": "Lingua",
   "vocab.changeTo": "Cambia in",
   "vocab.typeLabel": "Tipo",
@@ -222,6 +228,9 @@ const zh: Record<TranslationKey, string> = {
 
   "vocab.title": "词典",
   "vocab.subtitle": "查询单词，保存你想记住的。",
+  "vocab.multilingual": "多语言翻译",
+  "vocab.translateTo": "翻译成",
+  "vocab.retry": "重试",
   "vocab.language": "语言",
   "vocab.changeTo": "切换至",
   "vocab.typeLabel": "类型",
