@@ -204,16 +204,6 @@ function TranslatePage() {
             }}
           >
             <div className="flex h-11 items-center gap-1">
-              {targets.length > 1 && (
-                <button
-                  aria-label="Previous language"
-                  onClick={() => go(-1)}
-                  className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                >
-                  <ChevronLeft className="size-4" />
-                </button>
-              )}
-
               <div className="flex flex-1 items-center gap-1 overflow-x-auto">
                 {targets.map((lang, i) => (
                   <button
@@ -280,13 +270,22 @@ function TranslatePage() {
               </div>
 
               {targets.length > 1 && (
-                <button
-                  aria-label="Next language"
-                  onClick={() => go(1)}
-                  className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                >
-                  <ChevronRight className="size-4" />
-                </button>
+                <div className="flex items-center gap-0.5 pl-1">
+                  <button
+                    aria-label="Previous language"
+                    onClick={() => go(-1)}
+                    className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button
+                    aria-label="Next language"
+                    onClick={() => go(1)}
+                    className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
               )}
             </div>
 
