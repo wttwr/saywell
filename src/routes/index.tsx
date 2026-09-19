@@ -113,7 +113,7 @@ function TranslatePage() {
 
   const [source, setSource] = useState("");
   const [from, setFrom] = useState("English");
-  const [targets, setTargets] = useState<string[]>(["Finnish"]);
+  const [targets, setTargets] = useState<string[]>(["Chinese (Simplified)", "Italian"]);
   const [active, setActive] = useState(0);
   const [results, setResults] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
