@@ -1,10 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Copy, Plus, X } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Columns3,
+  Copy,
+  Plus,
+  RectangleHorizontal,
+  Rows3,
+  X,
+} from "lucide-react";
 
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
+
+type DisplayMode = "carousel" | "side" | "stacked";
+
+const MODES: { id: DisplayMode; label: string; Icon: typeof Columns3 }[] = [
+  { id: "carousel", label: "Carousel", Icon: RectangleHorizontal },
+  { id: "side", label: "Side by side", Icon: Columns3 },
+  { id: "stacked", label: "Stacked", Icon: Rows3 },
+];
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
