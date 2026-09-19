@@ -263,29 +263,7 @@ function TranslatePage() {
               )}
             </div>
 
-            <div className="mt-6 flex items-center justify-between">
-              {adding && available.length > 0 ? (
-                <LanguageSelect
-                  label="Add target language"
-                  value=""
-                  onChange={(v) => {
-                    if (!v) return;
-                    setTargets((p) => [...p, v]);
-                    setActive(targets.length);
-                    setAdding(false);
-                  }}
-                  options={["", ...available]}
-                />
-              ) : (
-                <button
-                  onClick={() => setAdding(true)}
-                  disabled={available.length === 0}
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
-                >
-                  <Plus className="size-4" /> Add language
-                </button>
-              )}
-
+            <div className="mt-6 flex items-center justify-end">
               <button
                 onClick={onCopy}
                 disabled={!translation}
