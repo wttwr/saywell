@@ -86,6 +86,7 @@ function LanguageSelect({
 function TranslatePage() {
   const translate = useServerFn(translateText);
   const { t } = useI18n();
+  const speech = useSpeech();
 
   const [source, setSource] = useState("");
   const [from, setFrom] = useState("English");
@@ -236,10 +237,13 @@ function TranslatePage() {
         placeholder={t("translate.placeholder")}
         className="mt-6 min-h-40 w-full flex-1 resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
       />
-      <div className="mt-6 flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">
-          {source.length} {t("translate.characters")}
-        </span>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-4">
+          {listenButton("source", source, from)}
+          <span className="text-xs text-muted-foreground">
+            {source.length} {t("translate.characters")}
+          </span>
+        </div>
         {loading && (
           <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
         )}
@@ -280,6 +284,35 @@ function TranslatePage() {
       {copiedLang === lang ? t("translate.copied") : t("translate.copy")}
     </button>
   );
+
+  const listenButton = (id: string, text: string, language: string | undefined) => {
+    const playing = speech.playingId === id;
+    const failed = speech.errorId === id;
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => language && speech.speak(id, text, language)}
+          disabled={!language || !text.trim()}
+          title={playing ? t("translate.stop") : t("translate.listen")}
+          aria-label={playing ? t("translate.stop") : t("translate.listen")}
+          aria-pressed={playing}
+          className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
+            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {failed ? (
+            <VolumeX className="size-4" />
+          ) : (
+            <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
+          )}
+          {playing ? t("translate.stop") : t("translate.listen")}
+        </button>
+        {failed && (
+          <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
+        )}
+      </div>
+    );
+  };
 
   const targetPanel = (lang: string, index: number) => (
     <section key={lang} className="flex min-w-0 flex-1 flex-col">
