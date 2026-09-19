@@ -3,8 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
-  ChevronLeft,
-  ChevronRight,
   Columns3,
   Copy,
   Plus,
@@ -269,24 +267,6 @@ function TranslatePage() {
                 </div>
               </div>
 
-              {targets.length > 1 && (
-                <div className="flex items-center gap-0.5 pl-1">
-                  <button
-                    aria-label="Previous language"
-                    onClick={() => go(-1)}
-                    className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  >
-                    <ChevronLeft className="size-4" />
-                  </button>
-                  <button
-                    aria-label="Next language"
-                    onClick={() => go(1)}
-                    className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  >
-                    <ChevronRight className="size-4" />
-                  </button>
-                </div>
-              )}
             </div>
 
             <div className="mt-6 min-h-56 md:min-h-72">
