@@ -160,8 +160,14 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
           <div className="flex min-w-full gap-8 px-1 pb-2">
             {visible.map((l) => {
               const isSource = l === entry.language;
-              const state = isSource
-                ? { loading: false, translation: source, transliteration: entry.transliteration }
+              const state: ItemState | undefined = isSource
+                ? {
+                    loading: false,
+                    translation: source,
+                    ...(entry.transliteration
+                      ? { transliteration: entry.transliteration }
+                      : {}),
+                  }
                 : items[l];
               const id = `dict-mt:${l}:${source}`;
               const playing = speech.playingId === id;
