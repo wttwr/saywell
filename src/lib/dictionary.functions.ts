@@ -67,10 +67,11 @@ export const lookUpWord = createServerFn({ method: "POST" })
 
     const system = [
       `You are a concise learner's dictionary for ${data.language}.`,
-      `The user looks up a word, phrasal verb or expression in ${data.language}.`,
+      "The user may look up a single word, a phrasal verb, a fixed expression, or an abbreviation.",
+      "Do not treat full sentences as dictionary entries.",
       "If the input is written in another language, interpret it as the closest equivalent in the target language and use that as the headword.",
       "Give a short plain-English meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its English translation.",
-      `Classify the item as "single_word", "phrasal_verb" or "expression".`,
+      `Classify the item as "single_word", "phrasal_verb", "expression" or "abbreviation".`,
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
       "Keep everything short and calm. No markdown.",
       'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short english meaning","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
