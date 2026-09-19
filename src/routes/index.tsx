@@ -352,6 +352,38 @@ function TranslatePage() {
               )}
               {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
             </div>
+
+            {!loading && !error && activeAlternatives.length > 0 && (
+              <div className="mt-8 border-t border-border pt-6">
+                <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("translate.alternatives")}
+                </h2>
+                <ul className="mt-4 space-y-4">
+                  {visibleAlternatives.map((alt, i) => (
+                    <li key={`${alt.text}-${i}`} className="flex flex-col gap-1.5">
+                      <p className="whitespace-pre-wrap text-base leading-relaxed text-foreground">
+                        {alt.text}
+                      </p>
+                      {alt.note && (
+                        <span className="text-xs text-muted-foreground">{alt.note}</span>
+                      )}
+                      <div className="flex items-center gap-4">
+                        {listenButton(`alt:${activeLang ?? ""}:${i}`, alt.text, activeLang, true)}
+                        {copyButton(`alt:${activeLang ?? ""}:${i}`, alt.text, true)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {activeAlternatives.length > 3 && (
+                  <button
+                    onClick={() => setShowAllAlts((v) => !v)}
+                    className="mt-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showAllAlts ? t("translate.showLess") : t("translate.showMore")}
+                  </button>
+                )}
+              </div>
+            )}
           </section>
         </div>
 
