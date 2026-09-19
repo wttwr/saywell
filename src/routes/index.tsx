@@ -131,8 +131,8 @@ function TranslatePage() {
         </header>
 
         <div className="grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
-          {/* Source — right on desktop, first on mobile */}
-          <section className="order-1 flex flex-col md:order-2 md:pl-10">
+          {/* Source — left on desktop, first on mobile */}
+          <section className="order-1 flex flex-col md:order-1 md:pr-10">
             <div className="flex h-11 items-center">
               <LanguageSelect
                 label="Source language"
@@ -159,9 +159,9 @@ function TranslatePage() {
             </div>
           </section>
 
-          {/* Target — left on desktop */}
+          {/* Target — right on desktop */}
           <section
-            className="order-2 flex flex-col md:order-1 md:pr-10"
+            className="order-2 flex flex-col md:order-2 md:pl-10"
             onTouchStart={(e) => (touchX.current = e.touches[0]?.clientX ?? null)}
             onTouchEnd={(e) => {
               if (touchX.current === null) return;
