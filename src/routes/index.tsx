@@ -243,28 +243,13 @@ function TranslatePage() {
 
   const sourceBody = (
     <>
-      <div className="flex min-h-11 flex-wrap items-center gap-2">
+      <div className="flex h-11 items-center">
         <LanguageSelect
           label={t("translate.sourceLanguage")}
           value={from}
           onChange={setFrom}
           options={SOURCE_LANGUAGES}
         />
-        <div className="flex flex-wrap items-center gap-1">
-          {["Chinese (Simplified)", "Italian"].map((lang) => (
-            <button
-              key={lang}
-              onClick={() => setFrom(lang)}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors ${
-                from === lang
-                  ? "bg-accent font-medium text-accent-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              {lang}
-            </button>
-          ))}
-        </div>
       </div>
       <textarea
         value={source}
