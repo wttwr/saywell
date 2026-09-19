@@ -1,9 +1,29 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+function looksLikeSentence(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (/[;:!?]/.test(trimmed)) return true;
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length > 6) return true;
+  if (/\.\s/.test(trimmed) || (/\./.test(trimmed) && words.length > 1)) return true;
+  const clauseMarkers = [
+    " i ", " you ", " he ", " she ", " it ", " we ", " they ",
+    " is ", " are ", " was ", " were ", " am ",
+    " has ", " have ", " had ", " do ", " does ", " did ",
+    " will ", " would ", " could ", " should ", " may ", " might ", " can ",
+    " cannot ", " can't ", " don't ", " doesn't ", " didn't ",
+  ];
+  const lower = ` ${trimmed.toLowerCase()} `;
+  return clauseMarkers.some((m) => lower.includes(m));
+}
+
 const schema = z.object({
   text: z.string().min(1).max(200),
   language: z.string().min(1),
+}).refine((val) => !looksLikeSentence(val.text), {
+  message: "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
 });
 
 export type DictionarySense = {
@@ -17,7 +37,7 @@ export type DictionaryEntry = {
   text: string;
   language: string;
   transliteration?: string;
-  type: "single_word" | "phrasal_verb" | "expression";
+  type: "single_word" | "phrasal_verb" | "expression" | "abbreviation";
   meaning: string;
   senses: DictionarySense[];
   note?: string;
@@ -47,10 +67,11 @@ export const lookUpWord = createServerFn({ method: "POST" })
 
     const system = [
       `You are a concise learner's dictionary for ${data.language}.`,
-      `The user looks up a word, phrasal verb or expression in ${data.language}.`,
+      "The user may look up a single word, a phrasal verb, a fixed expression, or an abbreviation.",
+      "Do not treat full sentences as dictionary entries.",
       "If the input is written in another language, interpret it as the closest equivalent in the target language and use that as the headword.",
       "Give a short plain-English meaning, then 1-3 distinct senses, each with a short natural example sentence in the target language and its English translation.",
-      `Classify the item as "single_word", "phrasal_verb" or "expression".`,
+      `Classify the item as "single_word", "phrasal_verb", "expression" or "abbreviation".`,
       "If the target language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
       "Keep everything short and calm. No markdown.",
       'Reply with ONLY a JSON object: {"text":"headword","transliteration":"...","type":"single_word","meaning":"short english meaning","senses":[{"partOfSpeech":"noun","definition":"...","example":"...","exampleTranslation":"..."}],"note":"optional usage note"}.',
@@ -92,8 +113,10 @@ export const lookUpWord = createServerFn({ method: "POST" })
     if (!meaning) throw new Error("No dictionary entry found for that word.");
 
     const rawType = str(parsed["type"]);
-    const type: DictionaryEntry["type"] =
-      rawType === "phrasal_verb" || rawType === "expression" ? rawType : "single_word";
+    const validTypes: DictionaryEntry["type"][] = ["single_word", "phrasal_verb", "expression", "abbreviation"];
+    const type: DictionaryEntry["type"] = validTypes.includes(rawType as DictionaryEntry["type"])
+      ? (rawType as DictionaryEntry["type"])
+      : "single_word";
 
     const senses = (Array.isArray(parsed["senses"]) ? parsed["senses"] : [])
       .map(asSense)

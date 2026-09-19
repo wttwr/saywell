@@ -23,7 +23,9 @@ const en = {
   "vocab.type.single_word": "Single word",
   "vocab.type.phrasal_verb": "Phrasal verb",
   "vocab.type.expression": "Expression",
-  "vocab.searchPlaceholder": "Look up a word or expression...",
+  "vocab.type.abbreviation": "Abbreviation",
+
+  "vocab.searchPlaceholder": "Type a word, phrasal verb, expression, or abbreviation...",
   "vocab.emptyTitle": "Nothing saved yet",
   "vocab.emptyBody": "Look up a word above and save the ones you want to keep.",
   "vocab.noMatches": "Nothing saved matches that — look it up instead",
@@ -34,6 +36,8 @@ const en = {
   "vocab.save": "Save",
   "vocab.savedDone": "Saved",
   "vocab.remove": "Remove",
+  "vocab.sentenceNotAllowed": "This looks like a sentence. Try a single word, phrasal verb, expression or abbreviation.",
+
 
 
 
@@ -113,7 +117,9 @@ const it: Record<TranslationKey, string> = {
   "vocab.type.single_word": "Parola singola",
   "vocab.type.phrasal_verb": "Verbo frasale",
   "vocab.type.expression": "Espressione",
-  "vocab.searchPlaceholder": "Cerca una parola o un'espressione...",
+  "vocab.type.abbreviation": "Abbreviazione",
+
+  "vocab.searchPlaceholder": "Digita una parola, un verbo frasale, un'espressione o un'abbreviazione...",
   "vocab.emptyTitle": "Niente di salvato",
   "vocab.emptyBody": "Cerca una parola qui sopra e salva quelle che vuoi tenere.",
   "vocab.noMatches": "Nessun salvataggio corrisponde — prova a cercarla",
@@ -124,6 +130,8 @@ const it: Record<TranslationKey, string> = {
   "vocab.save": "Salva",
   "vocab.savedDone": "Salvata",
   "vocab.remove": "Rimuovi",
+  "vocab.sentenceNotAllowed": "Sembra una frase. Prova una parola singola, un verbo frasale, un'espressione o un'abbreviazione.",
+
 
 
   "translate.title": "Lingua",
@@ -200,7 +208,9 @@ const zh: Record<TranslationKey, string> = {
   "vocab.type.single_word": "单词",
   "vocab.type.phrasal_verb": "短语动词",
   "vocab.type.expression": "固定表达",
-  "vocab.searchPlaceholder": "查询单词或表达…",
+  "vocab.type.abbreviation": "缩写",
+
+  "vocab.searchPlaceholder": "输入单词、短语动词、固定表达或缩写……",
   "vocab.emptyTitle": "还没有保存的词",
   "vocab.emptyBody": "在上方查询单词，保存你想记住的。",
   "vocab.noMatches": "没有匹配的收藏 — 试试直接查询",
@@ -211,6 +221,8 @@ const zh: Record<TranslationKey, string> = {
   "vocab.save": "保存",
   "vocab.savedDone": "已保存",
   "vocab.remove": "删除",
+  "vocab.sentenceNotAllowed": "这看起来像一个句子。请尝试输入单个单词、短语动词、固定表达或缩写。",
+
 
 
   "translate.title": "Lingua",
