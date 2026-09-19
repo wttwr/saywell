@@ -210,6 +210,28 @@ function TranslatePage() {
                     )}
                   </button>
                 ))}
+                {adding && available.length > 0 ? (
+                  <LanguageSelect
+                    label="Add target language"
+                    value=""
+                    onChange={(v) => {
+                      if (!v) return;
+                      setTargets((p) => [...p, v]);
+                      setActive(targets.length);
+                      setAdding(false);
+                    }}
+                    options={["", ...available]}
+                  />
+                ) : (
+                  <button
+                    aria-label="Add target language"
+                    onClick={() => setAdding(true)}
+                    disabled={available.length === 0}
+                    className="flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
+                  >
+                    <Plus className="size-4" /> Add
+                  </button>
+                )}
               </div>
 
               {targets.length > 1 && (
