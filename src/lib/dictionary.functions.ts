@@ -49,6 +49,14 @@ export type DictionaryEntry = {
   detectedLanguage?: string;
   /** True only when detection is confident the input is in another language. */
   languageMismatch?: boolean;
+  /** Original input when the entry is the nearest match to a misspelling. */
+  correctedFrom?: string;
+};
+
+export type DictionaryLookup = {
+  entry: DictionaryEntry | null;
+  /** Plausible alternatives when no single confident match exists. */
+  suggestions?: string[];
 };
 
 /** Looks for a free, relevant photo on Wikipedia. Returns undefined when none fits. */
@@ -91,7 +99,7 @@ const asSense = (value: unknown): DictionarySense | null => {
 
 export const lookUpWord = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
-  .handler(async ({ data }): Promise<DictionaryEntry> => {
+  .handler(async ({ data }): Promise<DictionaryLookup> => {
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("The dictionary service is not configured.");
 
