@@ -115,7 +115,7 @@ const it: Record<TranslationKey, string> = {
   "vocab.type.single_word": "Parola singola",
   "vocab.type.phrasal_verb": "Verbo frasale",
   "vocab.type.expression": "Espressione",
-  "vocab.searchPlaceholder": "Cerca una parola o un'espressione...",
+  "vocab.searchPlaceholder": "Digita una parola, un verbo frasale, un'espressione o un'abbreviazione...",
   "vocab.emptyTitle": "Niente di salvato",
   "vocab.emptyBody": "Cerca una parola qui sopra e salva quelle che vuoi tenere.",
   "vocab.noMatches": "Nessun salvataggio corrisponde — prova a cercarla",
@@ -126,6 +126,8 @@ const it: Record<TranslationKey, string> = {
   "vocab.save": "Salva",
   "vocab.savedDone": "Salvata",
   "vocab.remove": "Rimuovi",
+  "vocab.sentenceNotAllowed": "Sembra una frase. Prova una parola singola, un verbo frasale, un'espressione o un'abbreviazione.",
+
 
 
   "translate.title": "Lingua",
