@@ -222,28 +222,42 @@ function TranslatePage() {
                     )}
                   </button>
                 ))}
-                {adding && available.length > 0 ? (
-                  <LanguageSelect
-                    label="Add target language"
-                    value=""
-                    onChange={(v) => {
-                      if (!v) return;
-                      setTargets((p) => [...p, v]);
-                      setActive(targets.length);
-                      setAdding(false);
-                    }}
-                    options={["", ...available]}
-                  />
-                ) : (
-                  <button
-                    aria-label="Add target language"
-                    onClick={() => setAdding(true)}
-                    disabled={available.length === 0}
-                    className="flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
-                  >
-                    <Plus className="size-4" /> Add
-                  </button>
-                )}
+                <div ref={addRef} className="shrink-0">
+                  {adding && available.length > 0 ? (
+                    <select
+                      autoFocus
+                      aria-label="Add target language"
+                      value=""
+                      onChange={(e) => {
+                        const lang = e.target.value;
+                        setAdding(false);
+                        if (!lang) return;
+                        setTargets((p) => [...p, lang]);
+                        setActive(targets.length);
+                      }}
+                      onBlur={() => setAdding(false)}
+                      className="h-9 cursor-pointer appearance-none rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground outline-none"
+                    >
+                      <option value="" disabled>
+                        Select language
+                      </option>
+                      {available.map((l) => (
+                        <option key={l} value={l}>
+                          {l}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <button
+                      aria-label="Add target language"
+                      onClick={() => setAdding(true)}
+                      disabled={available.length === 0}
+                      className="flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
+                    >
+                      <Plus className="size-4" /> Add
+                    </button>
+                  )}
+                </div>
               </div>
 
               {targets.length > 1 && (
