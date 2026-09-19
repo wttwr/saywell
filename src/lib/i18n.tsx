@@ -130,7 +130,7 @@ const it: Record<TranslationKey, string> = {
   "vocab.save": "Salva",
   "vocab.savedDone": "Salvata",
   "vocab.remove": "Rimuovi",
-  "vocab.sentenceNotAllowed": "Sembra una frase. Prova una parola singola, un verbo frasale, un'espressione o un'abbreviazione.",
+  "vocab.sentenceNotAllowed": "Il dizionario supporta parole, verbi frasali, espressioni e abbreviazioni, ma non frasi complete.",
 
 
 
