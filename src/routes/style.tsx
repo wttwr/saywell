@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeftRight, Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
+import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
 
-import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
+import { LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/style")({
       {
         name: "description",
         content:
-          "Explore formal, casual, polite and idiomatic ways to express the same word, phrase or sentence in another language.",
+          "Explore formal, casual, polite and idiomatic ways to say the same thing in one language.",
       },
       { property: "og:title", content: "Style — Explore ways to express the same meaning" },
       {
@@ -69,8 +69,7 @@ function StylePage() {
   const speech = useSpeech();
 
   const [text, setText] = useState("");
-  const [from, setFrom] = useState("English");
-  const [to, setTo] = useState("Italian");
+  const [language, setLanguage] = useState("English");
   const [result, setResult] = useState<StyleResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,18 +84,13 @@ function StylePage() {
 
   const canExplore = text.trim().length > 0 && !loading;
 
-  const swap = () => {
-    setFrom(to);
-    setTo(from);
-  };
-
   const onExplore = async () => {
     const trimmed = text.trim();
     if (!trimmed) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await run({ data: { text: trimmed, from, to } });
+      const data = await run({ data: { text: trimmed, language } });
       setResult(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("style.error"));
@@ -119,7 +113,7 @@ function StylePage() {
     return (
       <div className="mt-2 flex items-center gap-4">
         <button
-          onClick={() => speech.speak(id, value, to)}
+          onClick={() => speech.speak(id, value, language)}
           disabled={!value}
           title={playing ? t("translate.stop") : t("translate.listen")}
           aria-label={playing ? t("translate.stop") : t("translate.listen")}
@@ -180,23 +174,9 @@ function StylePage() {
 
         <div className="flex flex-wrap items-center gap-3">
           <LanguageSelect
-            label={t("style.sourceLanguage")}
-            value={from}
-            onChange={setFrom}
-            options={SOURCE_LANGUAGES}
-          />
-          <button
-            onClick={swap}
-            title={t("translate.swap")}
-            aria-label={t("translate.swap")}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeftRight className="size-4" />
-          </button>
-          <LanguageSelect
-            label={t("style.targetLanguage")}
-            value={to}
-            onChange={setTo}
+            label={t("style.language")}
+            value={language}
+            onChange={setLanguage}
             options={LANGUAGES}
           />
         </div>

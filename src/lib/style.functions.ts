@@ -3,8 +3,7 @@ import { z } from "zod";
 
 const schema = z.object({
   text: z.string().min(1).max(1000),
-  from: z.string().min(1),
-  to: z.string().min(1),
+  language: z.string().min(1),
 });
 
 export type StyleVariant = {
@@ -45,18 +44,18 @@ export const exploreStyles = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The style service is not configured.");
 
     const system = [
-      `The user writes in ${data.from} and wants to see natural ways to express the same meaning in ${data.to}.`,
+      `The user writes in ${data.language} and wants to see natural ways to say the same thing in ${data.language}. Everything you output (labels aside) must be in ${data.language}.`,
       "The input may be a single word, a short phrase or a sentence. Never require a full sentence.",
-      "First give the primary translation: the most natural default rendering.",
+      "First give the primary phrasing: the most natural default way to say it. If the user's text is already natural, repeat it unchanged.",
       "Then give alternatives that are natural and MEANINGFULLY different in register, politeness, structure or idiom.",
       "Each alternative has a short label chosen only when it genuinely applies, such as: More formal, More casual, Common in everyday speech, Polite, Direct, Idiomatic, More literal, Regional, Written language.",
       "Do not generate every category. Do not invent variations to fill space. Usually 2-5 alternatives; one is fine; none is fine.",
       "All alternatives must preserve the core meaning. If nuance shifts, say so plainly in the explanation.",
       "This is about variation in expression, not correcting the user's writing. Never judge the user's own style, grammar or spelling.",
       "Never say an option is better or worse than another.",
-      `If ${data.to} uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.`,
+      `If ${data.language} uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.`,
       "Explanations are one short neutral sentence, written in English, and may be omitted when nothing useful can be said.",
-      "If no meaningful alternative exists, return an empty alternatives array and set note to 'The primary translation is already the most natural option for this context.'",
+      "If no meaningful alternative exists, return an empty alternatives array and set note to 'The primary phrasing is already the most natural option for this context.'",
       'Reply with ONLY a JSON object: {"primary":{"text":"...","transliteration":"...","explanation":"..."},"alternatives":[{"label":"More formal","text":"...","transliteration":"...","explanation":"..."}],"note":"..."}. No markdown, no commentary.',
     ].join(" ");
 
@@ -102,7 +101,7 @@ export const exploreStyles = createServerFn({ method: "POST" })
     const note = typeof parsed["note"] === "string" ? parsed["note"].trim() : "";
     const result: StyleResult = { primary, alternatives };
     if (alternatives.length === 0) {
-      result.note = note || "The primary translation is already the most natural option for this context.";
+      result.note = note || "The primary phrasing is already the most natural option for this context.";
     }
     return result;
   });
