@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, Copy, Search, Volume2, VolumeX } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/languages";
-import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
-import { useVocabulary, VOCABULARY_TYPES, type VocabularyType } from "@/lib/vocabulary";
+import { useVocabulary, type VocabularyType } from "@/lib/vocabulary";
 
 export const Route = createFileRoute("/vocabulary")({
   head: () => ({
