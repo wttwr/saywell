@@ -91,7 +91,6 @@ function TranslatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
   const [mode, setMode] = useState<DisplayMode>("carousel");
   const touchX = useRef<number | null>(null);
   const addRef = useRef<HTMLDivElement>(null);
@@ -122,7 +121,6 @@ function TranslatePage() {
   };
 
   const addTarget = (lang: string) => {
-    setAdding(false);
     if (!lang) return;
     setTargets((p) => [...p, lang]);
     setActive(targets.length);
@@ -161,16 +159,6 @@ function TranslatePage() {
     return () => clearTimeout(timeout);
   }, [source, from, targets, translate]);
 
-  useEffect(() => {
-    if (!adding) return;
-    const handlePointerDown = (e: PointerEvent) => {
-      if (addRef.current && !addRef.current.contains(e.target as Node)) {
-        setAdding(false);
-      }
-    };
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [adding]);
 
   const onCopy = async (lang: string) => {
     const value = results[lang];
@@ -181,35 +169,27 @@ function TranslatePage() {
   };
 
   const AddControl = (
-    <div ref={addRef} className="shrink-0">
-      {adding && available.length > 0 ? (
-        <select
-          autoFocus
-          aria-label={t("translate.addLanguage")}
-          value=""
-          onChange={(e) => addTarget(e.target.value)}
-          onBlur={() => setAdding(false)}
-          className="h-9 cursor-pointer rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground outline-none"
-        >
-          <option value="" disabled>
-            {t("translate.selectLanguage")}
+    <div ref={addRef} className="relative inline-flex shrink-0">
+      <span className="pointer-events-none flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground">
+        <Plus className="size-4" /> {t("translate.add")}
+      </span>
+      <select
+        aria-label={t("translate.addLanguage")}
+        value=""
+        disabled={available.length === 0}
+        onChange={(e) => e.target.value && addTarget(e.target.value)}
+        className="absolute inset-0 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+      >
+        <option value="" disabled>
+          {t("translate.selectLanguage")}
+        </option>
+        {LANGUAGES.map((l) => (
+          <option key={l} value={l} disabled={targets.includes(l)}>
+            {l}
+            {targets.includes(l) ? " ✓" : ""}
           </option>
-          {available.map((l) => (
-            <option key={l} value={l}>
-              {l}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <button
-          aria-label={t("translate.addLanguage")}
-          onClick={() => setAdding(true)}
-          disabled={available.length === 0}
-          className="flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
-        >
-          <Plus className="size-4" /> {t("translate.add")}
-        </button>
-      )}
+        ))}
+      </select>
     </div>
   );
 
