@@ -155,13 +155,9 @@ function TranslatePage() {
             />
             <div className="mt-6 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">{source.length} characters</span>
-              <button
-                onClick={onTranslate}
-                disabled={loading}
-                className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
-              >
-                {loading ? "Translating..." : "Translate"}
-              </button>
+              {loading && (
+                <span className="text-xs text-muted-foreground">Translating...</span>
+              )}
             </div>
           </section>
 
