@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check as CheckIcon, Copy } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/languages";
@@ -43,10 +43,19 @@ function CheckPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Pick up anything typed or pasted before the page finished loading.
+  useEffect(() => {
+    const value = textareaRef.current?.value ?? "";
+    if (value) setText((prev) => (prev ? prev : value));
+  }, []);
+
+  const canCheck = Boolean(language) && text.trim().length > 0;
 
   const onCheck = async () => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
+    const trimmed = (textareaRef.current?.value ?? text).trim();
+    if (!trimmed || !language || loading) return;
     setLoading(true);
     setError(null);
     setResult(null);
