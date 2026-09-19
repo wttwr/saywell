@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckRouteImport } from './routes/check'
 import { Route as StyleRouteImport } from './routes/style'
+import { Route as VocabularyRouteImport } from './routes/vocabulary'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const StyleRoute = StyleRouteImport.update({
   path: '/style',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VocabularyRoute = VocabularyRouteImport.update({
+  id: '/vocabulary',
+  path: '/vocabulary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/style': typeof StyleRoute
+  '/vocabulary': typeof VocabularyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/style': typeof StyleRoute
+  '/vocabulary': typeof VocabularyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/style': typeof StyleRoute
+  '/vocabulary': typeof VocabularyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/check' | '/style'
+  fullPaths: '/' | '/check' | '/style' | '/vocabulary'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/check' | '/style'
-  id: '__root__' | '/' | '/check' | '/style'
+  to: '/' | '/check' | '/style' | '/vocabulary'
+  id: '__root__' | '/' | '/check' | '/style' | '/vocabulary'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckRoute: typeof CheckRoute
   StyleRoute: typeof StyleRoute
+  VocabularyRoute: typeof VocabularyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StyleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vocabulary': {
+      id: '/vocabulary'
+      path: '/vocabulary'
+      fullPath: '/vocabulary'
+      preLoaderRoute: typeof VocabularyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckRoute: CheckRoute,
   StyleRoute: StyleRoute,
+  VocabularyRoute: VocabularyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
