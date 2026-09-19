@@ -57,53 +57,25 @@ function LanguageSelect({
   options: readonly string[];
   label: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handlePointerDown = (e: PointerEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [open]);
-
-  if (open) {
-    return (
-      <div ref={ref}>
-        <select
-          autoFocus
-          aria-label={label}
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value);
-            setOpen(false);
-          }}
-          onBlur={() => setOpen(false)}
-          className="cursor-pointer rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground outline-none"
-        >
-          {options.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-
   return (
-    <button
-      aria-label={label}
-      onClick={() => setOpen(true)}
-      className="flex cursor-pointer items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
-    >
-      {value}
-      <ChevronDown className="size-3.5 opacity-60" />
-    </button>
+    <div className="relative inline-flex">
+      <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors">
+        {value}
+        <ChevronDown className="size-3.5 opacity-60" />
+      </span>
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 size-full cursor-pointer opacity-0"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 
