@@ -173,6 +173,7 @@ function StylePage() {
         </header>
 
         <div className="flex flex-wrap items-center gap-3">
+          <span className="text-sm text-muted-foreground">{t("style.language")}</span>
           <LanguageSelect
             label={t("style.language")}
             value={language}
