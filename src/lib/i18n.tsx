@@ -30,8 +30,8 @@ const en = {
   "translate.copy": "Copy",
   "translate.copied": "Copied",
   "mode.carousel": "Carousel",
-  "mode.side": "Side by side",
-  "mode.stacked": "Stacked",
+  "mode.side": "Horizontal split",
+  "mode.stacked": "Vertical split",
 
   "check.title": "Check",
   "check.subtitle": "See whether your writing is correct and sounds natural.",
@@ -80,8 +80,8 @@ const it: Record<TranslationKey, string> = {
   "translate.copy": "Copia",
   "translate.copied": "Copiato",
   "mode.carousel": "Carosello",
-  "mode.side": "Affiancate",
-  "mode.stacked": "In colonna",
+  "mode.side": "Divisione orizzontale",
+  "mode.stacked": "Divisione verticale",
 
   "check.title": "Controlla",
   "check.subtitle": "Scopri se il tuo testo è corretto e suona naturale.",
@@ -128,8 +128,8 @@ const zh: Record<TranslationKey, string> = {
   "translate.copy": "复制",
   "translate.copied": "已复制",
   "mode.carousel": "轮播",
-  "mode.side": "并排",
-  "mode.stacked": "上下排列",
+  "mode.side": "水平分屏",
+  "mode.stacked": "垂直分屏",
 
   "check.title": "检查",
   "check.subtitle": "看看你的表达是否正确、是否地道。",
