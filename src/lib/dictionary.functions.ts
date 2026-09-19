@@ -159,13 +159,25 @@ export const lookUpWord = createServerFn({ method: "POST" })
       .filter((s): s is DictionarySense => s !== null)
       .slice(0, 3);
 
+    const detected = str(parsed["detectedLanguage"]);
+    const confident = parsed["languageConfident"] === true;
+    const mismatch =
+      confident &&
+      detected.length > 0 &&
+      detected.toLowerCase() !== data.language.toLowerCase();
+    const usedLanguage = mismatch ? detected : data.language;
+
     const entry: DictionaryEntry = {
       text: str(parsed["text"]) || data.text.trim(),
-      language: data.language,
+      language: usedLanguage,
       type,
       meaning,
       senses,
     };
+    if (mismatch) {
+      entry.detectedLanguage = detected;
+      entry.languageMismatch = true;
+    }
     const translit = str(parsed["transliteration"]);
     const note = str(parsed["note"]);
     const expandedForm = str(parsed["expandedForm"]);
