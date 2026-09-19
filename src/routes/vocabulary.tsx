@@ -123,29 +123,15 @@ function VocabularyPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("vocab.subtitle")}</p>
         </header>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
-            <SelectPill
-              label={t("vocab.language")}
-              value={language}
-              display={language}
-              onChange={setLanguage}
-              options={LANGUAGES.map((l) => ({ value: l, label: l }))}
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{t("vocab.typeLabel")}</span>
-            <SelectPill
-              label={t("vocab.typeLabel")}
-              value={type}
-              display={
-                type === "all" ? t("vocab.type.all") : t(TYPE_KEYS[type])
-              }
-              onChange={(v) => setType(v as "all" | VocabularyType)}
-              options={typeOptions}
-            />
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
+          <SelectPill
+            label={t("vocab.language")}
+            value={language}
+            display={language}
+            onChange={setLanguage}
+            options={LANGUAGES.map((l) => ({ value: l, label: l }))}
+          />
         </div>
 
         <div className="mt-8 flex items-center gap-3 border-b border-border pb-3">
