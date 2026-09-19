@@ -5,9 +5,7 @@ import {
   ChevronDown,
   Copy,
   Loader2,
-  Save,
   Search,
-  Trash2,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -17,7 +15,6 @@ import { LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
-import { useDictionaryStore, type DictionaryType } from "@/lib/dictionary-store";
 
 export const Route = createFileRoute("/dictionary")({
   head: () => ({
@@ -40,7 +37,7 @@ export const Route = createFileRoute("/dictionary")({
   component: DictionaryPage,
 });
 
-const TYPE_KEYS: Record<DictionaryType, TranslationKey> = {
+const TYPE_KEYS: Record<DictionaryEntry["type"], TranslationKey> = {
   single_word: "vocab.type.single_word",
   phrasal_verb: "vocab.type.phrasal_verb",
   expression: "vocab.type.expression",
@@ -121,7 +118,6 @@ function SelectPill({
 function DictionaryPage() {
   const { t, lang } = useI18n();
   const speech = useSpeech();
-  const { entries: saved, saveEntry, removeEntry } = useDictionaryStore();
 
   const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
   const [shortcuts, setShortcuts] = useState<string[]>([
@@ -130,7 +126,6 @@ function DictionaryPage() {
     "Chinese (Simplified)",
   ]);
   const [query, setQuery] = useState("");
-  const [savedQuery, setSavedQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
   const [loading, setLoading] = useState(false);
@@ -187,16 +182,6 @@ function DictionaryPage() {
     return () => clearTimeout(timer);
   }, [query, language, lang]);
 
-  const filteredSaved = useMemo(() => {
-    const q = savedQuery.trim().toLowerCase();
-    if (!q) return saved;
-    return saved.filter((e) =>
-      [e.entry_text, e.meaning, e.expanded_form ?? ""].some((v) =>
-        v.toLowerCase().includes(q),
-      ),
-    );
-  }, [saved, savedQuery]);
-
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedId(id);
@@ -244,40 +229,6 @@ function DictionaryPage() {
       </div>
     );
   };
-
-  const saveButton = (entry: DictionaryEntry) => {
-    const alreadySaved = saved.some(
-      (e) =>
-        e.language === entry.language &&
-        e.entry_text.toLowerCase() === entry.text.toLowerCase(),
-    );
-    return (
-      <button
-        onClick={() =>
-          saveEntry({
-            language: entry.language,
-            entry_text: entry.text,
-            type: entry.type,
-            meaning: entry.meaning,
-            ...(entry.expandedForm ? { expanded_form: entry.expandedForm } : {}),
-            ...(entry.etymology ? { etymology: entry.etymology } : {}),
-            ...(entry.imageUrl ? { image_url: entry.imageUrl } : {}),
-            ...(entry.transliteration ? { transliteration: entry.transliteration } : {}),
-          })
-        }
-        disabled={alreadySaved}
-        title={alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
-        aria-label={alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
-        className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
-          alreadySaved ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        <Save className="size-4" />
-        {alreadySaved ? t("vocab.savedDone") : t("vocab.save")}
-      </button>
-    );
-  };
-
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -373,7 +324,6 @@ function DictionaryPage() {
                 </div>
                 <div className="flex shrink-0 items-start gap-4">
                   {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
-                  {saveButton(entry)}
                 </div>
 
               </div>
@@ -437,67 +387,6 @@ function DictionaryPage() {
           </section>
         )}
 
-        <section className="mt-16 border-t border-border pt-8">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            {t("vocab.savedEntries")}
-          </p>
-
-          <div className="mt-4 flex items-center gap-3 border-b border-border pb-3">
-            <Search className="size-4 shrink-0 text-muted-foreground" />
-            <input
-              value={savedQuery}
-              onChange={(e) => setSavedQuery(e.target.value)}
-              placeholder={t("vocab.searchSaved")}
-              aria-label={t("vocab.searchSaved")}
-              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
-            />
-          </div>
-
-          {filteredSaved.length === 0 ? (
-            <div className="mt-6">
-              <p className="text-sm text-foreground">
-                {saved.length === 0 ? t("vocab.emptyTitle") : t("vocab.noMatches")}
-              </p>
-              {saved.length === 0 && (
-                <p className="mt-1 text-sm text-muted-foreground">{t("vocab.emptyBody")}</p>
-              )}
-            </div>
-          ) : (
-            <ul className="mt-2 divide-y divide-border">
-              {filteredSaved.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
-                >
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-base text-foreground">{item.entry_text}</span>
-                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-                        {t(TYPE_KEYS[item.type])}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{item.language}</span>
-                    </div>
-                    {item.expanded_form && (
-                      <p className="mt-1 text-sm text-foreground/80">{item.expanded_form}</p>
-                    )}
-                    <p className="mt-1 text-sm text-muted-foreground">{item.meaning}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-4">
-                    {actionButton(`saved:${item.id}`, item.entry_text, item.language, true)}
-                    <button
-                      onClick={() => removeEntry(item.id)}
-                      title={t("vocab.remove")}
-                      aria-label={t("vocab.remove")}
-                      className="text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
       </div>
     </main>
   );
