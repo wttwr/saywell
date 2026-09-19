@@ -76,6 +76,7 @@ function LanguageSelect({
 
 function TranslatePage() {
   const translate = useServerFn(translateText);
+  const { t } = useI18n();
 
   const [source, setSource] = useState("");
   const [from, setFrom] = useState("English");
@@ -128,7 +129,7 @@ function TranslatePage() {
           });
           setResults(data.results);
         } catch (e) {
-          setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
+          setError(e instanceof Error ? e.message : t("translate.error"));
         } finally {
           setLoading(false);
         }
@@ -161,10 +162,10 @@ function TranslatePage() {
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
       <div className="mx-auto max-w-6xl">
         <header className="mb-10 md:mb-14">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Lingua</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            One text, as many languages as you need.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {t("translate.title")}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("translate.subtitle")}</p>
         </header>
 
         <div className="grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
@@ -172,7 +173,7 @@ function TranslatePage() {
           <section className="order-1 flex flex-col md:order-1 md:pr-10">
             <div className="flex h-11 items-center">
               <LanguageSelect
-                label="Source language"
+                label={t("translate.sourceLanguage")}
                 value={from}
                 onChange={setFrom}
                 options={SOURCE_LANGUAGES}
@@ -181,13 +182,15 @@ function TranslatePage() {
             <textarea
               value={source}
               onChange={(e) => setSource(e.target.value)}
-              placeholder="Type or paste text here..."
+              placeholder={t("translate.placeholder")}
               className="mt-6 min-h-56 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 md:min-h-72"
             />
             <div className="mt-6 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{source.length} characters</span>
+              <span className="text-xs text-muted-foreground">
+                {source.length} {t("translate.characters")}
+              </span>
               {loading && (
-                <span className="text-xs text-muted-foreground">Translating...</span>
+                <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
               )}
             </div>
           </section>
