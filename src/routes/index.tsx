@@ -126,6 +126,17 @@ function TranslatePage() {
     setActive(targets.length);
   };
 
+  const swapLanguages = () => {
+    const lang = targets[active];
+    if (!lang) return;
+    const translated = results[lang] ?? "";
+    const previousSource = source;
+    setFrom(lang);
+    setTargets((prev) => prev.map((l, i) => (i === active ? from : l)));
+    setSource(translated);
+    setResults(translated ? { [from]: previousSource } : {});
+  };
+
   useEffect(() => {
     const trimmed = source.trim();
     if (!trimmed || targets.length === 0) {
