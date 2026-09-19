@@ -5,6 +5,7 @@ import { Check as CheckIcon, Copy } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
+import { useI18n, type TranslationKey } from "@/lib/i18n";
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -42,6 +43,7 @@ function labelTone(label: string) {
 
 function CheckPage() {
   const runCheck = useServerFn(checkText);
+  const { t } = useI18n();
 
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("English");
@@ -69,7 +71,7 @@ function CheckPage() {
       const data = await runCheck({ data: { text: trimmed, language } });
       setResult(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "The check failed. Please try again.");
+      setError(e instanceof Error ? e.message : t("check.error"));
     } finally {
       setLoading(false);
     }
