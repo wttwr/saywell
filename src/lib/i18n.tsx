@@ -117,6 +117,8 @@ const it: Record<TranslationKey, string> = {
   "vocab.type.single_word": "Parola singola",
   "vocab.type.phrasal_verb": "Verbo frasale",
   "vocab.type.expression": "Espressione",
+  "vocab.type.abbreviation": "Abbreviazione",
+
   "vocab.searchPlaceholder": "Digita una parola, un verbo frasale, un'espressione o un'abbreviazione...",
   "vocab.emptyTitle": "Niente di salvato",
   "vocab.emptyBody": "Cerca una parola qui sopra e salva quelle che vuoi tenere.",
