@@ -19,7 +19,7 @@ export const Route = createFileRoute("/vocabulary")({
       { property: "og:title", content: "Vocabulary — Words and expressions worth keeping" },
       {
         property: "og:description",
-        content: "Filter by language and type, search instantly, and listen to every item.",
+        content: "Filter by language, search instantly, and listen to every item.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
