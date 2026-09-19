@@ -34,6 +34,12 @@ function statusTone(status: CheckResult["status"]) {
   return "bg-secondary text-secondary-foreground";
 }
 
+function labelTone(label: string) {
+  if (label === "Typo") return "border-border bg-muted text-muted-foreground";
+  if (label === "Naturalness") return "border-primary/25 bg-primary/10 text-primary";
+  return "border-border bg-secondary text-secondary-foreground";
+}
+
 function CheckPage() {
   const runCheck = useServerFn(checkText);
 
