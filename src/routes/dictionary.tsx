@@ -129,6 +129,7 @@ function DictionaryPage() {
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -143,6 +144,8 @@ function DictionaryPage() {
 
     // Typing (or clearing) always hides the previous warning immediately.
     setError(null);
+
+    setSuggestions([]);
 
     if (!text) {
       setEntry(null);
@@ -162,6 +165,7 @@ function DictionaryPage() {
 
       setLoading(true);
       setEntry(null);
+      setSuggestions([]);
 
       lookUpWord({
         data: { text, language, explanationLanguage: explanationLanguage(lang) },
