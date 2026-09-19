@@ -103,7 +103,8 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const visible = languages.filter((l) => l !== entry.language);
+  // The entry's own language always appears first, labeled as the source.
+  const visible = [entry.language, ...languages.filter((l) => l !== entry.language)];
 
   return (
     <section className="mt-10">
