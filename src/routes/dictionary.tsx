@@ -380,7 +380,11 @@ function DictionaryPage() {
                     {t(TYPE_KEYS[entry.type])}
                   </span>
                 </div>
-                {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
+                <div className="flex shrink-0 items-start gap-4">
+                  {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
+                  {saveButton(entry)}
+                </div>
+
               </div>
 
               {entry.expandedForm && (
