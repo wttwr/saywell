@@ -103,6 +103,7 @@ function CheckPage() {
         </div>
 
         <textarea
+          ref={textareaRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type or paste a sentence or paragraph..."
@@ -113,7 +114,7 @@ function CheckPage() {
           <span className="text-xs text-muted-foreground">{text.length} characters</span>
           <button
             onClick={onCheck}
-            disabled={loading || !text.trim()}
+            disabled={loading || !canCheck}
             className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             {loading ? "Checking..." : "Check"}
