@@ -174,7 +174,7 @@ function CheckPage() {
                         {(issue.labels ?? []).map((label) => (
                           <span
                             key={label}
-                            className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground"
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${labelTone(label)}`}
                           >
                             {label}
                           </span>
