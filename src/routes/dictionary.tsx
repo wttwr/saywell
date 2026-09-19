@@ -102,6 +102,43 @@ function DictionaryPage() {
     setLanguage(defaultDictionaryLanguage(lang));
   }, [lang]);
 
+  // Instant lookup: debounce while typing and re-run when the language changes.
+  useEffect(() => {
+    const text = query.trim();
+    if (!text) {
+      setEntry(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setLoading(true);
+      setError(null);
+      setEntry(null);
+
+      lookUpWord({ data: { text, language } })
+        .then((result) => {
+          // Ignore stale results from an earlier query.
+          if (query.trim() === text) {
+            setEntry(result);
+          }
+        })
+        .catch((e) => {
+          if (query.trim() === text) {
+            setError(e instanceof Error ? e.message : "Could not look up that word.");
+          }
+        })
+        .finally(() => {
+          if (query.trim() === text) {
+            setLoading(false);
+          }
+        });
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [query, language]);
+
   const inLanguage = useMemo(
     () => items.filter((i) => i.language === language),
     [items, language],
@@ -119,22 +156,6 @@ function DictionaryPage() {
     await navigator.clipboard.writeText(value);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1600);
-  };
-
-  const runLookup = async () => {
-    const text = query.trim();
-    if (!text || loading) return;
-    setLoading(true);
-    setError(null);
-    setEntry(null);
-    try {
-      const result = await lookUpWord({ data: { text, language } });
-      setEntry(result);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not look up that word.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const alreadySaved =
@@ -217,24 +238,13 @@ function DictionaryPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                void runLookup();
-              }
-            }}
             placeholder={t("vocab.searchPlaceholder")}
             aria-label={t("vocab.searchPlaceholder")}
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
           />
-          <button
-            onClick={() => void runLookup()}
-            disabled={!query.trim() || loading}
-            className="flex shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-opacity disabled:opacity-40"
-          >
-            {loading && <Loader2 className="size-3.5 animate-spin" />}
-            {loading ? t("vocab.lookingUp") : t("vocab.lookup")}
-          </button>
+          {loading && (
+            <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
+          )}
         </div>
 
         {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
