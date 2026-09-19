@@ -93,6 +93,8 @@ function TranslatePage() {
 
   const available = useMemo(() => LANGUAGES.filter((l) => !targets.includes(l)), [targets]);
   const activeLang = targets[active];
+  const activeAlternatives = activeLang ? (alternatives[activeLang] ?? []) : [];
+  const visibleAlternatives = showAllAlts ? activeAlternatives : activeAlternatives.slice(0, 3);
 
   const removeTarget = (lang: string) => {
     setTargets((prev) => {
