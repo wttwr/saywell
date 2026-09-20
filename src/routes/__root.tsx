@@ -8,9 +8,10 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { Globe } from "lucide-react";
+import { Globe, Settings } from "lucide-react";
 
 import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i18n";
+import { SettingsProvider } from "../lib/settings";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -152,6 +153,16 @@ function AppNav() {
         >
           {t("nav.vocabulary")}
         </Link>
+        <Link
+          to="/settings"
+          title={t("nav.settings")}
+          aria-label={t("nav.settings")}
+          className="ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          activeProps={{ className: "bg-accent text-accent-foreground" }}
+        >
+          <Settings className="size-4" />
+        </Link>
+
 
 
         <div className="ml-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
@@ -180,10 +191,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <AppNav />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <SettingsProvider>
+          <AppNav />
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </SettingsProvider>
       </I18nProvider>
     </QueryClientProvider>
+
   );
 }

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckRouteImport } from './routes/check'
 import { Route as DictionaryRouteImport } from './routes/dictionary'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StyleRouteImport } from './routes/style'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const DictionaryRoute = DictionaryRouteImport.update({
   path: '/dictionary',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StyleRoute = StyleRouteImport.update({
   id: '/style',
   path: '/style',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
+  '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
+  '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
+  '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/check' | '/dictionary' | '/style'
+  fullPaths: '/' | '/check' | '/dictionary' | '/settings' | '/style'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/check' | '/dictionary' | '/style'
-  id: '__root__' | '/' | '/check' | '/dictionary' | '/style'
+  to: '/' | '/check' | '/dictionary' | '/settings' | '/style'
+  id: '__root__' | '/' | '/check' | '/dictionary' | '/settings' | '/style'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckRoute: typeof CheckRoute
   DictionaryRoute: typeof DictionaryRoute
+  SettingsRoute: typeof SettingsRoute
   StyleRoute: typeof StyleRoute
 }
 
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DictionaryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/style': {
       id: '/style'
       path: '/style'
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckRoute: CheckRoute,
   DictionaryRoute: DictionaryRoute,
+  SettingsRoute: SettingsRoute,
   StyleRoute: StyleRoute,
 }
 export const routeTree = rootRouteImport
