@@ -16,6 +16,7 @@ import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -86,6 +87,15 @@ function TranslatePage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
   const addRef = useRef<HTMLDivElement>(null);
+
+  const { settings } = useSettings();
+  useDefaultOnce(() => {
+    setFrom(settings.translateSource);
+    if (settings.translateTargets.length > 0) {
+      setTargets(settings.translateTargets);
+      setActive(0);
+    }
+  });
 
   const available = useMemo(() => LANGUAGES.filter((l) => !targets.includes(l)), [targets]);
   const activeLang = targets[active];
