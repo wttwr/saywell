@@ -6,6 +6,7 @@ import { Check as CheckIcon, Copy } from "lucide-react";
 import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -52,6 +53,9 @@ function CheckPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { settings } = useSettings();
+  useDefaultOnce(() => setLanguage(settings.checkLanguage));
 
   // Pick up anything typed or pasted before the page finished loading.
   useEffect(() => {

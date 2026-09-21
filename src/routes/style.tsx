@@ -7,6 +7,7 @@ import { LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/style")({
   head: () => ({
@@ -80,6 +81,12 @@ function StylePage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { settings } = useSettings();
+  useDefaultOnce(() => {
+    setLanguage(settings.styleLanguage);
+    setShortcuts(settings.styleShortcuts);
+  });
 
   useEffect(() => {
     const existing = textareaRef.current?.value;

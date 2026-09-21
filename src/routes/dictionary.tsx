@@ -17,6 +17,7 @@ import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
 import { MultilingualTranslation } from "@/components/MultilingualTranslation";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/dictionary")({
   head: () => ({
@@ -135,9 +136,11 @@ function DictionaryPage() {
   const [error, setError] = useState<string | null>(null);
 
 
-  useEffect(() => {
-    setLanguage(defaultDictionaryLanguage(lang));
-  }, [lang]);
+  const { settings } = useSettings();
+  useDefaultOnce(() => {
+    setLanguage(settings.dictionaryLanguage);
+    setShortcuts(settings.dictionaryShortcuts);
+  });
 
   // Instant lookup: stay quiet while typing, validate only after a pause.
   useEffect(() => {
