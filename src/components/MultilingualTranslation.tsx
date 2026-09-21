@@ -4,12 +4,12 @@ import { Check, Copy, Loader2, RotateCw, Volume2, VolumeX, X } from "lucide-reac
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
+import { useSettings } from "@/lib/settings";
 import {
   translateLexicalItem,
   type DictionaryEntry,
 } from "@/lib/dictionary.functions";
 
-const STORAGE_KEY = "lingua.dictionary.translateTo";
 const DEFAULT_LANGUAGES = ["Italian", "Chinese (Simplified)", "Finnish"];
 
 type ItemState = {
