@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check as CheckIcon, Copy } from "lucide-react";
+import { Check as CheckIcon, ChevronDown, Copy } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
