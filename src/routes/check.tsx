@@ -100,18 +100,24 @@ function CheckPage() {
 
         <div className="flex h-11 items-center gap-3">
           <span className="text-sm text-muted-foreground">{t("check.language")}</span>
-          <select
-            aria-label={t("check.language")}
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="cursor-pointer rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {LANGUAGES.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
+          <div className="relative inline-flex">
+            <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
+              {language}
+              <ChevronDown className="size-3.5 opacity-60" />
+            </span>
+            <select
+              aria-label={t("check.language")}
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="absolute inset-0 size-full cursor-pointer opacity-0"
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <textarea
