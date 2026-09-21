@@ -30,32 +30,17 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   const sourceLanguage = entry.language;
   const source = entry.text;
 
-  // Remembered selection (client-only, avoids hydration mismatch).
-  // The current source language is always excluded from the target list.
+  // Saved preference from Settings; the current source language is always excluded.
+  const { settings, loaded } = useSettings();
+  const saved = settings.dictionaryTranslateTo;
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as unknown;
-        if (Array.isArray(parsed) && parsed.every((v) => typeof v === "string")) {
-          setLanguages((parsed as string[]).filter((l) => l !== sourceLanguage));
-          return;
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-    setLanguages(DEFAULT_LANGUAGES.filter((l) => l !== sourceLanguage));
-  }, [sourceLanguage]);
+    const base = saved.length > 0 ? saved : DEFAULT_LANGUAGES;
+    setLanguages(base.filter((l) => l !== sourceLanguage));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourceLanguage, loaded, saved.join("|")]);
 
   const persist = (next: string[]) => {
-    const filtered = next.filter((l) => l !== sourceLanguage);
-    setLanguages(filtered);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-    } catch {
-      /* ignore */
-    }
+    setLanguages(next.filter((l) => l !== sourceLanguage));
   };
 
   const fetchFor = (target: string, cancelledRef: { current: boolean }) => {
