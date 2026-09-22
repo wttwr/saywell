@@ -4,6 +4,7 @@ import { z } from "zod";
 const schema = z.object({
   text: z.string().min(1).max(5000),
   language: z.string().min(1),
+  explanationLanguage: z.string().min(1).default("English"),
 });
 
 export type CheckIssue = {
@@ -40,7 +41,8 @@ export const checkText = createServerFn({ method: "POST" })
       "Typo: accidental writing mistakes rather than language-knowledge problems (misspellings, repeated letters, missing or extra letters, obvious typing slips). Never label a clear typo as Grammar or Naturalness.",
       "Naturalness: understandable or grammatically possible, but the wording is unusual or unidiomatic for fluent speakers in that context.",
       "Choose the single most appropriate type for each issue. Do NOT add both Grammar and Naturalness by default; use two labels only in the rare case where one issue genuinely belongs to both categories.",
-      "Write summary and reasons in English.",
+      `Write the summary and every reason in ${data.explanationLanguage}.`,
+      `Keep original, suggestion and corrected in ${data.language}; never translate the text being checked.`,
       'Reply with ONLY a JSON object: {"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
     ].join(" ");
 
@@ -90,12 +92,18 @@ export const checkText = createServerFn({ method: "POST" })
           ? "Looks good"
           : "Changes recommended";
 
+    const fallbackSummary: Record<string, string> = {
+      Italian: "Il testo è grammaticalmente corretto e suona naturale. Non sono necessarie modifiche.",
+      "Simplified Chinese": "这段文字语法正确，表达自然，无需修改。",
+    };
+
     return {
       status,
       summary:
         parsed.summary ||
         (status === "Looks good"
-          ? "This text is grammatically correct and sounds natural. No changes are needed."
+          ? fallbackSummary[data.explanationLanguage] ??
+            "This text is grammatically correct and sounds natural. No changes are needed."
           : ""),
       corrected: status === "Looks good" ? null : (parsed.corrected ?? null),
       issues: status === "Looks good" ? [] : issues,

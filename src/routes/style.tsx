@@ -66,7 +66,7 @@ function LanguageSelect({
 
 function StylePage() {
   const run = useServerFn(exploreStyles);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const speech = useSpeech();
 
   const [text, setText] = useState("");
@@ -102,7 +102,9 @@ function StylePage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await run({ data: { text: trimmed, language } });
+      const explanationLanguage =
+        lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
+      const data = await run({ data: { text: trimmed, language, explanationLanguage } });
       setResult(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("style.error"));
