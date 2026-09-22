@@ -44,7 +44,7 @@ function labelTone(label: string) {
 
 function CheckPage() {
   const runCheck = useServerFn(checkText);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("English");
@@ -72,7 +72,9 @@ function CheckPage() {
     setError(null);
     setResult(null);
     try {
-      const data = await runCheck({ data: { text: trimmed, language } });
+      const explanationLanguage =
+        lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
+      const data = await runCheck({ data: { text: trimmed, language, explanationLanguage } });
       setResult(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("check.error"));
