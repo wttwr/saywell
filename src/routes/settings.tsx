@@ -223,12 +223,12 @@ function SettingsPage() {
                 />
               </Field>
               <Field label={t("settings.defaultMultilingual")}>
+                <p className="text-xs text-muted-foreground">{t("settings.sourceExcluded")}</p>
                 <LanguageList
                   label={t("settings.defaultMultilingual")}
                   values={settings.dictionaryTranslateTo}
                   onChange={set("dictionaryTranslateTo")}
                 />
-                <p className="text-xs text-muted-foreground">{t("settings.sourceExcluded")}</p>
               </Field>
             </>,
           )}
