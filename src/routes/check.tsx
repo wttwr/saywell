@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Check as CheckIcon, ChevronDown, Copy } from "lucide-react";
 
+import { DraggableLanguageList } from "@/components/DraggableLanguageList";
 import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
@@ -128,47 +129,14 @@ function CheckPage() {
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("check.changeTo")}</span>
-            {shortcuts.map((shortcut) => (
-              <button
-                key={shortcut}
-                onClick={() => setLanguage(shortcut)}
-                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                  shortcut === language
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {shortcut}
-              </button>
-            ))}
-            <div className="relative inline-flex">
-              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
-                + {t("translate.add")}
-              </span>
-              <select
-                aria-label={t("translate.addLanguage")}
-                value=""
-                onChange={(e) => {
-                  const next = e.target.value;
-                  if (next) {
-                    setShortcuts((current) =>
-                      current.includes(next) ? current : [...current, next],
-                    );
-                  }
-                  e.target.value = "";
-                }}
-                className="absolute inset-0 size-full cursor-pointer opacity-0"
-              >
-                <option value="" disabled>
-                  {t("translate.addLanguage")}
-                </option>
-                {LANGUAGES.map((option) => (
-                  <option key={option} value={option} disabled={shortcuts.includes(option)}>
-                    {shortcuts.includes(option) ? `✓ ${option}` : option}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <DraggableLanguageList
+              values={shortcuts}
+              onChange={setShortcuts}
+              selected={language}
+              onSelect={setLanguage}
+              addLabel={t("translate.add")}
+              addAriaLabel={t("translate.addLanguage")}
+            />
           </div>
         </div>
 
