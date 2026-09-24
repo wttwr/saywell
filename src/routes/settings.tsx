@@ -173,14 +173,23 @@ function SettingsPage() {
 
           {section(
             "settings.check",
-            <Field label={t("settings.defaultLanguage")}>
-              <SelectPill
-                label={t("settings.defaultLanguage")}
-                value={settings.checkLanguage}
-                onChange={set("checkLanguage")}
-                options={LANGUAGES}
-              />
-            </Field>,
+            <>
+              <Field label={t("settings.defaultLanguage")}>
+                <SelectPill
+                  label={t("settings.defaultLanguage")}
+                  value={settings.checkLanguage}
+                  onChange={set("checkLanguage")}
+                  options={LANGUAGES}
+                />
+              </Field>
+              <Field label={t("settings.shortcuts")}>
+                <LanguageList
+                  label={t("settings.shortcuts")}
+                  values={settings.checkShortcuts}
+                  onChange={set("checkShortcuts")}
+                />
+              </Field>
+            </>,
           )}
 
           {section(
