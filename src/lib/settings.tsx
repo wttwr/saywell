@@ -14,6 +14,7 @@ export type Settings = {
   translateSource: string;
   translateTargets: string[];
   checkLanguage: string;
+  checkShortcuts: string[];
   styleLanguage: string;
   styleShortcuts: string[];
   dictionaryLanguage: string;
@@ -25,6 +26,7 @@ export const DEFAULT_SETTINGS: Settings = {
   translateSource: "English",
   translateTargets: ["Chinese (Simplified)", "Italian"],
   checkLanguage: "English",
+  checkShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   styleLanguage: "English",
   styleShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryLanguage: "English",
