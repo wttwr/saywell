@@ -15,7 +15,6 @@ const en = {
   "nav.vocabulary": "Dictionary",
   "nav.appLanguage": "App language",
   "nav.settings": "Settings",
-  "languages.dragToReorder": "Drag to reorder",
 
   "settings.title": "Settings",
   "settings.subtitle": "Choose the languages each section starts with. Changes are saved as you make them.",
@@ -140,7 +139,6 @@ const it: Record<TranslationKey, string> = {
   "nav.vocabulary": "Dizionario",
   "nav.appLanguage": "Lingua dell'app",
   "nav.settings": "Impostazioni",
-  "languages.dragToReorder": "Trascina per riordinare",
 
   "settings.title": "Impostazioni",
   "settings.subtitle": "Scegli le lingue con cui si apre ogni sezione. Le modifiche vengono salvate subito.",
@@ -262,7 +260,6 @@ const zh: Record<TranslationKey, string> = {
   "nav.vocabulary": "词典",
   "nav.appLanguage": "界面语言",
   "nav.settings": "设置",
-  "languages.dragToReorder": "拖动以重新排序",
 
   "settings.title": "设置",
   "settings.subtitle": "选择每个板块默认使用的语言，修改会立即保存。",

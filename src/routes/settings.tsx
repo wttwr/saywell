@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
-import { DraggableLanguageList } from "@/components/DraggableLanguageList";
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSettings, type Settings } from "@/lib/settings";
@@ -71,13 +70,47 @@ function LanguageList({
 }) {
   const { t } = useI18n();
   return (
-    <DraggableLanguageList
-      values={values}
-      onChange={onChange}
-      removable
-      addLabel={t("translate.add")}
-      addAriaLabel={`${t("translate.addLanguage")} — ${label}`}
-    />
+    <div className="flex flex-wrap items-center gap-2">
+      {values.map((l) => (
+        <span
+          key={l}
+          className="inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3.5 py-1.5 text-sm text-secondary-foreground"
+        >
+          {l}
+          <button
+            onClick={() => onChange(values.filter((x) => x !== l))}
+            aria-label={`${t("vocab.remove")} ${l}`}
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <X className="size-3.5" />
+          </button>
+        </span>
+      ))}
+      <div className="relative inline-flex">
+        <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+          + {t("translate.add")}
+        </span>
+        <select
+          aria-label={`${t("translate.addLanguage")} — ${label}`}
+          value=""
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v && !values.includes(v)) onChange([...values, v]);
+            e.target.value = "";
+          }}
+          className="absolute inset-0 size-full cursor-pointer opacity-0"
+        >
+          <option value="" disabled>
+            {t("translate.addLanguage")}
+          </option>
+          {LANGUAGES.map((o) => (
+            <option key={o} value={o} disabled={values.includes(o)}>
+              {values.includes(o) ? `✓ ${o}` : o}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 }
 

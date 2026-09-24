@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
 
-import { DraggableLanguageList } from "@/components/DraggableLanguageList";
 import { LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
@@ -199,14 +198,43 @@ function StylePage() {
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
-            <DraggableLanguageList
-              values={shortcuts}
-              onChange={setShortcuts}
-              selected={language}
-              onSelect={setLanguage}
-              addLabel={t("translate.add")}
-              addAriaLabel={t("translate.addLanguage")}
-            />
+            {shortcuts.map((s) => (
+              <button
+                key={s}
+                onClick={() => setLanguage(s)}
+                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                  s === language
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+            <div className="relative inline-flex">
+              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+                + {t("translate.add")}
+              </span>
+              <select
+                aria-label={t("translate.addLanguage")}
+                value=""
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
+                  e.target.value = "";
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              >
+                <option value="" disabled>
+                  {t("translate.addLanguage")}
+                </option>
+                {LANGUAGES.map((o) => (
+                  <option key={o} value={o} disabled={shortcuts.includes(o)}>
+                    {shortcuts.includes(o) ? `✓ ${o}` : o}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
