@@ -1,10 +1,10 @@
-# SayWays
+# SayWell 会说
 
 Implement exactly the screenshot and nothing else
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://sayways.lovable.app
+**Live app**: https://saywell.lovable.app
 
 ## Build with Lovable
 

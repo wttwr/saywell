@@ -81,11 +81,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "SayWell 会说 — Translate text into multiple languages" },
+      { name: "description", content: "SayWell 会说 — Translate text into multiple languages instantly" },
+      { name: "author", content: "SayWell 会说" },
+      { property: "og:title", content: "SayWell 会说 — Multi-language text translator" },
+      { property: "og:description", content: "SayWell 会说 — Translate text into multiple languages instantly" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -143,9 +143,12 @@ function AppNav() {
               <path d="M8 12h8m-4-4v8" />
             </svg>
           </span>
-          <span className="flex items-baseline text-lg tracking-tight text-foreground">
-            <span className="font-medium">Say</span>
-            <span className="font-extrabold">Ways</span>
+          <span className="flex items-baseline gap-1.5 text-lg tracking-tight text-foreground">
+            <span>
+              <span className="font-medium">Say</span>
+              <span className="font-extrabold">Well</span>
+            </span>
+            <span className="text-sm font-medium text-muted-foreground">会说</span>
           </span>
         </Link>
         <Link

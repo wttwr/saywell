@@ -8,13 +8,13 @@ import { useSettings, type Settings } from "@/lib/settings";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — Default languages | SayWays" },
+      { title: "Settings — Default languages | SayWell 会说" },
       {
         name: "description",
         content:
           "Choose the languages each section starts with: translate, check, style and dictionary defaults, saved automatically.",
       },
-      { property: "og:title", content: "Settings — Default languages | SayWays" },
+      { property: "og:title", content: "Settings — Default languages | SayWell 会说" },
       {
         property: "og:description",
         content: "Set the languages every section opens with. Changes are saved as you make them.",
