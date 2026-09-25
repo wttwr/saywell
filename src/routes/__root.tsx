@@ -126,7 +126,7 @@ function AppNav() {
       <nav className="mx-auto flex max-w-6xl items-center gap-1">
         <Link
           to="/"
-          className="mr-1 flex items-center gap-2.5 rounded-full border-r border-border py-2 pl-3 pr-6"
+          className="mr-1 flex items-center gap-2.5 rounded-full py-2 pl-3 pr-6"
           activeOptions={{ exact: false }}
         >
           <span className="flex size-8 items-center justify-center rounded-xl bg-foreground">
