@@ -166,7 +166,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             return (
               <div
                 key={l}
-                className="flex items-start gap-4 rounded-xl border border-border/60 bg-secondary/30 px-4 py-3"
+                className="flex items-start gap-4 rounded-2xl bg-secondary/40 p-5 md:p-6"
               >
                 <div className="w-36 shrink-0 pt-0.5">
                   <p className="text-xs font-medium text-muted-foreground">
