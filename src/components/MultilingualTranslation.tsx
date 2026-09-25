@@ -148,8 +148,8 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
       </div>
 
       {visible.length > 0 && (
-        <div className="mt-5 flex flex-col gap-3">
-          {visible.map((l) => {
+        <div className="mt-5 rounded-2xl bg-secondary/40 p-5 md:p-6">
+          {visible.map((l, i) => {
             const isSource = l === entry.language;
             const state: ItemState | undefined = isSource
               ? {
