@@ -21,13 +21,13 @@ import { useDefaultOnce, useSettings } from "@/lib/settings";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lingua — Translate text into many languages at once" },
+      { title: "SayWays — Translate text into many languages at once" },
       {
         name: "description",
         content:
           "Paste text once and translate it into several languages at the same time, then compare every version side by side.",
       },
-      { property: "og:title", content: "Lingua — Multi-language text translator" },
+      { property: "og:title", content: "SayWays — Multi-language text translator" },
       {
         property: "og:description",
         content:

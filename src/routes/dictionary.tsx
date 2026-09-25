@@ -22,13 +22,13 @@ import { useDefaultOnce, useSettings } from "@/lib/settings";
 export const Route = createFileRoute("/dictionary")({
   head: () => ({
     meta: [
-      { title: "Dictionary — Look up words and keep them | Lingua" },
+      { title: "Dictionary — Look up words and keep them | SayWays" },
       {
         name: "description",
         content:
           "Look up any word, phrasal verb, expression or abbreviation, see its meaning, origin and examples, and browse the ones you kept.",
       },
-      { property: "og:title", content: "Dictionary — Look up words and keep them" },
+      { property: "og:title", content: "Dictionary — Look up words and keep them | SayWays" },
       {
         property: "og:description",
         content: "Meanings, expanded forms, etymology and pronunciation, with your own saved list.",

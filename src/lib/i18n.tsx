@@ -70,7 +70,7 @@ const en = {
 
 
 
-  "translate.title": "Lingua",
+  "translate.title": "SayWays",
   "translate.subtitle": "One text, as many languages as you need.",
   "translate.from": "From",
   "translate.sourceLanguage": "Source language",
@@ -193,7 +193,7 @@ const it: Record<TranslationKey, string> = {
 
 
 
-  "translate.title": "Lingua",
+  "translate.title": "SayWays",
   "translate.subtitle": "Un testo, tutte le lingue che ti servono.",
   "translate.from": "Da",
   "translate.sourceLanguage": "Lingua di partenza",
@@ -314,7 +314,7 @@ const zh: Record<TranslationKey, string> = {
 
 
 
-  "translate.title": "Lingua",
+  "translate.title": "SayWays",
   "translate.subtitle": "一段文字，翻译成你需要的所有语言。",
   "translate.from": "源语言",
   "translate.sourceLanguage": "源语言",

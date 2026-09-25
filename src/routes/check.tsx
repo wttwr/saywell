@@ -11,13 +11,13 @@ import { useDefaultOnce, useSettings } from "@/lib/settings";
 export const Route = createFileRoute("/check")({
   head: () => ({
     meta: [
-      { title: "Check — Is your writing correct and natural? | Lingua" },
+      { title: "Check — Is your writing correct and natural? | SayWays" },
       {
         name: "description",
         content:
           "Paste a sentence or paragraph and see whether it is grammatically correct and sounds natural in the language you chose.",
       },
-      { property: "og:title", content: "Check your writing — Lingua" },
+      { property: "og:title", content: "Check your writing — SayWays" },
       {
         property: "og:description",
         content:
