@@ -129,26 +129,12 @@ function AppNav() {
           className="mr-1 flex items-center gap-2.5 rounded-full border-r border-border py-2 pl-3 pr-6"
           activeOptions={{ exact: false }}
         >
-          <span className="flex size-8 items-center justify-center rounded-xl bg-foreground text-background shadow-inner">
-            <svg
-              viewBox="0 0 24 24"
-              className="size-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="8" opacity="0.2" />
-              <path d="M8 12h8m-4-4v8" />
-            </svg>
+          <span className="flex size-8 items-center justify-center rounded-xl bg-foreground">
+            <span className="block size-2 rounded-full bg-background" />
           </span>
-          <span className="flex items-baseline gap-1.5 text-lg tracking-tight text-foreground">
-            <span>
-              <span className="font-medium">Say</span>
-              <span className="font-extrabold">Well</span>
-            </span>
-            <span className="text-sm font-medium text-muted-foreground">会说</span>
+          <span className="flex items-baseline gap-1.5 text-lg font-medium tracking-tight text-foreground">
+            <span>SayWell</span>
+            <span className="text-sm text-muted-foreground">会说</span>
           </span>
         </Link>
         <Link
