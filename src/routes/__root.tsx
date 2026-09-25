@@ -143,9 +143,12 @@ function AppNav() {
               <path d="M8 12h8m-4-4v8" />
             </svg>
           </span>
-          <span className="flex items-baseline text-lg tracking-tight text-foreground">
-            <span className="font-medium">Say</span>
-            <span className="font-extrabold">Ways</span>
+          <span className="flex items-baseline gap-1.5 text-lg tracking-tight text-foreground">
+            <span>
+              <span className="font-medium">Say</span>
+              <span className="font-extrabold">Well</span>
+            </span>
+            <span className="text-sm font-medium text-muted-foreground">会说</span>
           </span>
         </Link>
         <Link
