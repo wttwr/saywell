@@ -126,6 +126,30 @@ function AppNav() {
       <nav className="mx-auto flex max-w-6xl items-center gap-1">
         <Link
           to="/"
+          className="mr-1 flex items-center gap-2.5 rounded-full border-r border-border py-2 pl-3 pr-6"
+          activeOptions={{ exact: false }}
+        >
+          <span className="flex size-8 items-center justify-center rounded-xl bg-foreground text-background shadow-inner">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="8" opacity="0.2" />
+              <path d="M8 12h8m-4-4v8" />
+            </svg>
+          </span>
+          <span className="flex items-baseline text-lg tracking-tight text-foreground">
+            <span className="font-medium">Say</span>
+            <span className="font-extrabold">Ways</span>
+          </span>
+        </Link>
+        <Link
+          to="/"
           className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
           activeOptions={{ exact: true }}
