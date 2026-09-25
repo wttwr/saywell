@@ -12,13 +12,13 @@ import { useDefaultOnce, useSettings } from "@/lib/settings";
 export const Route = createFileRoute("/style")({
   head: () => ({
     meta: [
-      { title: "Style — Natural ways to say the same thing | SayWays" },
+      { title: "Style — Natural ways to say the same thing | SayWell 会说" },
       {
         name: "description",
         content:
           "Explore formal, casual, polite and idiomatic ways to say the same thing in one language.",
       },
-      { property: "og:title", content: "Style — Explore ways to express the same meaning | SayWays" },
+      { property: "og:title", content: "Style — Explore ways to express the same meaning | SayWell 会说" },
       {
         property: "og:description",
         content:
