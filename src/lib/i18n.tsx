@@ -70,7 +70,7 @@ const en = {
 
 
 
-  "translate.title": "SayWays",
+  "translate.title": "Translate",
   "translate.subtitle": "One text, as many languages as you need.",
   "translate.from": "From",
   "translate.sourceLanguage": "Source language",
