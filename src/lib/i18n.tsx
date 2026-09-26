@@ -193,7 +193,7 @@ const it: Record<TranslationKey, string> = {
 
 
 
-  "translate.title": "Translate",
+  "translate.title": "Traduci",
   "translate.subtitle": "Un testo, tutte le lingue che ti servono.",
   "translate.from": "Da",
   "translate.sourceLanguage": "Lingua di partenza",
@@ -314,7 +314,7 @@ const zh: Record<TranslationKey, string> = {
 
 
 
-  "translate.title": "Translate",
+  "translate.title": "翻译",
   "translate.subtitle": "一段文字，翻译成你需要的所有语言。",
   "translate.from": "源语言",
   "translate.sourceLanguage": "源语言",
