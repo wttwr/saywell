@@ -14,6 +14,7 @@ import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i
 import { SettingsProvider } from "../lib/settings";
 
 import appCss from "../styles.css?url";
+import logoAsset from "../assets/saywell-logo.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
