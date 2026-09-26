@@ -126,16 +126,14 @@ function AppNav() {
       <nav className="mx-auto flex max-w-6xl items-center gap-1">
         <Link
           to="/"
-          className="mr-1 flex items-center gap-2.5 rounded-full py-2 pl-3 pr-6"
+          className="mr-1 flex items-center rounded-full py-1 pl-1 pr-5"
           activeOptions={{ exact: false }}
         >
-          <span className="flex size-8 items-center justify-center rounded-xl bg-foreground">
-            <span className="block size-2 rounded-full bg-background" />
-          </span>
-          <span className="flex items-baseline gap-1.5 text-lg font-medium tracking-tight text-foreground">
-            <span>SayWell</span>
-            <span className="text-sm text-muted-foreground">会说</span>
-          </span>
+          <img
+            src={logoAsset.url}
+            alt="SayWell 会说"
+            className="h-12 w-auto object-contain"
+          />
         </Link>
         <Link
           to="/"
