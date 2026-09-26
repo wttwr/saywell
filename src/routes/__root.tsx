@@ -7,8 +7,9 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
-import { Globe, Settings } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Globe, Menu, Settings } from "lucide-react";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i18n";
 import { SettingsProvider } from "../lib/settings";
@@ -121,77 +122,87 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function AppNav() {
   const { t, lang, setLang } = useI18n();
+  const [open, setOpen] = useState(false);
+  const pill =
+    "rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground";
+  const active = { className: "bg-accent font-medium text-accent-foreground" };
+  const links = [
+    { to: "/", label: t("nav.translate"), exact: true },
+    { to: "/check", label: t("nav.check") },
+    { to: "/style", label: t("nav.style") },
+    { to: "/dictionary", label: t("nav.vocabulary") },
+  ] as const;
+
+  const langSelect = (
+    <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+      <Globe className="size-4 shrink-0" />
+      <select
+        aria-label={t("nav.appLanguage")}
+        value={lang}
+        onChange={(e) => setLang(e.target.value as AppLanguage)}
+        className="cursor-pointer bg-transparent text-sm outline-none"
+      >
+        {APP_LANGUAGES.map((l) => (
+          <option key={l.code} value={l.code}>
+            {l.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 
   return (
     <div className="bg-background px-5 pt-6 md:px-10 md:pt-8">
       <nav className="mx-auto flex max-w-6xl items-center gap-1">
-        <Link
-          to="/"
-          className="mr-1 flex items-center rounded-full py-1 pl-1 pr-5"
-          activeOptions={{ exact: false }}
-        >
-          <img
-            src={logoAsset.url}
-            alt="SayWell 会说"
-            className="h-9 w-auto object-contain"
-          />
+        <Link to="/" className="mr-1 flex shrink-0 items-center rounded-full py-1 pl-1 pr-5">
+          <img src={logoAsset.url} alt="SayWell 会说" className="h-9 w-auto object-contain" />
         </Link>
-        <Link
-          to="/"
-          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-          activeOptions={{ exact: true }}
-        >
-          {t("nav.translate")}
-        </Link>
-        <Link
-          to="/check"
-          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-        >
-          {t("nav.check")}
-        </Link>
-        <Link
-          to="/style"
-          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-        >
-          {t("nav.style")}
-        </Link>
-        <Link
-          to="/dictionary"
-          className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-        >
-          {t("nav.vocabulary")}
-        </Link>
-        <Link
-          to="/settings"
-          title={t("nav.settings")}
-          aria-label={t("nav.settings")}
-          className="ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          activeProps={{ className: "bg-accent text-accent-foreground" }}
-        >
-          <Settings className="size-4" />
-        </Link>
-
-
-
-        <div className="ml-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-          <Globe className="size-4" />
-          <select
-            aria-label={t("nav.appLanguage")}
-            value={lang}
-            onChange={(e) => setLang(e.target.value as AppLanguage)}
-            className="cursor-pointer bg-transparent text-sm outline-none"
+        <div className="hidden items-center gap-1 md:flex">
+          {links.map((l) => (
+            <Link key={l.to} to={l.to} className={pill} activeProps={active} activeOptions={{ exact: "exact" in l }}>
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            to="/settings"
+            title={t("nav.settings")}
+            aria-label={t("nav.settings")}
+            className="ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            activeProps={{ className: "bg-accent text-accent-foreground" }}
           >
-            {APP_LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.label}
-              </option>
-            ))}
-          </select>
+            <Settings className="size-4" />
+          </Link>
         </div>
+        <div className="ml-auto hidden md:block">{langSelect}</div>
+
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <button
+              aria-label="Menu"
+              className="ml-auto flex size-11 items-center justify-center rounded-full text-foreground hover:bg-secondary md:hidden"
+            >
+              <Menu className="size-5" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-72">
+            <SheetTitle className="sr-only">Menu</SheetTitle>
+            <div className="mt-8 flex flex-col gap-1">
+              {[...links, { to: "/settings", label: t("nav.settings") } as const].map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-4 py-3 text-base text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  activeProps={active}
+                  activeOptions={{ exact: "exact" in l }}
+                >
+                  {l.label}
+                </Link>
+              ))}
+              <div className="mt-4 border-t border-border pt-4">{langSelect}</div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </nav>
     </div>
   );
