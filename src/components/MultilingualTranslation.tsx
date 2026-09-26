@@ -100,9 +100,6 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         {t("vocab.multilingual")}
       </p>
-      <p className="mt-1.5 text-sm text-muted-foreground">
-        {t("vocab.sourceLanguage").replace("{language}", sourceLanguage)}
-      </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">{t("vocab.translateTo")}</span>
