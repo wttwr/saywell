@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Reuse `Button` variants and shared language controls for repeated actions and selectors, so focus, sizing, and states remain consistent across routes.
