@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LanguageList, LanguageSelect } from "@/components/LanguageControls";
+import { ChevronDown, X } from "lucide-react";
+
 import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSettings, type Settings } from "@/lib/settings";
@@ -24,6 +25,94 @@ export const Route = createFileRoute("/settings")({
   }),
   component: SettingsPage,
 });
+
+function SelectPill({
+  value,
+  onChange,
+  label,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  label: string;
+  options: readonly string[];
+}) {
+  return (
+    <div className="relative inline-flex">
+      <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
+        {value}
+        <ChevronDown className="size-3.5 opacity-60" />
+      </span>
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 size-full cursor-pointer opacity-0"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function LanguageList({
+  values,
+  onChange,
+  label,
+}: {
+  values: string[];
+  onChange: (next: string[]) => void;
+  label: string;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {values.map((l) => (
+        <span
+          key={l}
+          className="inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3.5 py-1.5 text-sm text-secondary-foreground"
+        >
+          {l}
+          <button
+            onClick={() => onChange(values.filter((x) => x !== l))}
+            aria-label={`${t("vocab.remove")} ${l}`}
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <X className="size-3.5" />
+          </button>
+        </span>
+      ))}
+      <div className="relative inline-flex">
+        <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+          + {t("translate.add")}
+        </span>
+        <select
+          aria-label={`${t("translate.addLanguage")} — ${label}`}
+          value=""
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v && !values.includes(v)) onChange([...values, v]);
+            e.target.value = "";
+          }}
+          className="absolute inset-0 size-full cursor-pointer opacity-0"
+        >
+          <option value="" disabled>
+            {t("translate.addLanguage")}
+          </option>
+          {LANGUAGES.map((o) => (
+            <option key={o} value={o} disabled={values.includes(o)}>
+              {values.includes(o) ? `✓ ${o}` : o}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -65,7 +154,7 @@ function SettingsPage() {
             "settings.translate",
             <>
               <Field label={t("settings.defaultSource")}>
-                <LanguageSelect
+                <SelectPill
                   label={t("settings.defaultSource")}
                   value={settings.translateSource}
                   onChange={set("translateSource")}
@@ -73,7 +162,7 @@ function SettingsPage() {
                 />
               </Field>
               <Field label={t("settings.defaultTargets")}>
-                <LanguageList addLabel={t("translate.add")}
+                <LanguageList
                   label={t("settings.defaultTargets")}
                   values={settings.translateTargets}
                   onChange={set("translateTargets")}
@@ -86,7 +175,7 @@ function SettingsPage() {
             "settings.check",
             <>
               <Field label={t("settings.defaultLanguage")}>
-                <LanguageSelect
+                <SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.checkLanguage}
                   onChange={set("checkLanguage")}
@@ -94,7 +183,7 @@ function SettingsPage() {
                 />
               </Field>
               <Field label={t("settings.shortcuts")}>
-                <LanguageList addLabel={t("translate.add")}
+                <LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.checkShortcuts}
                   onChange={set("checkShortcuts")}
@@ -107,7 +196,7 @@ function SettingsPage() {
             "settings.style",
             <>
               <Field label={t("settings.defaultLanguage")}>
-                <LanguageSelect
+                <SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.styleLanguage}
                   onChange={set("styleLanguage")}
@@ -115,7 +204,7 @@ function SettingsPage() {
                 />
               </Field>
               <Field label={t("settings.shortcuts")}>
-                <LanguageList addLabel={t("translate.add")}
+                <LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.styleShortcuts}
                   onChange={set("styleShortcuts")}
@@ -128,7 +217,7 @@ function SettingsPage() {
             "settings.dictionary",
             <>
               <Field label={t("settings.defaultLanguage")}>
-                <LanguageSelect
+                <SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.dictionaryLanguage}
                   onChange={set("dictionaryLanguage")}
@@ -136,7 +225,7 @@ function SettingsPage() {
                 />
               </Field>
               <Field label={t("settings.shortcuts")}>
-                <LanguageList addLabel={t("translate.add")}
+                <LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.dictionaryShortcuts}
                   onChange={set("dictionaryShortcuts")}
@@ -144,7 +233,7 @@ function SettingsPage() {
               </Field>
               <Field label={t("settings.defaultMultilingual")}>
                 <p className="text-xs text-muted-foreground">{t("settings.sourceExcluded")}</p>
-                <LanguageList addLabel={t("translate.add")}
+                <LanguageList
                   label={t("settings.defaultMultilingual")}
                   values={settings.dictionaryTranslateTo}
                   onChange={set("dictionaryTranslateTo")}

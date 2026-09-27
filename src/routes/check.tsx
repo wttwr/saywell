@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check as CheckIcon, Copy } from "lucide-react";
+import { Check as CheckIcon, ChevronDown, Copy } from "lucide-react";
 
-import { LanguageSelect, LanguageShortcuts } from "@/components/LanguageControls";
-import { Button } from "@/components/ui/button";
 import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
@@ -109,11 +107,68 @@ function CheckPage() {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("check.language")}</span>
-            <LanguageSelect label={t("check.language")} value={language} onChange={setLanguage} options={LANGUAGES} />
+            <div className="relative inline-flex">
+              <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
+                {language}
+                <ChevronDown className="size-3.5 opacity-60" />
+              </span>
+              <select
+                aria-label={t("check.language")}
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              >
+                {LANGUAGES.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("check.changeTo")}</span>
-            <LanguageShortcuts values={shortcuts} current={language} onSelect={setLanguage} onChange={setShortcuts} addLabel={t("translate.add")} selectLabel={t("translate.addLanguage")} />
+            {shortcuts.map((shortcut) => (
+              <button
+                key={shortcut}
+                onClick={() => setLanguage(shortcut)}
+                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                  shortcut === language
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {shortcut}
+              </button>
+            ))}
+            <div className="relative inline-flex">
+              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+                + {t("translate.add")}
+              </span>
+              <select
+                aria-label={t("translate.addLanguage")}
+                value=""
+                onChange={(e) => {
+                  const next = e.target.value;
+                  if (next) {
+                    setShortcuts((current) =>
+                      current.includes(next) ? current : [...current, next],
+                    );
+                  }
+                  e.target.value = "";
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              >
+                <option value="" disabled>
+                  {t("translate.addLanguage")}
+                </option>
+                {LANGUAGES.map((option) => (
+                  <option key={option} value={option} disabled={shortcuts.includes(option)}>
+                    {shortcuts.includes(option) ? `✓ ${option}` : option}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -129,13 +184,13 @@ function CheckPage() {
           <span className="text-xs text-muted-foreground">
             {text.length} {t("check.characters")}
           </span>
-          <Button
+          <button
             onClick={onCheck}
             disabled={loading || !canCheck}
-            size="action"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             {loading ? t("check.checking") : t("check.button")}
-          </Button>
+          </button>
         </div>
 
         {error && <p className="mt-10 text-base text-destructive">{error}</p>}
@@ -169,14 +224,13 @@ function CheckPage() {
                   <h2 className="text-sm font-medium text-muted-foreground">
                     {t("check.suggestedVersion")}
                   </h2>
-                  <Button
+                  <button
                     onClick={onCopy}
-                    variant="quiet"
-                    size="sm"
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {copied ? <CheckIcon className="size-4" /> : <Copy className="size-4" />}
                     {copied ? t("check.copied") : t("check.copy")}
-                  </Button>
+                  </button>
                 </div>
                 <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
                   {result.corrected}

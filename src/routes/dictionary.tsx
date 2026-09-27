@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Check,
+  ChevronDown,
   Copy,
   Info,
   Loader2,
@@ -12,8 +13,6 @@ import {
 
 
 import { LANGUAGES } from "@/lib/languages";
-import { LanguageSelect, LanguageShortcuts } from "@/components/LanguageControls";
-import { Button } from "@/components/ui/button";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
@@ -86,6 +85,37 @@ function explanationLanguage(lang: AppLanguage): string {
     default:
       return "English";
   }
+}
+
+function SelectPill({
+  value,
+  onChange,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  label: string;
+}) {
+  return (
+    <div className="relative inline-flex">
+      <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
+        {value}
+        <ChevronDown className="size-3.5 opacity-60" />
+      </span>
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 size-full cursor-pointer opacity-0"
+      >
+        {LANGUAGES.map((l) => (
+          <option key={l} value={l}>
+            {l}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 function DictionaryPage() {
@@ -182,14 +212,14 @@ function DictionaryPage() {
     const failed = speech.errorId === id;
     return (
       <div className="flex shrink-0 items-center gap-4">
-        <Button
+        <button
           onClick={() => speech.speak(id, text, itemLanguage)}
           title={playing ? t("translate.stop") : t("translate.listen")}
           aria-label={playing ? t("translate.stop") : t("translate.listen")}
           aria-pressed={playing}
-          variant="quiet"
-          size={compact ? "iconSm" : "sm"}
-          className={playing ? "text-foreground" : undefined}
+          className={`flex items-center gap-1.5 text-sm transition-colors ${
+            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
         >
           {failed ? (
             <VolumeX className="size-4" />
@@ -197,17 +227,16 @@ function DictionaryPage() {
             <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
           )}
           {!compact && (playing ? t("translate.stop") : t("translate.listen"))}
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => onCopy(id, text)}
           title={t("translate.copy")}
           aria-label={t("translate.copy")}
-          variant="quiet"
-          size={compact ? "iconSm" : "sm"}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           {copiedId === id ? <Check className="size-4" /> : <Copy className="size-4" />}
           {!compact && (copiedId === id ? t("translate.copied") : t("translate.copy"))}
-        </Button>
+        </button>
         {failed && !compact && (
           <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
         )}
@@ -228,11 +257,47 @@ function DictionaryPage() {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
-            <LanguageSelect label={t("vocab.language")} value={language} onChange={setLanguage} options={LANGUAGES} />
+            <SelectPill label={t("vocab.language")} value={language} onChange={setLanguage} />
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("vocab.changeTo")}</span>
-            <LanguageShortcuts values={shortcuts} current={language} onSelect={setLanguage} onChange={setShortcuts} addLabel={t("translate.add")} selectLabel={t("translate.addLanguage")} />
+            {shortcuts.map((s) => (
+              <button
+                key={s}
+                onClick={() => setLanguage(s)}
+                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                  s === language
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+            <div className="relative inline-flex">
+              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+                + {t("translate.add")}
+              </span>
+              <select
+                aria-label={t("translate.addLanguage")}
+                value=""
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
+                  e.target.value = "";
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              >
+                <option value="" disabled>
+                  {t("translate.addLanguage")}
+                </option>
+                {LANGUAGES.map((o) => (
+                  <option key={o} value={o} disabled={shortcuts.includes(o)}>
+                    {shortcuts.includes(o) ? `✓ ${o}` : o}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -263,14 +328,13 @@ function DictionaryPage() {
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {suggestions.map((s) => (
-                <Button
+                <button
                   key={s}
                   onClick={() => setQuery(s)}
-                  variant="pill"
-                  size="compact"
+                  className="rounded-full bg-secondary px-3.5 py-1.5 text-sm text-secondary-foreground transition-colors hover:text-foreground"
                 >
                   {s}
-                </Button>
+                </button>
               ))}
             </div>
           </section>
@@ -302,7 +366,7 @@ function DictionaryPage() {
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
               {t("vocab.entry")}
             </p>
-             <div className="mt-3 rounded-xl bg-secondary/40 p-5 md:p-6">
+            <div className="mt-3 rounded-2xl bg-secondary/40 p-5 md:p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                 <div className="min-w-0">
                   <p className="text-2xl text-foreground">{entry.text}</p>

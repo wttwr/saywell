@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Check, Copy, Loader2, RotateCw, Volume2, VolumeX, X } from "lucide-react";
 
-import { AddLanguageSelect } from "@/components/LanguageControls";
-import { Button } from "@/components/ui/button";
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
@@ -111,18 +109,39 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             className="inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3.5 py-1.5 text-sm text-secondary-foreground"
           >
             {l}
-            <Button
+            <button
               onClick={() => persist(languages.filter((x) => x !== l))}
               aria-label={`${t("vocab.remove")} ${l}`}
-              variant="quiet"
-              size="iconSm"
-              className="-mr-2 size-6 rounded-full"
+              className="text-muted-foreground transition-colors hover:text-foreground"
             >
               <X className="size-3.5" />
-            </Button>
+            </button>
           </span>
         ))}
-        <AddLanguageSelect selected={languages} onAdd={(value) => persist([...languages, value])} label={t("translate.addLanguage")} addLabel={t("translate.add")} options={LANGUAGES} excluded={[sourceLanguage]} />
+        <div className="relative inline-flex">
+          <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+            + {t("translate.add")}
+          </span>
+          <select
+            aria-label={t("translate.addLanguage")}
+            value=""
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v && !languages.includes(v)) persist([...languages, v]);
+              e.target.value = "";
+            }}
+            className="absolute inset-0 size-full cursor-pointer opacity-0"
+          >
+            <option value="" disabled>
+              {t("translate.addLanguage")}
+            </option>
+            {LANGUAGES.filter((o) => o !== sourceLanguage).map((o) => (
+              <option key={o} value={o} disabled={languages.includes(o)}>
+                {languages.includes(o) ? `✓ ${o}` : o}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {visible.length > 0 && (
@@ -144,7 +163,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             return (
               <div
                 key={l}
-                className="flex items-start gap-4 rounded-xl bg-secondary/40 p-5 md:p-6"
+                className="flex items-start gap-4 rounded-2xl bg-secondary/40 p-5 md:p-6"
               >
                 <div className="w-36 shrink-0 pt-0.5">
                   <p className="text-xs font-medium text-muted-foreground">
@@ -157,14 +176,13 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
                   {state?.loading ? (
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
                   ) : state?.error ? (
-                    <Button
+                    <button
                       onClick={() => fetchFor(l, { current: false })}
-                      variant="quiet"
-                      size="sm"
+                      className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <RotateCw className="size-3.5" />
                       {t("vocab.retry")}
-                    </Button>
+                    </button>
                   ) : (
                     <>
                       <p className="text-lg leading-snug text-foreground">
@@ -180,34 +198,35 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2 pt-0.5">
-                  <Button
+                  <button
                     onClick={() => speech.speak(id, state?.translation ?? "", l)}
                     title={playing ? t("translate.stop") : t("translate.listen")}
                     aria-label={`${playing ? t("translate.stop") : t("translate.listen")} ${l}`}
                     aria-pressed={playing}
-                    variant="quiet"
-                    size="iconSm"
-                    className={playing ? "bg-secondary text-foreground" : undefined}
+                    className={`rounded-md p-1.5 transition-colors ${
+                      playing
+                        ? "bg-secondary text-foreground"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
                   >
                     {failed ? (
                       <VolumeX className="size-4" />
                     ) : (
                       <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
                     )}
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={() => onCopy(id, state?.translation ?? "")}
                     title={t("translate.copy")}
                     aria-label={`${t("translate.copy")} ${l}`}
-                    variant="quiet"
-                    size="iconSm"
+                    className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                   >
                     {copiedId === id ? (
                       <Check className="size-4" />
                     ) : (
                       <Copy className="size-4" />
                     )}
-                  </Button>
+                  </button>
                 </div>
               </div>
             );

@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Volume2, VolumeX } from "lucide-react";
+import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
 
-import { LanguageSelect, LanguageShortcuts } from "@/components/LanguageControls";
-import { Button } from "@/components/ui/button";
 import { LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
@@ -32,6 +30,39 @@ export const Route = createFileRoute("/style")({
   }),
   component: StylePage,
 });
+
+function LanguageSelect({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly string[];
+  label: string;
+}) {
+  return (
+    <div className="relative inline-flex">
+      <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
+        {value}
+        <ChevronDown className="size-3.5 opacity-60" />
+      </span>
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 size-full cursor-pointer opacity-0"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 function StylePage() {
   const run = useServerFn(exploreStyles);
@@ -95,15 +126,15 @@ function StylePage() {
     const failed = speech.errorId === id;
     return (
       <div className="mt-2 flex items-center gap-4">
-        <Button
+        <button
           onClick={() => speech.speak(id, value, language)}
           disabled={!value}
           title={playing ? t("translate.stop") : t("translate.listen")}
           aria-label={playing ? t("translate.stop") : t("translate.listen")}
           aria-pressed={playing}
-          variant="quiet"
-          size="sm"
-          className={playing ? "text-foreground" : undefined}
+          className={`flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40 ${
+            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
         >
           {failed ? (
             <VolumeX className="size-4" />
@@ -111,18 +142,17 @@ function StylePage() {
             <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
           )}
           {playing ? t("translate.stop") : t("translate.listen")}
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => onCopy(id, value)}
           disabled={!value}
           title={t("translate.copy")}
           aria-label={t("translate.copy")}
-          variant="quiet"
-          size="sm"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
         >
           {copiedId === id ? <Check className="size-4" /> : <Copy className="size-4" />}
           {copiedId === id ? t("translate.copied") : t("translate.copy")}
-        </Button>
+        </button>
         {failed && <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>}
       </div>
     );
@@ -168,7 +198,43 @@ function StylePage() {
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
-            <LanguageShortcuts values={shortcuts} current={language} onSelect={setLanguage} onChange={setShortcuts} addLabel={t("translate.add")} selectLabel={t("translate.addLanguage")} />
+            {shortcuts.map((s) => (
+              <button
+                key={s}
+                onClick={() => setLanguage(s)}
+                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                  s === language
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+            <div className="relative inline-flex">
+              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+                + {t("translate.add")}
+              </span>
+              <select
+                aria-label={t("translate.addLanguage")}
+                value=""
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
+                  e.target.value = "";
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              >
+                <option value="" disabled>
+                  {t("translate.addLanguage")}
+                </option>
+                {LANGUAGES.map((o) => (
+                  <option key={o} value={o} disabled={shortcuts.includes(o)}>
+                    {shortcuts.includes(o) ? `✓ ${o}` : o}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -180,14 +246,13 @@ function StylePage() {
           className="mt-8 min-h-32 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
         />
 
-        <Button
+        <button
           onClick={onExplore}
           disabled={!canExplore}
-          size="action"
-          className="mt-4"
+          className="mt-4 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
         >
           {loading ? t("style.exploring") : t("style.explore")}
-        </Button>
+        </button>
 
         {error && <p className="mt-8 text-base text-destructive">{error}</p>}
 
