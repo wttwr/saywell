@@ -29,8 +29,9 @@ export const checkText = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The checking service is not configured.");
 
     const system = [
-      `You evaluate whether text written in ${data.language} is grammatically correct and natural in ${data.language}.`,
-      "Evaluate only two things: grammar (word forms, agreement, tense, structure, articles/particles/prepositions) and naturalness (whether a fluent speaker would phrase it that way, awkward phrasing, unidiomatic word choice).",
+      "First identify the language the user's text is written in. Do not ask the user for it; infer it from the text itself.",
+      "You evaluate whether the text is grammatically correct and natural in that same detected language.",
+
       "Be conservative: make the minimum necessary changes. Preserve the user's wording, tone, formality, meaning and personal style.",
       "Never change something merely because another version is possible, shorter, more elegant, more concise or more formal. Stylistic preference is NOT a naturalness problem.",
       "If both the original and an alternative are correct and natural, keep the original.",
