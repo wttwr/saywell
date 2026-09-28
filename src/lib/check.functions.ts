@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const schema = z.object({
   text: z.string().min(1).max(5000),
+  language: z.string().min(1),
   explanationLanguage: z.string().min(1).default("English"),
 });
 
@@ -18,9 +19,7 @@ export type CheckResult = {
   summary: string;
   corrected: string | null;
   issues: CheckIssue[];
-  detectedLanguage: string;
 };
-
 
 export const checkText = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
@@ -29,8 +28,7 @@ export const checkText = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The checking service is not configured.");
 
     const system = [
-      "First identify the language the user's text is written in. Do not ask the user for it; infer it from the text itself.",
-      "You evaluate whether the text is grammatically correct and natural in that same detected language.",
+      `You evaluate whether text written in ${data.language} is grammatically correct and natural in ${data.language}.`,
       "Evaluate only two things: grammar (word forms, agreement, tense, structure, articles/particles/prepositions) and naturalness (whether a fluent speaker would phrase it that way, awkward phrasing, unidiomatic word choice).",
       "Be conservative: make the minimum necessary changes. Preserve the user's wording, tone, formality, meaning and personal style.",
       "Never change something merely because another version is possible, shorter, more elegant, more concise or more formal. Stylistic preference is NOT a naturalness problem.",
@@ -44,10 +42,8 @@ export const checkText = createServerFn({ method: "POST" })
       "Naturalness: understandable or grammatically possible, but the wording is unusual or unidiomatic for fluent speakers in that context.",
       "Choose the single most appropriate type for each issue. Do NOT add both Grammar and Naturalness by default; use two labels only in the rare case where one issue genuinely belongs to both categories.",
       `Write the summary and every reason in ${data.explanationLanguage}.`,
-      "Keep original, suggestion and corrected in the detected language of the text; never translate the text being checked.",
-      `Also return detectedLanguage: the English name of the language the text is written in (for example "English", "Italian", "Chinese (Simplified)", "Spanish").`,
-      'Reply with ONLY a JSON object: {"detectedLanguage":"...","status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
-
+      `Keep original, suggestion and corrected in ${data.language}; never translate the text being checked.`,
+      'Reply with ONLY a JSON object: {"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -103,10 +99,6 @@ export const checkText = createServerFn({ method: "POST" })
 
     return {
       status,
-      detectedLanguage:
-        typeof parsed.detectedLanguage === "string" && parsed.detectedLanguage.trim()
-          ? parsed.detectedLanguage.trim()
-          : "",
       summary:
         parsed.summary ||
         (status === "Looks good"
@@ -116,5 +108,4 @@ export const checkText = createServerFn({ method: "POST" })
       corrected: status === "Looks good" ? null : (parsed.corrected ?? null),
       issues: status === "Looks good" ? [] : issues,
     };
-
   });

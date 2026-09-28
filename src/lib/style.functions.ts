@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const schema = z.object({
   text: z.string().min(1).max(1000),
+  language: z.string().min(1),
   explanationLanguage: z.string().min(1).default("English"),
 });
 
@@ -17,9 +18,7 @@ export type StyleResult = {
   primary: StyleVariant;
   alternatives: StyleVariant[];
   note?: string;
-  detectedLanguage: string;
 };
-
 
 const asVariant = (value: unknown): StyleVariant | null => {
   const o = (value ?? {}) as Record<string, unknown>;
@@ -46,10 +45,8 @@ export const exploreStyles = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The style service is not configured.");
 
     const system = [
-      "First identify the language the user's text is written in; infer it from the text itself, it is never given to you.",
-      "The user wants to see natural ways to say the same thing in that same detected language.",
-      "Keep every primary and alternative text in the detected language; never translate the content being explored.",
-
+      `The user writes in ${data.language} and wants to see natural ways to say the same thing in ${data.language}.`,
+      `Keep every primary and alternative text in ${data.language}; never translate the content being explored.`,
       "The input may be a single word, a short phrase or a sentence. Never require a full sentence.",
       "First give the primary phrasing: the most natural default way to say it. If the user's text is already natural, repeat it unchanged.",
       "Then give alternatives that are natural and MEANINGFULLY different in register, politeness, structure or idiom.",
@@ -58,12 +55,10 @@ export const exploreStyles = createServerFn({ method: "POST" })
       "All alternatives must preserve the core meaning. If nuance shifts, say so plainly in the explanation.",
       "This is about variation in expression, not correcting the user's writing. Never judge the user's own style, grammar or spelling.",
       "Never say an option is better or worse than another.",
-      "If the detected language uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.",
+      `If ${data.language} uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.`,
       `Explanations and the note must be written in ${data.explanationLanguage}. Explanations are one short neutral sentence and may be omitted when nothing useful can be said.`,
       "If no meaningful alternative exists, return an empty alternatives array and use a short localized note saying that the primary phrasing is already the most natural option for this context.",
-      `Also return detectedLanguage: the English name of the language the text is written in (for example "English", "Italian", "Chinese (Simplified)", "Spanish").`,
-      'Reply with ONLY a JSON object: {"detectedLanguage":"...","primary":{"text":"...","transliteration":"...","explanation":"..."},"alternatives":[{"label":"More formal","text":"...","transliteration":"...","explanation":"..."}],"note":"..."}. No markdown, no commentary.',
-
+      'Reply with ONLY a JSON object: {"primary":{"text":"...","transliteration":"...","explanation":"..."},"alternatives":[{"label":"More formal","text":"...","transliteration":"...","explanation":"..."}],"note":"..."}. No markdown, no commentary.',
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -106,10 +101,7 @@ export const exploreStyles = createServerFn({ method: "POST" })
       .slice(0, 5);
 
     const note = typeof parsed["note"] === "string" ? parsed["note"].trim() : "";
-    const detectedLanguage =
-      typeof parsed["detectedLanguage"] === "string" ? parsed["detectedLanguage"].trim() : "";
-    const result: StyleResult = { primary, alternatives, detectedLanguage };
-
+    const result: StyleResult = { primary, alternatives };
     if (alternatives.length === 0) {
       const fallbackNote: Record<string, string> = {
         Italian: "La formulazione principale è già l'opzione più naturale in questo contesto.",
