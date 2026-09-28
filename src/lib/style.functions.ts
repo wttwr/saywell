@@ -3,7 +3,6 @@ import { z } from "zod";
 
 const schema = z.object({
   text: z.string().min(1).max(1000),
-  language: z.string().min(1),
   explanationLanguage: z.string().min(1).default("English"),
 });
 
@@ -18,7 +17,9 @@ export type StyleResult = {
   primary: StyleVariant;
   alternatives: StyleVariant[];
   note?: string;
+  detectedLanguage: string;
 };
+
 
 const asVariant = (value: unknown): StyleVariant | null => {
   const o = (value ?? {}) as Record<string, unknown>;
