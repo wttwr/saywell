@@ -3,7 +3,6 @@ import { z } from "zod";
 
 const schema = z.object({
   text: z.string().min(1).max(5000),
-  language: z.string().min(1),
   explanationLanguage: z.string().min(1).default("English"),
 });
 
@@ -19,7 +18,9 @@ export type CheckResult = {
   summary: string;
   corrected: string | null;
   issues: CheckIssue[];
+  detectedLanguage: string;
 };
+
 
 export const checkText = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
