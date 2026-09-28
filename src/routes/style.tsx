@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
+import { Check, Copy, Volume2, VolumeX } from "lucide-react";
 
-import { LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
-import { useDefaultOnce, useSettings } from "@/lib/settings";
+
 
 export const Route = createFileRoute("/style")({
   head: () => ({
