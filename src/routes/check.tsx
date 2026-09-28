@@ -47,19 +47,11 @@ function CheckPage() {
   const { t, lang } = useI18n();
 
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState("English");
-  const [shortcuts, setShortcuts] = useState<string[]>([]);
   const [result, setResult] = useState<CheckResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const { settings } = useSettings();
-  useDefaultOnce(() => {
-    setLanguage(settings.checkLanguage);
-    setShortcuts(settings.checkShortcuts);
-  });
 
   // Pick up anything typed or pasted before the page finished loading.
   useEffect(() => {
@@ -67,18 +59,18 @@ function CheckPage() {
     if (value) setText((prev) => (prev ? prev : value));
   }, []);
 
-  const canCheck = Boolean(language) && text.trim().length > 0;
+  const canCheck = text.trim().length > 0;
 
   const onCheck = async () => {
     const trimmed = (textareaRef.current?.value ?? text).trim();
-    if (!trimmed || !language || loading) return;
+    if (!trimmed || loading) return;
     setLoading(true);
     setError(null);
     setResult(null);
     try {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
-      const data = await runCheck({ data: { text: trimmed, language, explanationLanguage } });
+      const data = await runCheck({ data: { text: trimmed, explanationLanguage } });
       setResult(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("check.error"));
@@ -93,6 +85,7 @@ function CheckPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
+
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
