@@ -44,8 +44,10 @@ export const checkText = createServerFn({ method: "POST" })
       "Naturalness: understandable or grammatically possible, but the wording is unusual or unidiomatic for fluent speakers in that context.",
       "Choose the single most appropriate type for each issue. Do NOT add both Grammar and Naturalness by default; use two labels only in the rare case where one issue genuinely belongs to both categories.",
       `Write the summary and every reason in ${data.explanationLanguage}.`,
-      `Keep original, suggestion and corrected in ${data.language}; never translate the text being checked.`,
-      'Reply with ONLY a JSON object: {"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
+      "Keep original, suggestion and corrected in the detected language of the text; never translate the text being checked.",
+      `Also return detectedLanguage: the English name of the language the text is written in (for example "English", "Italian", "Chinese (Simplified)", "Spanish").`,
+      'Reply with ONLY a JSON object: {"detectedLanguage":"...","status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
+
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
