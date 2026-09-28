@@ -175,7 +175,13 @@ function StylePage() {
 
         {!loading && result && (
           <div className="mt-10">
-            <section className="border-t border-border pt-6">
+            {result.detectedLanguage && (
+              <p className="text-xs text-muted-foreground">
+                {t("style.detected")}: {result.detectedLanguage}
+              </p>
+            )}
+            <section className="mt-4 border-t border-border pt-6">
+
               <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("style.primary")}
               </h2>
