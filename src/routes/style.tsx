@@ -37,23 +37,13 @@ function StylePage() {
   const speech = useSpeech();
 
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState("English");
-  const [shortcuts, setShortcuts] = useState<string[]>([
-    "English",
-    "Italian",
-    "Chinese (Simplified)",
-  ]);
   const [result, setResult] = useState<StyleResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { settings } = useSettings();
-  useDefaultOnce(() => {
-    setLanguage(settings.styleLanguage);
-    setShortcuts(settings.styleShortcuts);
-  });
+  const language = result?.detectedLanguage || "";
 
   useEffect(() => {
     const existing = textareaRef.current?.value;
@@ -71,8 +61,9 @@ function StylePage() {
     try {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
-      const data = await run({ data: { text: trimmed, language, explanationLanguage } });
+      const data = await run({ data: { text: trimmed, explanationLanguage } });
       setResult(data);
+
     } catch (e) {
       setError(e instanceof Error ? e.message : t("style.error"));
       setResult(null);
