@@ -31,6 +31,7 @@ export const checkText = createServerFn({ method: "POST" })
     const system = [
       "First identify the language the user's text is written in. Do not ask the user for it; infer it from the text itself.",
       "You evaluate whether the text is grammatically correct and natural in that same detected language.",
+      "Evaluate only two things: grammar (word forms, agreement, tense, structure, articles/particles/prepositions) and naturalness (whether a fluent speaker would phrase it that way, awkward phrasing, unidiomatic word choice).",
 
       "Be conservative: make the minimum necessary changes. Preserve the user's wording, tone, formality, meaning and personal style.",
       "Never change something merely because another version is possible, shorter, more elegant, more concise or more formal. Stylistic preference is NOT a naturalness problem.",
