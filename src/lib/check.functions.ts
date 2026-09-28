@@ -103,6 +103,10 @@ export const checkText = createServerFn({ method: "POST" })
 
     return {
       status,
+      detectedLanguage:
+        typeof parsed.detectedLanguage === "string" && parsed.detectedLanguage.trim()
+          ? parsed.detectedLanguage.trim()
+          : "",
       summary:
         parsed.summary ||
         (status === "Looks good"
@@ -112,4 +116,5 @@ export const checkText = createServerFn({ method: "POST" })
       corrected: status === "Looks good" ? null : (parsed.corrected ?? null),
       issues: status === "Looks good" ? [] : issues,
     };
+
   });
