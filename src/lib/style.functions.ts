@@ -58,10 +58,12 @@ export const exploreStyles = createServerFn({ method: "POST" })
       "All alternatives must preserve the core meaning. If nuance shifts, say so plainly in the explanation.",
       "This is about variation in expression, not correcting the user's writing. Never judge the user's own style, grammar or spelling.",
       "Never say an option is better or worse than another.",
-      `If ${data.language} uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.`,
+      "If the detected language uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.",
       `Explanations and the note must be written in ${data.explanationLanguage}. Explanations are one short neutral sentence and may be omitted when nothing useful can be said.`,
       "If no meaningful alternative exists, return an empty alternatives array and use a short localized note saying that the primary phrasing is already the most natural option for this context.",
-      'Reply with ONLY a JSON object: {"primary":{"text":"...","transliteration":"...","explanation":"..."},"alternatives":[{"label":"More formal","text":"...","transliteration":"...","explanation":"..."}],"note":"..."}. No markdown, no commentary.',
+      `Also return detectedLanguage: the English name of the language the text is written in (for example "English", "Italian", "Chinese (Simplified)", "Spanish").`,
+      'Reply with ONLY a JSON object: {"detectedLanguage":"...","primary":{"text":"...","transliteration":"...","explanation":"..."},"alternatives":[{"label":"More formal","text":"...","transliteration":"...","explanation":"..."}],"note":"..."}. No markdown, no commentary.',
+
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
