@@ -106,7 +106,10 @@ export const exploreStyles = createServerFn({ method: "POST" })
       .slice(0, 5);
 
     const note = typeof parsed["note"] === "string" ? parsed["note"].trim() : "";
-    const result: StyleResult = { primary, alternatives };
+    const detectedLanguage =
+      typeof parsed["detectedLanguage"] === "string" ? parsed["detectedLanguage"].trim() : "";
+    const result: StyleResult = { primary, alternatives, detectedLanguage };
+
     if (alternatives.length === 0) {
       const fallbackNote: Record<string, string> = {
         Italian: "La formulazione principale è già l'opzione più naturale in questo contesto.",
