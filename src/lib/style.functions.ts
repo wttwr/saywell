@@ -46,8 +46,10 @@ export const exploreStyles = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The style service is not configured.");
 
     const system = [
-      `The user writes in ${data.language} and wants to see natural ways to say the same thing in ${data.language}.`,
-      `Keep every primary and alternative text in ${data.language}; never translate the content being explored.`,
+      "First identify the language the user's text is written in; infer it from the text itself, it is never given to you.",
+      "The user wants to see natural ways to say the same thing in that same detected language.",
+      "Keep every primary and alternative text in the detected language; never translate the content being explored.",
+
       "The input may be a single word, a short phrase or a sentence. Never require a full sentence.",
       "First give the primary phrasing: the most natural default way to say it. If the user's text is already natural, repeat it unchanged.",
       "Then give alternatives that are natural and MEANINGFULLY different in register, politeness, structure or idiom.",
