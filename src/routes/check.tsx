@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check as CheckIcon, ChevronDown, Copy } from "lucide-react";
+import { Check as CheckIcon, Copy } from "lucide-react";
 
-import { LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { useDefaultOnce, useSettings } from "@/lib/settings";
+
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -47,19 +46,11 @@ function CheckPage() {
   const { t, lang } = useI18n();
 
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState("English");
-  const [shortcuts, setShortcuts] = useState<string[]>([]);
   const [result, setResult] = useState<CheckResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const { settings } = useSettings();
-  useDefaultOnce(() => {
-    setLanguage(settings.checkLanguage);
-    setShortcuts(settings.checkShortcuts);
-  });
 
   // Pick up anything typed or pasted before the page finished loading.
   useEffect(() => {
@@ -67,18 +58,18 @@ function CheckPage() {
     if (value) setText((prev) => (prev ? prev : value));
   }, []);
 
-  const canCheck = Boolean(language) && text.trim().length > 0;
+  const canCheck = text.trim().length > 0;
 
   const onCheck = async () => {
     const trimmed = (textareaRef.current?.value ?? text).trim();
-    if (!trimmed || !language || loading) return;
+    if (!trimmed || loading) return;
     setLoading(true);
     setError(null);
     setResult(null);
     try {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
-      const data = await runCheck({ data: { text: trimmed, language, explanationLanguage } });
+      const data = await runCheck({ data: { text: trimmed, explanationLanguage } });
       setResult(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("check.error"));
@@ -94,6 +85,7 @@ function CheckPage() {
     setTimeout(() => setCopied(false), 1600);
   };
 
+
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
       <div className="mx-auto max-w-3xl">
@@ -104,73 +96,8 @@ function CheckPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("check.subtitle")}</p>
         </header>
 
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <span className="text-sm text-muted-foreground">{t("check.language")}</span>
-            <div className="relative inline-flex">
-              <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-                {language}
-                <ChevronDown className="size-3.5 opacity-60" />
-              </span>
-              <select
-                aria-label={t("check.language")}
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="absolute inset-0 size-full cursor-pointer opacity-0"
-              >
-                {LANGUAGES.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <span className="text-sm text-muted-foreground">{t("check.changeTo")}</span>
-            {shortcuts.map((shortcut) => (
-              <button
-                key={shortcut}
-                onClick={() => setLanguage(shortcut)}
-                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                  shortcut === language
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {shortcut}
-              </button>
-            ))}
-            <div className="relative inline-flex">
-              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
-                + {t("translate.add")}
-              </span>
-              <select
-                aria-label={t("translate.addLanguage")}
-                value=""
-                onChange={(e) => {
-                  const next = e.target.value;
-                  if (next) {
-                    setShortcuts((current) =>
-                      current.includes(next) ? current : [...current, next],
-                    );
-                  }
-                  e.target.value = "";
-                }}
-                className="absolute inset-0 size-full cursor-pointer opacity-0"
-              >
-                <option value="" disabled>
-                  {t("translate.addLanguage")}
-                </option>
-                {LANGUAGES.map((option) => (
-                  <option key={option} value={option} disabled={shortcuts.includes(option)}>
-                    {shortcuts.includes(option) ? `✓ ${option}` : option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+        <p className="text-sm text-muted-foreground">{t("check.autoDetect")}</p>
+
 
         <textarea
           ref={textareaRef}
@@ -206,17 +133,25 @@ function CheckPage() {
         {result && !loading && (
           <section className="mt-12 space-y-10">
             <div>
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
-              >
-                {t(`status.${result.status}` as TranslationKey)}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
+                >
+                  {t(`status.${result.status}` as TranslationKey)}
+                </span>
+                {result.detectedLanguage && (
+                  <span className="text-xs text-muted-foreground">
+                    {t("check.detected")}: {result.detectedLanguage}
+                  </span>
+                )}
+              </div>
               {result.summary && (
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                   {result.summary}
                 </p>
               )}
             </div>
+
 
             {result.corrected && (
               <div>

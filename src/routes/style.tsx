@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
+import { Check, Copy, Volume2, VolumeX } from "lucide-react";
 
-import { LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
-import { useDefaultOnce, useSettings } from "@/lib/settings";
+
 
 export const Route = createFileRoute("/style")({
   head: () => ({
@@ -31,38 +30,6 @@ export const Route = createFileRoute("/style")({
   component: StylePage,
 });
 
-function LanguageSelect({
-  value,
-  onChange,
-  options,
-  label,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: readonly string[];
-  label: string;
-}) {
-  return (
-    <div className="relative inline-flex">
-      <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-        {value}
-        <ChevronDown className="size-3.5 opacity-60" />
-      </span>
-      <select
-        aria-label={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="absolute inset-0 size-full cursor-pointer opacity-0"
-      >
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
 
 function StylePage() {
   const run = useServerFn(exploreStyles);
@@ -70,23 +37,13 @@ function StylePage() {
   const speech = useSpeech();
 
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState("English");
-  const [shortcuts, setShortcuts] = useState<string[]>([
-    "English",
-    "Italian",
-    "Chinese (Simplified)",
-  ]);
   const [result, setResult] = useState<StyleResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { settings } = useSettings();
-  useDefaultOnce(() => {
-    setLanguage(settings.styleLanguage);
-    setShortcuts(settings.styleShortcuts);
-  });
+  const language = result?.detectedLanguage || "";
 
   useEffect(() => {
     const existing = textareaRef.current?.value;
@@ -104,8 +61,9 @@ function StylePage() {
     try {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
-      const data = await run({ data: { text: trimmed, language, explanationLanguage } });
+      const data = await run({ data: { text: trimmed, explanationLanguage } });
       setResult(data);
+
     } catch (e) {
       setError(e instanceof Error ? e.message : t("style.error"));
       setResult(null);
@@ -186,57 +144,8 @@ function StylePage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("style.subtitle")}</p>
         </header>
 
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <span className="text-sm text-muted-foreground">{t("style.language")}</span>
-            <LanguageSelect
-              label={t("style.language")}
-              value={language}
-              onChange={setLanguage}
-              options={LANGUAGES}
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
-            {shortcuts.map((s) => (
-              <button
-                key={s}
-                onClick={() => setLanguage(s)}
-                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                  s === language
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-            <div className="relative inline-flex">
-              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
-                + {t("translate.add")}
-              </span>
-              <select
-                aria-label={t("translate.addLanguage")}
-                value=""
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
-                  e.target.value = "";
-                }}
-                className="absolute inset-0 size-full cursor-pointer opacity-0"
-              >
-                <option value="" disabled>
-                  {t("translate.addLanguage")}
-                </option>
-                {LANGUAGES.map((o) => (
-                  <option key={o} value={o} disabled={shortcuts.includes(o)}>
-                    {shortcuts.includes(o) ? `✓ ${o}` : o}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+        <p className="text-sm text-muted-foreground">{t("style.autoDetect")}</p>
+
 
         <textarea
           ref={textareaRef}
@@ -266,7 +175,13 @@ function StylePage() {
 
         {!loading && result && (
           <div className="mt-10">
-            <section className="border-t border-border pt-6">
+            {result.detectedLanguage && (
+              <p className="text-xs text-muted-foreground">
+                {t("style.detected")}: {result.detectedLanguage}
+              </p>
+            )}
+            <section className="mt-4 border-t border-border pt-6">
+
               <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("style.primary")}
               </h2>
