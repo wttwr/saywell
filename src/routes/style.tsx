@@ -30,38 +30,6 @@ export const Route = createFileRoute("/style")({
   component: StylePage,
 });
 
-function LanguageSelect({
-  value,
-  onChange,
-  options,
-  label,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: readonly string[];
-  label: string;
-}) {
-  return (
-    <div className="relative inline-flex">
-      <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-        {value}
-        <ChevronDown className="size-3.5 opacity-60" />
-      </span>
-      <select
-        aria-label={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="absolute inset-0 size-full cursor-pointer opacity-0"
-      >
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
 
 function StylePage() {
   const run = useServerFn(exploreStyles);
