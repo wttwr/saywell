@@ -134,17 +134,25 @@ function CheckPage() {
         {result && !loading && (
           <section className="mt-12 space-y-10">
             <div>
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
-              >
-                {t(`status.${result.status}` as TranslationKey)}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
+                >
+                  {t(`status.${result.status}` as TranslationKey)}
+                </span>
+                {result.detectedLanguage && (
+                  <span className="text-xs text-muted-foreground">
+                    {t("check.detected")}: {result.detectedLanguage}
+                  </span>
+                )}
+              </div>
               {result.summary && (
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                   {result.summary}
                 </p>
               )}
             </div>
+
 
             {result.corrected && (
               <div>
