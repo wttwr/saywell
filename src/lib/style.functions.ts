@@ -1,3 +1,4 @@
+import { promptLanguage } from "@/lib/languages";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -41,12 +42,13 @@ const asVariant = (value: unknown): StyleVariant | null => {
 export const exploreStyles = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }): Promise<StyleResult> => {
+    const lang = promptLanguage(data.language);
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("The style service is not configured.");
 
     const system = [
-      `The user writes in ${data.language} and wants to see natural ways to say the same thing in ${data.language}.`,
-      `Keep every primary and alternative text in ${data.language}; never translate the content being explored.`,
+      `The user writes in ${lang} and wants to see natural ways to say the same thing in ${lang}.`,
+      `Keep every primary and alternative text in ${lang}; never translate the content being explored.`,
       "The input may be a single word, a short phrase or a sentence. Never require a full sentence.",
       "First give the primary phrasing: the most natural default way to say it. If the user's text is already natural, repeat it unchanged.",
       "Then give alternatives that are natural and MEANINGFULLY different in register, politeness, structure or idiom.",
@@ -55,7 +57,7 @@ export const exploreStyles = createServerFn({ method: "POST" })
       "All alternatives must preserve the core meaning. If nuance shifts, say so plainly in the explanation.",
       "This is about variation in expression, not correcting the user's writing. Never judge the user's own style, grammar or spelling.",
       "Never say an option is better or worse than another.",
-      `If ${data.language} uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.`,
+      `If ${lang} uses a script different from the Latin alphabet, add a transliteration (e.g. pinyin, romaji) for each option. Otherwise omit transliteration entirely.`,
       `Explanations and the note must be written in ${data.explanationLanguage}. Explanations are one short neutral sentence and may be omitted when nothing useful can be said.`,
       "If no meaningful alternative exists, return an empty alternatives array and use a short localized note saying that the primary phrasing is already the most natural option for this context.",
       'Reply with ONLY a JSON object: {"primary":{"text":"...","transliteration":"...","explanation":"..."},"alternatives":[{"label":"More formal","text":"...","transliteration":"...","explanation":"..."}],"note":"..."}. No markdown, no commentary.',

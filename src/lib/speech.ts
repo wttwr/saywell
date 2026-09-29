@@ -67,11 +67,11 @@ export function useSpeech() {
       setErrorId(null);
       const locale = SPEECH_LOCALES[language];
       const voices = window.speechSynthesis.getVoices();
-      const voice =
+      const voice = !locale ? undefined :
         voices.find((v) => v.lang.replace("_", "-") === locale) ??
         voices.find((v) => locale && v.lang.toLowerCase().startsWith(locale.slice(0, 2)));
 
-      if (voices.length > 0 && !voice) {
+      if (locale && voices.length > 0 && !voice) {
         setErrorId(id);
         return;
       }

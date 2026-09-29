@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Check as CheckIcon, ChevronDown, Copy } from "lucide-react";
 
-import { LANGUAGES } from "@/lib/languages";
+import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
@@ -118,7 +118,7 @@ function CheckPage() {
                 onChange={(e) => setLanguage(e.target.value)}
                 className="absolute inset-0 size-full cursor-pointer opacity-0"
               >
-                {LANGUAGES.map((l) => (
+                {INPUT_LANGUAGES.map((l) => (
                   <option key={l} value={l}>
                     {l}
                   </option>

@@ -1,3 +1,4 @@
+import { promptLanguage } from "@/lib/languages";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -24,11 +25,12 @@ export type CheckResult = {
 export const checkText = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }): Promise<CheckResult> => {
+    const lang = promptLanguage(data.language);
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("The checking service is not configured.");
 
     const system = [
-      `You evaluate whether text written in ${data.language} is grammatically correct and natural in ${data.language}.`,
+      `You evaluate whether text written in ${lang} is grammatically correct and natural in ${lang}.`,
       "Evaluate only two things: grammar (word forms, agreement, tense, structure, articles/particles/prepositions) and naturalness (whether a fluent speaker would phrase it that way, awkward phrasing, unidiomatic word choice).",
       "Be conservative: make the minimum necessary changes. Preserve the user's wording, tone, formality, meaning and personal style.",
       "Never change something merely because another version is possible, shorter, more elegant, more concise or more formal. Stylistic preference is NOT a naturalness problem.",
@@ -42,7 +44,7 @@ export const checkText = createServerFn({ method: "POST" })
       "Naturalness: understandable or grammatically possible, but the wording is unusual or unidiomatic for fluent speakers in that context.",
       "Choose the single most appropriate type for each issue. Do NOT add both Grammar and Naturalness by default; use two labels only in the rare case where one issue genuinely belongs to both categories.",
       `Write the summary and every reason in ${data.explanationLanguage}.`,
-      `Keep original, suggestion and corrected in ${data.language}; never translate the text being checked.`,
+      `Keep original, suggestion and corrected in ${lang}; never translate the text being checked.`,
       'Reply with ONLY a JSON object: {"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
     ].join(" ");
 

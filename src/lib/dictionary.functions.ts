@@ -104,7 +104,7 @@ export const lookUpWord = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The dictionary service is not configured.");
 
     const system = [
-      `You are a concise learner's dictionary for ${data.language}.`,
+      (data.language === "Auto-detect" ? "You are a concise learner's dictionary. The user chose auto-detect: build the entry in whatever language the input is written in." : `You are a concise learner's dictionary for ${data.language}.`),
       "The user may look up a single word, a phrasal verb, a fixed expression, or an abbreviation.",
       "Do not treat full sentences as dictionary entries.",
       `First detect the language the user actually typed. Set "detectedLanguage" to that language name in English (for example "English", "Italian"). Never translate the input: always define exactly what the user typed, in its own language.`,
@@ -180,11 +180,13 @@ export const lookUpWord = createServerFn({ method: "POST" })
 
     const detected = str(parsed["detectedLanguage"]);
     const confident = parsed["languageConfident"] === true;
+    const auto = data.language === "Auto-detect";
     const mismatch =
+      !auto &&
       confident &&
       detected.length > 0 &&
       detected.toLowerCase() !== data.language.toLowerCase();
-    const usedLanguage = mismatch ? detected : data.language;
+    const usedLanguage = mismatch || auto ? detected || "English" : data.language;
 
     const entry: DictionaryEntry = {
       text: str(parsed["text"]) || data.text.trim(),

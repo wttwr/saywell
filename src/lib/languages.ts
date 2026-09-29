@@ -31,4 +31,13 @@ export const LANGUAGES = [
   "Romanian",
 ] as const;
 
-export const SOURCE_LANGUAGES = [...LANGUAGES];
+
+/** Special input-language value: let the AI detect the language of the text. */
+export const AUTO_DETECT = "Auto-detect";
+export const INPUT_LANGUAGES = [AUTO_DETECT, ...LANGUAGES];
+
+/** Wording used inside AI prompts in place of a language name. */
+export function promptLanguage(language: string) {
+  return language === AUTO_DETECT ? "the language the text is written in (detect it)" : language;
+}
+export const SOURCE_LANGUAGES = INPUT_LANGUAGES;
