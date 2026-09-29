@@ -42,6 +42,7 @@ const asVariant = (value: unknown): StyleVariant | null => {
 export const exploreStyles = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }): Promise<StyleResult> => {
+    const lang = promptLanguage(data.language);
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("The style service is not configured.");
 

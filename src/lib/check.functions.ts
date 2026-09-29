@@ -25,6 +25,7 @@ export type CheckResult = {
 export const checkText = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }): Promise<CheckResult> => {
+    const lang = promptLanguage(data.language);
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("The checking service is not configured.");
 
