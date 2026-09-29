@@ -23,13 +23,13 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  translateSource: "English",
+  translateSource: AUTO_DETECT,
   translateTargets: ["Chinese (Simplified)", "Italian"],
-  checkLanguage: "English",
+  checkLanguage: AUTO_DETECT,
   checkShortcuts: ["English", "Italian", "Chinese (Simplified)"],
-  styleLanguage: "English",
+  styleLanguage: AUTO_DETECT,
   styleShortcuts: ["English", "Italian", "Chinese (Simplified)"],
-  dictionaryLanguage: "English",
+  dictionaryLanguage: AUTO_DETECT,
   dictionaryShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryTranslateTo: ["Italian", "Chinese (Simplified)", "Finnish"],
 };
