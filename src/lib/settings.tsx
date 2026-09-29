@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { AUTO_DETECT } from "@/lib/languages";
 
 /** Content-language preferences. These never change the interface language. */
 export type Settings = {
