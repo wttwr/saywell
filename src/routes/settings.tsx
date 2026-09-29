@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, X } from "lucide-react";
 
-import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
+import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSettings, type Settings } from "@/lib/settings";
 
@@ -179,7 +179,7 @@ function SettingsPage() {
                   label={t("settings.defaultLanguage")}
                   value={settings.checkLanguage}
                   onChange={set("checkLanguage")}
-                  options={LANGUAGES}
+                  options={INPUT_LANGUAGES}
                 />
               </Field>
               <Field label={t("settings.shortcuts")}>
@@ -200,7 +200,7 @@ function SettingsPage() {
                   label={t("settings.defaultLanguage")}
                   value={settings.styleLanguage}
                   onChange={set("styleLanguage")}
-                  options={LANGUAGES}
+                  options={INPUT_LANGUAGES}
                 />
               </Field>
               <Field label={t("settings.shortcuts")}>
@@ -221,7 +221,7 @@ function SettingsPage() {
                   label={t("settings.defaultLanguage")}
                   value={settings.dictionaryLanguage}
                   onChange={set("dictionaryLanguage")}
-                  options={LANGUAGES}
+                  options={INPUT_LANGUAGES}
                 />
               </Field>
               <Field label={t("settings.shortcuts")}>

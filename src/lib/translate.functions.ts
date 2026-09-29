@@ -14,7 +14,7 @@ export const translateText = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("Translation service is not configured.");
 
     const sourceNote =
-      data.from === "auto" ? "Detect the source language." : `The source language is ${data.from}.`;
+      data.from === "auto" || data.from === "Auto-detect" ? "Detect the source language." : `The source language is ${data.from}.`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 
-import { LANGUAGES } from "@/lib/languages";
+import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
@@ -108,7 +108,7 @@ function SelectPill({
         onChange={(e) => onChange(e.target.value)}
         className="absolute inset-0 size-full cursor-pointer opacity-0"
       >
-        {LANGUAGES.map((l) => (
+        {INPUT_LANGUAGES.map((l) => (
           <option key={l} value={l}>
             {l}
           </option>

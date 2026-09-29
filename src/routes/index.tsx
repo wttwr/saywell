@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 
-import { LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
+import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
@@ -116,7 +116,7 @@ function TranslatePage() {
 
   const swapLanguages = () => {
     const lang = targets[active];
-    if (!lang) return;
+    if (!lang || from === AUTO_DETECT) return;
     const translated = results[lang] ?? "";
     const previousSource = source;
     setFrom(lang);
@@ -189,7 +189,7 @@ function TranslatePage() {
       onClick={swapLanguages}
       title={t("translate.swap")}
       aria-label={t("translate.swap")}
-      disabled={!targets[active]}
+      disabled={!targets[active] || from === AUTO_DETECT}
       className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
     >
       <ArrowLeftRight className="size-4" />
