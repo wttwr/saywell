@@ -28,7 +28,9 @@ const en = {
   "settings.shortcuts": "Language shortcuts",
   "settings.defaultMultilingual": "Default multilingual translation languages",
   "settings.sourceExcluded": "The current Dictionary language is the source, so it is never shown here.",
-  "settings.note": "These settings change content languages only, not the app interface language.",
+  "settings.note": "Content language settings below don't change the app interface language.",
+  "settings.appLanguage": "App language",
+  "settings.interfaceLanguage": "Interface language",
 
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations.",
@@ -152,7 +154,9 @@ const it: Record<TranslationKey, string> = {
   "settings.shortcuts": "Scorciatoie di lingua",
   "settings.defaultMultilingual": "Lingue predefinite per la traduzione multilingue",
   "settings.sourceExcluded": "La lingua attuale del dizionario è quella di partenza, quindi non compare qui.",
-  "settings.note": "Queste impostazioni riguardano solo le lingue dei contenuti, non la lingua dell'interfaccia.",
+  "settings.note": "Le impostazioni delle lingue dei contenuti qui sotto non cambiano la lingua dell'interfaccia.",
+  "settings.appLanguage": "Lingua dell'app",
+  "settings.interfaceLanguage": "Lingua dell'interfaccia",
 
   "vocab.title": "Dizionario",
   "vocab.subtitle": "Cerca una parola e salva quelle che vuoi imparare.",
@@ -273,7 +277,9 @@ const zh: Record<TranslationKey, string> = {
   "settings.shortcuts": "语言快捷方式",
   "settings.defaultMultilingual": "多语言翻译的默认语言",
   "settings.sourceExcluded": "当前词典语言为源语言，因此不会出现在这里。",
-  "settings.note": "这些设置只影响内容语言，不会更改界面语言。",
+  "settings.note": "下方的内容语言设置不会更改界面语言。",
+  "settings.appLanguage": "应用语言",
+  "settings.interfaceLanguage": "界面语言",
 
   "vocab.title": "词典",
   "vocab.subtitle": "查询单词，保存你想记住的。",

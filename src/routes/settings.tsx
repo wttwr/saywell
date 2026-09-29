@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, X } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
-import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { APP_LANGUAGES, useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSettings, type Settings } from "@/lib/settings";
 
 export const Route = createFileRoute("/settings")({
@@ -124,7 +124,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function SettingsPage() {
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const { settings, update } = useSettings();
 
   const section = (titleKey: TranslationKey, children: React.ReactNode) => (
@@ -150,6 +150,27 @@ function SettingsPage() {
         </header>
 
         <div className="space-y-10">
+          {section(
+            "settings.appLanguage",
+            <Field label={t("settings.interfaceLanguage")}>
+              <div className="flex flex-wrap gap-2">
+                {APP_LANGUAGES.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => setLang(l.code)}
+                    aria-pressed={lang === l.code}
+                    className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                      lang === l.code
+                        ? "bg-foreground text-background"
+                        : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </Field>,
+          )}
           {section(
             "settings.translate",
             <>
