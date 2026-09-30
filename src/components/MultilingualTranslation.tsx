@@ -20,7 +20,7 @@ type ItemState = {
 };
 
 export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
-  const { t } = useI18n();
+  const { t, ln } = useI18n();
   const speech = useSpeech();
 
   const [languages, setLanguages] = useState<string[]>(DEFAULT_LANGUAGES);
@@ -108,7 +108,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             key={l}
             className="inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3.5 py-1.5 text-sm text-secondary-foreground"
           >
-            {l}
+            {ln(l)}
             <button
               onClick={() => persist(languages.filter((x) => x !== l))}
               aria-label={`${t("vocab.remove")} ${l}`}
@@ -137,7 +137,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
             </option>
             {LANGUAGES.filter((o) => o !== sourceLanguage).map((o) => (
               <option key={o} value={o} disabled={languages.includes(o)}>
-                {languages.includes(o) ? `✓ ${o}` : o}
+                {languages.includes(o) ? `✓ ${ln(o)}` : ln(o)}
               </option>
             ))}
           </select>
@@ -167,7 +167,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
               >
                 <div className="w-36 shrink-0 pt-0.5">
                   <p className="text-xs font-medium text-muted-foreground">
-                    {l}
+                    {ln(l)}
                     {isSource && ` · ${t("translate.sourceLabel")}`}
                   </p>
                 </div>

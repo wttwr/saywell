@@ -99,7 +99,7 @@ function SelectPill({
   return (
     <div className="relative inline-flex">
       <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-        {value}
+        {ln(value)}
         <ChevronDown className="size-3.5 opacity-60" />
       </span>
       <select
@@ -110,7 +110,7 @@ function SelectPill({
       >
         {INPUT_LANGUAGES.map((l) => (
           <option key={l} value={l}>
-            {l}
+            {ln(l)}
           </option>
         ))}
       </select>
@@ -119,7 +119,7 @@ function SelectPill({
 }
 
 function DictionaryPage() {
-  const { t, lang } = useI18n();
+  const { t, lang, ln } = useI18n();
   const speech = useSpeech();
 
   const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
@@ -271,7 +271,7 @@ function DictionaryPage() {
                     : "bg-secondary/60 text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {s}
+                {ln(s)}
               </button>
             ))}
             <div className="relative inline-flex">
@@ -293,7 +293,7 @@ function DictionaryPage() {
                 </option>
                 {LANGUAGES.map((o) => (
                   <option key={o} value={o} disabled={shortcuts.includes(o)}>
-                    {shortcuts.includes(o) ? `✓ ${o}` : o}
+                    {shortcuts.includes(o) ? `✓ ${ln(o)}` : ln(o)}
                   </option>
                 ))}
               </select>
@@ -333,7 +333,7 @@ function DictionaryPage() {
                   onClick={() => setQuery(s)}
                   className="rounded-full bg-secondary px-3.5 py-1.5 text-sm text-secondary-foreground transition-colors hover:text-foreground"
                 >
-                  {s}
+                  {ln(s)}
                 </button>
               ))}
             </div>
@@ -356,8 +356,8 @@ function DictionaryPage() {
                   {entry.languageMismatch && entry.detectedLanguage && (
                     <span className="block">
                       {t("vocab.languageMismatch")
-                        .replaceAll("{detected}", entry.detectedLanguage)
-                        .replaceAll("{selected}", language)}
+                        .replaceAll("{detected}", ln(entry.detectedLanguage))
+                        .replaceAll("{selected}", ln(language))}
                     </span>
                   )}
                 </span>

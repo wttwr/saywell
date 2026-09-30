@@ -45,7 +45,7 @@ function LanguageSelect({
   return (
     <div className="relative inline-flex">
       <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-        {value}
+        {ln(value)}
         <ChevronDown className="size-3.5 opacity-60" />
       </span>
       <select
@@ -56,7 +56,7 @@ function LanguageSelect({
       >
         {options.map((o) => (
           <option key={o} value={o}>
-            {o}
+            {ln(o)}
           </option>
         ))}
       </select>
@@ -66,7 +66,7 @@ function LanguageSelect({
 
 function StylePage() {
   const run = useServerFn(exploreStyles);
-  const { t, lang } = useI18n();
+  const { t, lang, ln } = useI18n();
   const speech = useSpeech();
 
   const [text, setText] = useState("");
@@ -208,7 +208,7 @@ function StylePage() {
                     : "bg-secondary/60 text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {s}
+                {ln(s)}
               </button>
             ))}
             <div className="relative inline-flex">
@@ -230,7 +230,7 @@ function StylePage() {
                 </option>
                 {LANGUAGES.map((o) => (
                   <option key={o} value={o} disabled={shortcuts.includes(o)}>
-                    {shortcuts.includes(o) ? `✓ ${o}` : o}
+                    {shortcuts.includes(o) ? `✓ ${ln(o)}` : ln(o)}
                   </option>
                 ))}
               </select>

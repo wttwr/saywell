@@ -40,7 +40,7 @@ function SelectPill({
   return (
     <div className="relative inline-flex">
       <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-        {value}
+        {ln(value)}
         <ChevronDown className="size-3.5 opacity-60" />
       </span>
       <select
@@ -51,7 +51,7 @@ function SelectPill({
       >
         {options.map((o) => (
           <option key={o} value={o}>
-            {o}
+            {ln(o)}
           </option>
         ))}
       </select>
@@ -68,7 +68,7 @@ function LanguageList({
   onChange: (next: string[]) => void;
   label: string;
 }) {
-  const { t } = useI18n();
+  const { t, ln } = useI18n();
   return (
     <div className="flex flex-wrap items-center gap-2">
       {values.map((l) => (
@@ -76,7 +76,7 @@ function LanguageList({
           key={l}
           className="inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3.5 py-1.5 text-sm text-secondary-foreground"
         >
-          {l}
+          {ln(l)}
           <button
             onClick={() => onChange(values.filter((x) => x !== l))}
             aria-label={`${t("vocab.remove")} ${l}`}
@@ -105,7 +105,7 @@ function LanguageList({
           </option>
           {LANGUAGES.map((o) => (
             <option key={o} value={o} disabled={values.includes(o)}>
-              {values.includes(o) ? `✓ ${o}` : o}
+              {values.includes(o) ? `✓ ${ln(o)}` : ln(o)}
             </option>
           ))}
         </select>
@@ -124,7 +124,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function SettingsPage() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang, setLang, ln } = useI18n();
   const { settings, update } = useSettings();
 
   const section = (titleKey: TranslationKey, children: React.ReactNode) => (

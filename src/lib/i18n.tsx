@@ -1,3 +1,4 @@
+import { languageName } from "@/lib/languages";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export const APP_LANGUAGES = [
@@ -392,6 +393,7 @@ type I18nValue = {
   lang: AppLanguage;
   setLang: (lang: AppLanguage) => void;
   t: (key: TranslationKey) => string;
+  ln: (language: string) => string;
 };
 
 const I18nContext = createContext<I18nValue | null>(null);
@@ -416,6 +418,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         }
       },
       t: (key) => DICTIONARIES[lang][key] ?? en[key] ?? key,
+      ln: (language) => languageName(language, lang),
     }),
     [lang],
   );
@@ -427,6 +430,7 @@ const FALLBACK_I18N: I18nValue = {
   lang: "en",
   setLang: () => {},
   t: (key) => en[key] ?? key,
+  ln: (language) => language,
 };
 
 export function useI18n() {
