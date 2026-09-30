@@ -333,7 +333,7 @@ function DictionaryPage() {
                   onClick={() => setQuery(s)}
                   className="rounded-full bg-secondary px-3.5 py-1.5 text-sm text-secondary-foreground transition-colors hover:text-foreground"
                 >
-                  {ln(s)}
+                  {s}
                 </button>
               ))}
             </div>
