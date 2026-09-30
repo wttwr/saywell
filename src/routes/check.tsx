@@ -44,7 +44,7 @@ function labelTone(label: string) {
 
 function CheckPage() {
   const runCheck = useServerFn(checkText);
-  const { t, lang } = useI18n();
+  const { t, lang, ln } = useI18n();
 
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("English");
@@ -109,7 +109,7 @@ function CheckPage() {
             <span className="text-sm text-muted-foreground">{t("check.language")}</span>
             <div className="relative inline-flex">
               <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-                {language}
+                {ln(language)}
                 <ChevronDown className="size-3.5 opacity-60" />
               </span>
               <select
@@ -120,7 +120,7 @@ function CheckPage() {
               >
                 {INPUT_LANGUAGES.map((l) => (
                   <option key={l} value={l}>
-                    {l}
+                    {ln(l)}
                   </option>
                 ))}
               </select>
