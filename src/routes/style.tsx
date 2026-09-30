@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
 
-import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
+import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
@@ -96,6 +96,8 @@ function StylePage() {
   }, []);
 
   const canExplore = text.trim().length > 0 && !loading;
+  const showLanguageNotice =
+    result && language !== AUTO_DETECT && result.detectedLanguage !== language;
 
   const onExplore = async () => {
     const trimmed = text.trim();
@@ -267,6 +269,12 @@ function StylePage() {
 
         {!loading && result && (
           <div className="mt-10">
+            {showLanguageNotice && (
+              <p className="mb-6 rounded-lg bg-secondary/60 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+                {t("style.languageMismatch")
+                  .replace("{detected}", ln(result.detectedLanguage))}
+              </p>
+            )}
             <section className="border-t border-border pt-6">
               <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("style.primary")}
