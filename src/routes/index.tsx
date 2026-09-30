@@ -41,7 +41,6 @@ export const Route = createFileRoute("/")({
 });
 
 function LanguageSelect({
-  const { ln } = useI18n();
   value,
   onChange,
   options,
@@ -52,6 +51,7 @@ function LanguageSelect({
   options: readonly string[];
   label: string;
 }) {
+  const { ln } = useI18n();
   return (
     <div className="relative inline-flex">
       <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors">
