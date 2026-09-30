@@ -27,6 +27,7 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SelectPill({
+  const { ln } = useI18n();
   value,
   onChange,
   label,

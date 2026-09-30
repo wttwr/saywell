@@ -32,6 +32,7 @@ export const Route = createFileRoute("/style")({
 });
 
 function LanguageSelect({
+  const { ln } = useI18n();
   value,
   onChange,
   options,

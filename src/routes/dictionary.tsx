@@ -88,6 +88,7 @@ function explanationLanguage(lang: AppLanguage): string {
 }
 
 function SelectPill({
+  const { ln } = useI18n();
   value,
   onChange,
   label,
