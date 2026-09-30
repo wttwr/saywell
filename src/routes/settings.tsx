@@ -161,7 +161,7 @@ function SettingsPage() {
                     aria-pressed={lang === l.code}
                     className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
                       lang === l.code
-                        ? "bg-foreground text-background"
+                        ? "bg-primary text-primary-foreground"
                         : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
                     }`}
                   >
