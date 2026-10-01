@@ -10,6 +10,7 @@ import {
   Volume2,
   VolumeX,
   X,
+  Info,
 } from "lucide-react";
 
 import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
@@ -84,6 +85,8 @@ function TranslatePage() {
   const [targets, setTargets] = useState<string[]>(["Chinese (Simplified)", "Italian"]);
   const [active, setActive] = useState(0);
   const [results, setResults] = useState<Record<string, string>>({});
+  const [detectedLanguage, setDetectedLanguage] = useState("");
+  const [languageMismatch, setLanguageMismatch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
@@ -130,27 +133,38 @@ function TranslatePage() {
     const trimmed = source.trim();
     if (!trimmed || targets.length === 0) {
       setResults({});
+      setDetectedLanguage("");
+      setLanguageMismatch(false);
       setError(null);
       return;
     }
 
+    let cancelled = false;
     const timeout = setTimeout(() => {
       const run = async () => {
         setLoading(true);
         setError(null);
         try {
           const data = await translate({ data: { text: trimmed, from, targets } });
+          if (cancelled) return;
           setResults(data.results);
+          setDetectedLanguage(data.detectedLanguage);
+          setLanguageMismatch(data.languageMismatch);
         } catch (e) {
+          if (cancelled) return;
           setError(e instanceof Error ? e.message : t("translate.error"));
         } finally {
+          if (cancelled) return;
           setLoading(false);
         }
       };
       run();
     }, 700);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [source, from, targets, translate]);
 
   const onCopy = async (lang: string, value: string) => {
@@ -298,7 +312,7 @@ function TranslatePage() {
             />
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
-                {listenButton("source", source, from)}
+                {listenButton("source", source, detectedLanguage || from)}
                 <span className="text-xs text-muted-foreground">
                   {source.length} {t("translate.characters")}
                 </span>
@@ -357,6 +371,17 @@ function TranslatePage() {
             </div>
           </section>
         </div>
+
+        {languageMismatch && detectedLanguage && (
+          <p className="mt-8 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0" />
+            <span>
+              {t("translate.languageMismatch")
+                .replaceAll("{detected}", ln(detectedLanguage))
+                .replaceAll("{selected}", ln(from))}
+            </span>
+          </p>
+        )}
 
       </div>
     </main>
