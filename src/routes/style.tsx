@@ -130,7 +130,7 @@ function StylePage() {
     return (
       <div className="mt-2 flex items-center gap-4">
         <button
-          onClick={() => speech.speak(id, value, language)}
+          onClick={() => speech.speak(id, value, result?.detectedLanguage ?? language)}
           disabled={!value}
           title={playing ? t("translate.stop") : t("translate.listen")}
           aria-label={playing ? t("translate.stop") : t("translate.listen")}

@@ -312,7 +312,7 @@ function TranslatePage() {
             />
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
-                {listenButton("source", source, from)}
+                {listenButton("source", source, detectedLanguage || from)}
                 <span className="text-xs text-muted-foreground">
                   {source.length} {t("translate.characters")}
                 </span>
