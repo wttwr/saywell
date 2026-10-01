@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Copy, Volume2, VolumeX } from "lucide-react";
+import { Check, ChevronDown, Copy, Info, Volume2, VolumeX } from "lucide-react";
 
 import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
@@ -270,9 +270,13 @@ function StylePage() {
         {!loading && result && (
           <div className="mt-10">
             {showLanguageNotice && (
-              <p className="mb-6 rounded-lg bg-secondary/60 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
-                {t("style.languageMismatch")
-                  .replace("{detected}", ln(result.detectedLanguage))}
+              <p className="mb-6 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+                <Info className="mt-0.5 size-4 shrink-0" />
+                <span>
+                  {t("style.languageMismatch")
+                    .replaceAll("{detected}", ln(result.detectedLanguage))
+                    .replaceAll("{selected}", ln(language))}
+                </span>
               </p>
             )}
             <section className="border-t border-border pt-6">

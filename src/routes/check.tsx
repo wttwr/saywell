@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check as CheckIcon, ChevronDown, Copy } from "lucide-react";
+import { Check as CheckIcon, ChevronDown, Copy, Info } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
@@ -194,6 +194,17 @@ function CheckPage() {
         </div>
 
         {error && <p className="mt-10 text-base text-destructive">{error}</p>}
+
+        {result?.languageMismatch && result.detectedLanguage && (
+          <p className="mt-8 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0" />
+            <span>
+              {t("check.languageMismatch")
+                .replaceAll("{detected}", ln(result.detectedLanguage))
+                .replaceAll("{selected}", ln(language))}
+            </span>
+          </p>
+        )}
 
         {loading && (
           <div className="mt-10 space-y-3">

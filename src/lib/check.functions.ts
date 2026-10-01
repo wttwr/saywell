@@ -1,4 +1,4 @@
-import { promptLanguage } from "@/lib/languages";
+import { AUTO_DETECT, LANGUAGES } from "@/lib/languages";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -16,6 +16,8 @@ export type CheckIssue = {
 };
 
 export type CheckResult = {
+  detectedLanguage: string;
+  languageMismatch: boolean;
   status: "Looks good" | "A few issues found" | "Changes recommended";
   summary: string;
   corrected: string | null;
@@ -25,12 +27,15 @@ export type CheckResult = {
 export const checkText = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }): Promise<CheckResult> => {
-    const lang = promptLanguage(data.language);
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("The checking service is not configured.");
 
     const system = [
-      `You evaluate whether text written in ${lang} is grammatically correct and natural in ${lang}.`,
+      `Detect the language actually used and return its closest canonical name from this list: ${LANGUAGES.join(", ")}.`,
+      data.language === AUTO_DETECT
+        ? "The user chose auto-detect."
+        : `The language picker is set to ${data.language}, but it is only a preference and may be wrong. Set languageConfident to true only when the detected language is clearly different.`,
+      "Evaluate whether the text is grammatically correct and natural in its detected language. Never translate it into the selected language.",
       "Evaluate only two things: grammar (word forms, agreement, tense, structure, articles/particles/prepositions) and naturalness (whether a fluent speaker would phrase it that way, awkward phrasing, unidiomatic word choice).",
       "Be conservative: make the minimum necessary changes. Preserve the user's wording, tone, formality, meaning and personal style.",
       "Never change something merely because another version is possible, shorter, more elegant, more concise or more formal. Stylistic preference is NOT a naturalness problem.",
@@ -44,8 +49,8 @@ export const checkText = createServerFn({ method: "POST" })
       "Naturalness: understandable or grammatically possible, but the wording is unusual or unidiomatic for fluent speakers in that context.",
       "Choose the single most appropriate type for each issue. Do NOT add both Grammar and Naturalness by default; use two labels only in the rare case where one issue genuinely belongs to both categories.",
       `Write the summary and every reason in ${data.explanationLanguage}.`,
-      `Keep original, suggestion and corrected in ${lang}; never translate the text being checked.`,
-      'Reply with ONLY a JSON object: {"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
+      "Keep original, suggestion and corrected in the detected language; never translate the text being checked.",
+      'Reply with ONLY a JSON object: {"detectedLanguage":"English","languageConfident":true,"status":"...","summary":"...","corrected":null|"...","issues":[{"original":"...","suggestion":"...","reason":"...","labels":["Grammar"]}]}. No markdown, no commentary.',
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -99,7 +104,22 @@ export const checkText = createServerFn({ method: "POST" })
       "Simplified Chinese": "这段文字语法正确，表达自然，无需修改。",
     };
 
+    const rawResult = parsed as CheckResult & { languageConfident?: boolean };
+    const detectedLanguage =
+      typeof rawResult.detectedLanguage === "string" &&
+      LANGUAGES.includes(rawResult.detectedLanguage as (typeof LANGUAGES)[number])
+        ? rawResult.detectedLanguage
+        : data.language === AUTO_DETECT
+          ? "English"
+          : data.language;
+    const languageMismatch =
+      data.language !== AUTO_DETECT &&
+      rawResult.languageConfident === true &&
+      detectedLanguage.toLowerCase() !== data.language.toLowerCase();
+
     return {
+      detectedLanguage,
+      languageMismatch,
       status,
       summary:
         parsed.summary ||
