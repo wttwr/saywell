@@ -32,6 +32,8 @@ const en = {
   "settings.note": "Content language settings below don't change the app interface language.",
   "settings.appLanguage": "App language",
   "settings.interfaceLanguage": "Interface language",
+  "settings.speech": "Speech",
+  "settings.speechSpeed": "Speech speed",
 
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations.",
@@ -161,6 +163,8 @@ const it: Record<TranslationKey, string> = {
   "settings.note": "Le impostazioni delle lingue dei contenuti qui sotto non cambiano la lingua dell'interfaccia.",
   "settings.appLanguage": "Lingua dell'app",
   "settings.interfaceLanguage": "Lingua dell'interfaccia",
+  "settings.speech": "Voce",
+  "settings.speechSpeed": "Velocità della voce",
 
   "vocab.title": "Dizionario",
   "vocab.subtitle": "Cerca una parola e salva quelle che vuoi imparare.",
@@ -287,6 +291,8 @@ const zh: Record<TranslationKey, string> = {
   "settings.note": "下方的内容语言设置不会更改界面语言。",
   "settings.appLanguage": "应用语言",
   "settings.interfaceLanguage": "界面语言",
+  "settings.speech": "语音",
+  "settings.speechSpeed": "朗读速度",
 
   "vocab.title": "词典",
   "vocab.subtitle": "查询单词，保存你想记住的。",

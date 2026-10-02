@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSettings } from "@/lib/settings";
 
 /** Map app language names to BCP-47 tags used by speech synthesis voices. */
 export const SPEECH_LOCALES: Record<string, string> = {
@@ -40,6 +41,8 @@ export const SPEECH_LOCALES: Record<string, string> = {
  * Only one clip plays at a time; clicking the same id again stops it.
  */
 export function useSpeech() {
+  const { settings } = useSettings();
+  const speed = settings.speechSpeed;
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [errorId, setErrorId] = useState<string | null>(null);
   const currentId = useRef<string | null>(null);
@@ -82,6 +85,7 @@ export function useSpeech() {
     const u = new SpeechSynthesisUtterance(text);
     if (locale) u.lang = locale;
     if (voice) u.voice = voice;
+    u.rate = speed;
     const done = (err: boolean) => {
       if (currentId.current !== id) return;
       currentId.current = null;
@@ -91,7 +95,7 @@ export function useSpeech() {
     u.onend = () => done(false);
     u.onerror = () => done(true);
     window.speechSynthesis.speak(u);
-  }, []);
+  }, [speed]);
 
   const speak = useCallback(
     async (id: string, text: string, language: string) => {
@@ -117,6 +121,8 @@ export function useSpeech() {
         const url = URL.createObjectURL(blob);
         urlRef.current = url;
         const audio = new Audio(url);
+        audio.playbackRate = speed;
+        audio.preservesPitch = true;
         audioRef.current = audio;
         const finish = () => {
           if (currentId.current !== id) return;
@@ -133,7 +139,7 @@ export function useSpeech() {
         browserSpeak(id, text, language);
       }
     },
-    [stop, browserSpeak],
+    [stop, browserSpeak, speed],
   );
 
   return { speak, stop, playingId, errorId };

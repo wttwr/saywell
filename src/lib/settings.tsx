@@ -12,6 +12,7 @@ import { AUTO_DETECT } from "@/lib/languages";
 
 /** Content-language preferences. These never change the interface language. */
 export type Settings = {
+  speechSpeed: number;
   translateSource: string;
   translateTargets: string[];
   checkLanguage: string;
@@ -24,6 +25,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
+  speechSpeed: 1,
   translateSource: AUTO_DETECT,
   translateTargets: ["Chinese (Simplified)", "Italian"],
   checkLanguage: AUTO_DETECT,
@@ -54,6 +56,12 @@ function parse(raw: string): Partial<Settings> {
   const parsed = JSON.parse(raw) as Record<string, unknown>;
   for (const key of Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[]) {
     const value = parsed[key];
+    if (key === "speechSpeed") {
+      if (typeof value === "number" && Number.isFinite(value)) {
+        out.speechSpeed = Math.min(2, Math.max(0.1, Math.round(value * 10) / 10));
+      }
+      continue;
+    }
     if (Array.isArray(DEFAULT_SETTINGS[key])) {
       const arr = asStringArray(value);
       if (arr) (out[key] as string[] | undefined) = arr;
