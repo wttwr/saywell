@@ -14,6 +14,7 @@ import { Route as CheckRouteImport } from './routes/check'
 import { Route as DictionaryRouteImport } from './routes/dictionary'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StyleRouteImport } from './routes/style'
+import { Route as ApiTtsRouteImport } from './routes/api/tts'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const StyleRoute = StyleRouteImport.update({
   path: '/style',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTtsRoute = ApiTtsRouteImport.update({
+  id: '/api/tts',
+  path: '/api/tts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/dictionary': typeof DictionaryRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
+  '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/dictionary': typeof DictionaryRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
+  '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,22 @@ export interface FileRoutesById {
   '/dictionary': typeof DictionaryRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
+  '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/check' | '/dictionary' | '/settings' | '/style'
+  fullPaths:
+    '/' | '/check' | '/dictionary' | '/settings' | '/style' | '/api/tts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/check' | '/dictionary' | '/settings' | '/style'
-  id: '__root__' | '/' | '/check' | '/dictionary' | '/settings' | '/style'
+  to: '/' | '/check' | '/dictionary' | '/settings' | '/style' | '/api/tts'
+  id:
+    | '__root__'
+    | '/'
+    | '/check'
+    | '/dictionary'
+    | '/settings'
+    | '/style'
+    | '/api/tts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +94,7 @@ export interface RootRouteChildren {
   DictionaryRoute: typeof DictionaryRoute
   SettingsRoute: typeof SettingsRoute
   StyleRoute: typeof StyleRoute
+  ApiTtsRoute: typeof ApiTtsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StyleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/tts': {
+      id: '/api/tts'
+      path: '/api/tts'
+      fullPath: '/api/tts'
+      preLoaderRoute: typeof ApiTtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   DictionaryRoute: DictionaryRoute,
   SettingsRoute: SettingsRoute,
   StyleRoute: StyleRoute,
+  ApiTtsRoute: ApiTtsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
