@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Treat input-language selectors as preferences: AI tools detect the actual language, preserve it, and show a localized mismatch notice when confidently different.
+- Listen uses ElevenLabs via a server route (key stays server-side); browser speech is only a fallback when the service fails.
