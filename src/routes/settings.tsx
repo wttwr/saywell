@@ -4,6 +4,7 @@ import { ChevronDown, X } from "lucide-react";
 import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { APP_LANGUAGES, useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSettings, type Settings } from "@/lib/settings";
+import { Slider } from "@/components/ui/slider";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -151,6 +152,27 @@ function SettingsPage() {
         </header>
 
         <div className="space-y-10">
+          {section(
+            "settings.speech",
+            <Field label={t("settings.speechSpeed")}>
+              <div className="flex max-w-md items-center gap-4">
+                <Slider
+                  aria-label={t("settings.speechSpeed")}
+                  min={0.1}
+                  max={2}
+                  step={0.1}
+                  value={[settings.speechSpeed]}
+                  onValueChange={(values) => {
+                    const value = values[0];
+                    if (typeof value === "number") update("speechSpeed", value);
+                  }}
+                />
+                <output className="w-12 shrink-0 text-right text-sm font-medium tabular-nums text-foreground">
+                  {settings.speechSpeed.toFixed(1)}×
+                </output>
+              </div>
+            </Field>,
+          )}
           {section(
             "settings.appLanguage",
             <Field label={t("settings.interfaceLanguage")}>
