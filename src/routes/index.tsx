@@ -373,8 +373,8 @@ function TranslatePage() {
         </div>
 
         {languageMismatch && detectedLanguage && (
-          <p className="mt-8 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
-            <Info className="mt-0.5 size-4 shrink-0" />
+          <p className="mt-8 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0 text-primary" />
             <span>
               {t("translate.languageMismatch")
                 .replaceAll("{detected}", ln(detectedLanguage))

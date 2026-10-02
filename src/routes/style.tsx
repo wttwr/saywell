@@ -270,8 +270,8 @@ function StylePage() {
         {!loading && result && (
           <div className="mt-10">
             {showLanguageNotice && (
-              <p className="mb-6 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
-                <Info className="mt-0.5 size-4 shrink-0" />
+              <p className="mb-6 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+                <Info className="mt-0.5 size-4 shrink-0 text-primary" />
                 <span>
                   {t("style.languageMismatch")
                     .replaceAll("{detected}", ln(result.detectedLanguage))

@@ -196,8 +196,8 @@ function CheckPage() {
         {error && <p className="mt-10 text-base text-destructive">{error}</p>}
 
         {result?.languageMismatch && result.detectedLanguage && (
-          <p className="mt-8 flex items-start gap-2 rounded-xl bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
-            <Info className="mt-0.5 size-4 shrink-0" />
+          <p className="mt-8 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0 text-primary" />
             <span>
               {t("check.languageMismatch")
                 .replaceAll("{detected}", ln(result.detectedLanguage))
