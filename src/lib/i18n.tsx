@@ -34,6 +34,7 @@ const en = {
   "settings.interfaceLanguage": "Interface language",
   "settings.speech": "Speech",
   "settings.speechSpeed": "Speech speed",
+  "settings.speechExample": "Your happiness is number one",
 
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations.",
@@ -165,6 +166,7 @@ const it: Record<TranslationKey, string> = {
   "settings.interfaceLanguage": "Lingua dell'interfaccia",
   "settings.speech": "Voce",
   "settings.speechSpeed": "Velocità della voce",
+  "settings.speechExample": "La tua felicità è numero uno",
 
   "vocab.title": "Dizionario",
   "vocab.subtitle": "Cerca una parola e salva quelle che vuoi imparare.",
@@ -293,6 +295,7 @@ const zh: Record<TranslationKey, string> = {
   "settings.interfaceLanguage": "界面语言",
   "settings.speech": "语音",
   "settings.speechSpeed": "朗读速度",
+  "settings.speechExample": "你的幸福是第一位的",
 
   "vocab.title": "词典",
   "vocab.subtitle": "查询单词，保存你想记住的。",
