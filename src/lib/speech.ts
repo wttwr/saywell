@@ -43,6 +43,7 @@ export const SPEECH_LOCALES: Record<string, string> = {
 export function useSpeech() {
   const { settings } = useSettings();
   const speed = settings.speechSpeed;
+  const voiceId = settings.voiceId;
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [errorId, setErrorId] = useState<string | null>(null);
   const currentId = useRef<string | null>(null);
@@ -112,7 +113,7 @@ export function useSpeech() {
         const res = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text.slice(0, 2500) }),
+          body: JSON.stringify({ text: text.slice(0, 2500), voiceId }),
           signal: ctrl.signal,
         });
         if (!res.ok) throw new Error(`TTS ${res.status}`);
@@ -139,7 +140,7 @@ export function useSpeech() {
         browserSpeak(id, text, language);
       }
     },
-    [stop, browserSpeak, speed],
+    [stop, browserSpeak, speed, voiceId],
   );
 
   return { speak, stop, playingId, errorId };

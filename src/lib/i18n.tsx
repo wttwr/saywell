@@ -34,6 +34,7 @@ const en = {
   "settings.interfaceLanguage": "Interface language",
   "settings.speech": "Speech",
   "settings.speechSpeed": "Speech speed",
+  "settings.voice": "Voice",
   "settings.speechExample": "Your happiness is no 1 in the world",
 
   "vocab.title": "Dictionary",
@@ -166,6 +167,7 @@ const it: Record<TranslationKey, string> = {
   "settings.interfaceLanguage": "Lingua dell'interfaccia",
   "settings.speech": "Voce",
   "settings.speechSpeed": "Velocità della voce",
+  "settings.voice": "Voce narrante",
   "settings.speechExample": "La tua felicità è la numero 1 al mondo",
 
   "vocab.title": "Dizionario",
@@ -295,6 +297,7 @@ const zh: Record<TranslationKey, string> = {
   "settings.interfaceLanguage": "界面语言",
   "settings.speech": "语音",
   "settings.speechSpeed": "朗读速度",
+  "settings.voice": "声音",
   "settings.speechExample": "你的幸福是世界第一",
 
   "vocab.title": "词典",
