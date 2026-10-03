@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { DEFAULT_VOICE, VOICE_IDS } from "@/lib/voices";
 
 const Body = z.object({
   text: z.string().trim().min(1).max(2500),
+  voiceId: z.string().optional(),
 });
 
-// Multilingual natural voice (Sarah). eleven_multilingual_v2 detects the language from the text.
-const VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
 
 export const Route = createFileRoute("/api/tts")({
   server: {
@@ -20,8 +20,9 @@ export const Route = createFileRoute("/api/tts")({
         } catch {
           return new Response("Invalid request", { status: 400 });
         }
+        const voice = parsed.voiceId && VOICE_IDS.includes(parsed.voiceId) ? parsed.voiceId : DEFAULT_VOICE;
         const res = await fetch(
-          `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream?output_format=mp3_44100_128`,
+          `https://api.elevenlabs.io/v1/text-to-speech/${voice}/stream?output_format=mp3_44100_128`,
           {
             method: "POST",
             headers: { "xi-api-key": key, "Content-Type": "application/json" },

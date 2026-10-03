@@ -9,10 +9,12 @@ import {
   type ReactNode,
 } from "react";
 import { AUTO_DETECT } from "@/lib/languages";
+import { DEFAULT_VOICE, VOICE_IDS } from "@/lib/voices";
 
 /** Content-language preferences. These never change the interface language. */
 export type Settings = {
   speechSpeed: number;
+  voiceId: string;
   translateSource: string;
   translateTargets: string[];
   checkLanguage: string;
@@ -26,6 +28,7 @@ export type Settings = {
 
 export const DEFAULT_SETTINGS: Settings = {
   speechSpeed: 0.8,
+  voiceId: DEFAULT_VOICE,
   translateSource: AUTO_DETECT,
   translateTargets: ["Chinese (Simplified)", "Italian"],
   checkLanguage: AUTO_DETECT,
@@ -60,6 +63,10 @@ function parse(raw: string): Partial<Settings> {
       if (typeof value === "number" && Number.isFinite(value)) {
         out.speechSpeed = Math.min(2, Math.max(0.1, Math.round(value * 10) / 10));
       }
+      continue;
+    }
+    if (key === "voiceId") {
+      if (typeof value === "string" && VOICE_IDS.includes(value)) out.voiceId = value;
       continue;
     }
     if (Array.isArray(DEFAULT_SETTINGS[key])) {

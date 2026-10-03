@@ -7,6 +7,7 @@ import { useSettings, type Settings } from "@/lib/settings";
 import { useSpeech } from "@/lib/speech";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { VOICES } from "@/lib/voices";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -161,6 +162,27 @@ function SettingsPage() {
         <div className="space-y-10">
           {section(
             "settings.speech",
+            <>
+            <Field label={t("settings.voice")}>
+              <div className="grid max-w-md grid-cols-2 gap-2 sm:grid-cols-4">
+                {VOICES.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => update("voiceId", v.id)}
+                    aria-pressed={settings.voiceId === v.id}
+                    className={`rounded-xl px-3 py-2 text-left transition-colors ${
+                      settings.voiceId === v.id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    <span className="block text-sm font-medium">{v.name}</span>
+                    <span className="block text-xs opacity-75">{v.tone[lang]}</span>
+                  </button>
+                ))}
+              </div>
+            </Field>
             <Field label={t("settings.speechSpeed")}>
               <div className="flex max-w-md items-center gap-4">
                 <Slider
@@ -194,7 +216,8 @@ function SettingsPage() {
                   {speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
                 </Button>
               </div>
-            </Field>,
+            </Field>
+            </>,
           )}
           {section(
             "settings.appLanguage",
