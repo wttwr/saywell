@@ -25,7 +25,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  speechSpeed: 1,
+  speechSpeed: 0.8,
   translateSource: AUTO_DETECT,
   translateTargets: ["Chinese (Simplified)", "Italian"],
   checkLanguage: AUTO_DETECT,
