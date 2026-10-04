@@ -99,7 +99,7 @@ export function useSpeech() {
   }, [speed]);
 
   const speak = useCallback(
-    async (id: string, text: string, language: string) => {
+    async (id: string, text: string, language: string, voiceOverride?: string) => {
       const wasPlaying = currentId.current === id;
       stop();
       if (wasPlaying || !text.trim()) return;
@@ -113,7 +113,7 @@ export function useSpeech() {
         const res = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text.slice(0, 2500), voiceId }),
+          body: JSON.stringify({ text: text.slice(0, 2500), voiceId: voiceOverride ?? voiceId }),
           signal: ctrl.signal,
         });
         if (!res.ok) throw new Error(`TTS ${res.status}`);

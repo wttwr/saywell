@@ -169,7 +169,13 @@ function SettingsPage() {
                   <button
                     key={v.id}
                     type="button"
-                    onClick={() => update("voiceId", v.id)}
+                    onClick={() => {
+                      const alreadySelected = settings.voiceId === v.id;
+                      update("voiceId", v.id);
+                      if (!alreadySelected) {
+                        speech.speak(`settings:voice-${v.id}`, `Hello, I'm ${v.name}.`, "English", v.id);
+                      }
+                    }}
                     aria-pressed={settings.voiceId === v.id}
                     className={`rounded-xl px-3 py-2 text-left transition-colors ${
                       settings.voiceId === v.id
