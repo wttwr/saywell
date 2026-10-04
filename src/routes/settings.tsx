@@ -21,7 +21,8 @@ export const Route = createFileRoute("/settings")({
       { property: "og:title", content: "Settings — Default languages | SayWell 会说" },
       {
         property: "og:description",
-        content: "Set the languages every section opens with. Changes are saved as you make them.",
+        content:
+          "Set how SayWell sounds — voice and speech speed — and the languages every section opens with. Changes are saved as you make them.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
