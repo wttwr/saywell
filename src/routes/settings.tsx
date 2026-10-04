@@ -16,7 +16,7 @@ export const Route = createFileRoute("/settings")({
       {
         name: "description",
         content:
-          "Choose the languages each section starts with: translate, check, style and dictionary defaults, saved automatically.",
+          "Set how SayWell sounds — voice and speech speed — and the languages each section starts with: translate, check, style and dictionary defaults, saved automatically.",
       },
       { property: "og:title", content: "Settings — Default languages | SayWell 会说" },
       {
