@@ -18,7 +18,7 @@ const en = {
   "nav.settings": "Settings",
 
   "settings.title": "Settings",
-  "settings.subtitle": "Set how SayWell sounds — voice and speech speed — and the languages each section starts with. Changes are saved as you make them.",
+  "settings.subtitle": "Changes are saved as you make them.",
   "settings.translate": "Translate",
   "settings.check": "Check",
   "settings.style": "Style",
