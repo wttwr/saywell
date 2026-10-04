@@ -16,12 +16,13 @@ export const Route = createFileRoute("/settings")({
       {
         name: "description",
         content:
-          "Choose the languages each section starts with: translate, check, style and dictionary defaults, saved automatically.",
+          "Set how SayWell sounds — voice and speech speed — and the languages each section starts with: translate, check, style and dictionary defaults, saved automatically.",
       },
       { property: "og:title", content: "Settings — Default languages | SayWell 会说" },
       {
         property: "og:description",
-        content: "Set the languages every section opens with. Changes are saved as you make them.",
+        content:
+          "Set how SayWell sounds — voice and speech speed — and the languages every section opens with. Changes are saved as you make them.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -169,7 +170,13 @@ function SettingsPage() {
                   <button
                     key={v.id}
                     type="button"
-                    onClick={() => update("voiceId", v.id)}
+                    onClick={() => {
+                      const alreadySelected = settings.voiceId === v.id;
+                      update("voiceId", v.id);
+                      if (!alreadySelected) {
+                        speech.speak(`settings:voice-${v.id}`, `Hello, I'm ${v.name}.`, "English", v.id);
+                      }
+                    }}
                     aria-pressed={settings.voiceId === v.id}
                     className={`rounded-xl px-3 py-2 text-left transition-colors ${
                       settings.voiceId === v.id

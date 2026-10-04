@@ -18,7 +18,7 @@ const en = {
   "nav.settings": "Settings",
 
   "settings.title": "Settings",
-  "settings.subtitle": "Choose the languages each section starts with. Changes are saved as you make them.",
+  "settings.subtitle": "Set how SayWell sounds — voice and speech speed — and the languages each section starts with. Changes are saved as you make them.",
   "settings.translate": "Translate",
   "settings.check": "Check",
   "settings.style": "Style",
@@ -35,7 +35,7 @@ const en = {
   "settings.speech": "Speech",
   "settings.speechSpeed": "Speech speed",
   "settings.voice": "Voice",
-  "settings.speechExample": "Your happiness is no 1 in the world",
+  "settings.speechExample": "Your happiness is number 1 in the world",
 
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations.",
@@ -151,7 +151,7 @@ const it: Record<TranslationKey, string> = {
   "nav.settings": "Impostazioni",
 
   "settings.title": "Impostazioni",
-  "settings.subtitle": "Scegli le lingue con cui si apre ogni sezione. Le modifiche vengono salvate subito.",
+  "settings.subtitle": "Scegli come suona SayWell — voce e velocità della voce — e le lingue con cui si apre ogni sezione. Le modifiche vengono salvate subito.",
   "settings.translate": "Traduci",
   "settings.check": "Controlla",
   "settings.style": "Stile",
@@ -281,7 +281,7 @@ const zh: Record<TranslationKey, string> = {
   "nav.settings": "设置",
 
   "settings.title": "设置",
-  "settings.subtitle": "选择每个板块默认使用的语言，修改会立即保存。",
+  "settings.subtitle": "设置 SayWell 的声音（音色与语速），以及每个板块默认使用的语言，修改会立即保存。",
   "settings.translate": "翻译",
   "settings.check": "检查",
   "settings.style": "表达",
