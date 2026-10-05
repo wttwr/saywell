@@ -172,34 +172,36 @@ function CheckPage() {
           </div>
         </div>
 
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={t("check.placeholder")}
-          className="mt-6 min-h-56 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
-        />
+        <div className="relative mt-6">
+          <textarea
+            ref={textareaRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t("check.placeholder")}
+            className="min-h-56 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
+          />
+          {text && (
+            <button
+              type="button"
+              onClick={() => {
+                setText("");
+                setResult(null);
+                textareaRef.current?.focus();
+              }}
+              aria-label="Clear text"
+              title="Clear text"
+              className="absolute right-0 top-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <X className="size-4" />
+            </button>
+          )}
+        </div>
 
         <div className="mt-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground">
               {text.length} {t("check.characters")}
             </span>
-            {text && (
-              <button
-                type="button"
-                onClick={() => {
-                  setText("");
-                  setResult(null);
-                  textareaRef.current?.focus();
-                }}
-                aria-label="Clear text"
-                title="Clear text"
-                className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-              >
-                <X className="size-4" />
-              </button>
-            )}
           </div>
           <button
             onClick={onCheck}

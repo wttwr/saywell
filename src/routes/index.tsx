@@ -304,12 +304,25 @@ function TranslatePage() {
                 options={SOURCE_LANGUAGES}
               />
             </div>
-            <textarea
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              placeholder={t("translate.placeholder")}
-              className="mt-6 min-h-40 w-full flex-1 resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
-            />
+            <div className="relative mt-6 flex-1">
+              <textarea
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                placeholder={t("translate.placeholder")}
+                className="min-h-40 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
+              />
+              {source && (
+                <button
+                  type="button"
+                  onClick={() => setSource("")}
+                  aria-label="Clear text"
+                  title="Clear text"
+                  className="absolute right-0 top-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
                 {listenButton("source", source, detectedLanguage || from)}
@@ -322,17 +335,6 @@ function TranslatePage() {
                   <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
                 )}
                 {copyButton("source", source)}
-                {source && (
-                  <button
-                    type="button"
-                    onClick={() => setSource("")}
-                    aria-label="Clear text"
-                    title="Clear text"
-                    className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  >
-                    <X className="size-4" />
-                  </button>
-                )}
               </div>
             </div>
           </section>
