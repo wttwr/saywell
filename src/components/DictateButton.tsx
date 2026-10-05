@@ -20,7 +20,9 @@ export function DictateButton({ language, onText, className = "", label = "Voice
   useEffect(() => {
     const w = window as any;
     setSupported(!!(w.SpeechRecognition || w.webkitSpeechRecognition));
-    return () => recRef.current?.abort?.();
+    return () => {
+      // Keep recognizing after the ✕ replaces this button; it ends on its own after a pause.
+    };
   }, []);
 
   if (!supported) return null;
@@ -36,7 +38,7 @@ export function DictateButton({ language, onText, className = "", label = "Voice
     const locale = SPEECH_LOCALES[language];
     if (locale) rec.lang = locale;
     rec.interimResults = true;
-    rec.continuous = true;
+    rec.continuous = false;
     rec.onresult = (e: any) => {
       let text = "";
       for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
