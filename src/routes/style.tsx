@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Copy, Info, Volume2, VolumeX } from "lucide-react";
+import { Check, ChevronDown, Copy, Info, Volume2, VolumeX, X } from "lucide-react";
 
 import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
@@ -241,13 +241,30 @@ function StylePage() {
           </div>
         </div>
 
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={t("style.placeholder")}
-          className="mt-8 min-h-32 w-full resize-none bg-transparent text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
-        />
+        <div className="relative">
+          <textarea
+            ref={textareaRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t("style.placeholder")}
+            className="mt-8 min-h-32 w-full resize-none bg-transparent pr-10 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
+          />
+          {text && (
+            <button
+              type="button"
+              onClick={() => {
+                setText("");
+                setResult(null);
+                textareaRef.current?.focus();
+              }}
+              aria-label="Clear text"
+              title="Clear text"
+              className="absolute right-0 top-8 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <X className="size-4" />
+            </button>
+          )}
+        </div>
 
         <button
           onClick={onExplore}

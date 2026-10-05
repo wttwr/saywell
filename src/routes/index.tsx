@@ -322,6 +322,17 @@ function TranslatePage() {
                   <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
                 )}
                 {copyButton("source", source)}
+                {source && (
+                  <button
+                    type="button"
+                    onClick={() => setSource("")}
+                    aria-label="Clear text"
+                    title="Clear text"
+                    className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    <X className="size-4" />
+                  </button>
+                )}
               </div>
             </div>
           </section>
