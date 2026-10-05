@@ -1,17 +1,7 @@
+import { DictateButton } from "@/components/DictateButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  Check,
-  ChevronDown,
-  Copy,
-  Info,
-  Loader2,
-  Search,
-  Volume2,
-  VolumeX,
-  X,
-} from "lucide-react";
-
+import { Check, ChevronDown, Copy, Info, Loader2, Search, Volume2, VolumeX, X } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
@@ -56,11 +46,36 @@ function looksLikeSentence(text: string): boolean {
   if (words.length > 6) return true;
   if (/\.\s/.test(trimmed) || (/\./.test(trimmed) && words.length > 1)) return true;
   const clauseMarkers = [
-    " i ", " you ", " he ", " she ", " it ", " we ", " they ",
-    " is ", " are ", " was ", " were ", " am ",
-    " has ", " have ", " had ", " do ", " does ", " did ",
-    " will ", " would ", " could ", " should ", " may ", " might ", " can ",
-    " cannot ", " can't ", " don't ", " doesn't ", " didn't ",
+    " i ",
+    " you ",
+    " he ",
+    " she ",
+    " it ",
+    " we ",
+    " they ",
+    " is ",
+    " are ",
+    " was ",
+    " were ",
+    " am ",
+    " has ",
+    " have ",
+    " had ",
+    " do ",
+    " does ",
+    " did ",
+    " will ",
+    " would ",
+    " could ",
+    " should ",
+    " may ",
+    " might ",
+    " can ",
+    " cannot ",
+    " can't ",
+    " don't ",
+    " doesn't ",
+    " didn't ",
   ];
   const lower = ` ${trimmed.toLowerCase()} `;
   return clauseMarkers.some((m) => lower.includes(m));
@@ -137,7 +152,6 @@ function DictionaryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
   const { settings } = useSettings();
   useDefaultOnce(() => {
     setLanguage(settings.dictionaryLanguage);
@@ -197,19 +211,13 @@ function DictionaryPage() {
     };
   }, [query, language, lang]);
 
-
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const actionButton = (
-    id: string,
-    text: string,
-    itemLanguage: string,
-    compact = false,
-  ) => {
+  const actionButton = (id: string, text: string, itemLanguage: string, compact = false) => {
     const playing = speech.playingId === id;
     const failed = speech.errorId === id;
     return (
@@ -303,7 +311,6 @@ function DictionaryPage() {
           </div>
         </div>
 
-
         <div className="mt-8 flex items-center gap-3 border-b border-border pb-3">
           <Search className="size-4 shrink-0 text-muted-foreground" />
           <input
@@ -313,10 +320,8 @@ function DictionaryPage() {
             aria-label={t("vocab.searchPlaceholder")}
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
           />
-          {loading && (
-            <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
-          )}
-          {query && (
+          {loading && <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />}
+          {query ? (
             <button
               type="button"
               onClick={() => setQuery("")}
@@ -326,6 +331,8 @@ function DictionaryPage() {
             >
               <X className="size-4" />
             </button>
+          ) : (
+            <DictateButton language={language} onText={setQuery} className="shrink-0" />
           )}
         </div>
 
@@ -384,9 +391,7 @@ function DictionaryPage() {
                 <div className="min-w-0">
                   <p className="text-2xl text-foreground">{entry.text}</p>
                   {entry.transliteration && (
-                    <p className="mt-0.5 text-sm text-muted-foreground">
-                      {entry.transliteration}
-                    </p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{entry.transliteration}</p>
                   )}
                   <span className="mt-3 inline-block rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
                     {t(TYPE_KEYS[entry.type])}
@@ -395,7 +400,6 @@ function DictionaryPage() {
                 <div className="flex shrink-0 items-start gap-4">
                   {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
                 </div>
-
               </div>
 
               {entry.expandedForm && (
@@ -450,14 +454,11 @@ function DictionaryPage() {
                 </div>
               )}
 
-              {entry.note && (
-                <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
-              )}
+              {entry.note && <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>}
             </div>
             <MultilingualTranslation entry={entry} />
           </section>
         )}
-
       </div>
     </main>
   );

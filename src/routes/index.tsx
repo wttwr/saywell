@@ -1,3 +1,4 @@
+import { DictateButton } from "@/components/DictateButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -279,7 +280,6 @@ function TranslatePage() {
     );
   };
 
-
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
       <div className="mx-auto max-w-6xl">
@@ -311,7 +311,7 @@ function TranslatePage() {
                 placeholder={t("translate.placeholder")}
                 className="min-h-40 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
               />
-              {source && (
+              {source ? (
                 <button
                   type="button"
                   onClick={() => setSource("")}
@@ -321,6 +321,12 @@ function TranslatePage() {
                 >
                   <X className="size-4" />
                 </button>
+              ) : (
+                <DictateButton
+                  language={from}
+                  onText={setSource}
+                  className="absolute right-0 top-1"
+                />
               )}
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
@@ -332,7 +338,9 @@ function TranslatePage() {
               </div>
               <div className="flex items-center gap-4">
                 {loading && (
-                  <span className="text-xs text-muted-foreground">{t("translate.translating")}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {t("translate.translating")}
+                  </span>
                 )}
                 {copyButton("source", source)}
               </div>
@@ -395,7 +403,6 @@ function TranslatePage() {
             </span>
           </p>
         )}
-
       </div>
     </main>
   );
