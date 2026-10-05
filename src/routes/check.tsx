@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check as CheckIcon, ChevronDown, Copy, Info } from "lucide-react";
+import { Check as CheckIcon, ChevronDown, Copy, Info, X } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
@@ -181,9 +181,26 @@ function CheckPage() {
         />
 
         <div className="mt-6 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            {text.length} {t("check.characters")}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">
+              {text.length} {t("check.characters")}
+            </span>
+            {text && (
+              <button
+                type="button"
+                onClick={() => {
+                  setText("");
+                  setResult(null);
+                  textareaRef.current?.focus();
+                }}
+                aria-label="Clear text"
+                title="Clear text"
+                className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <X className="size-4" />
+              </button>
+            )}
+          </div>
           <button
             onClick={onCheck}
             disabled={loading || !canCheck}

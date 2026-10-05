@@ -9,6 +9,7 @@ import {
   Search,
   Volume2,
   VolumeX,
+  X,
 } from "lucide-react";
 
 
@@ -314,6 +315,17 @@ function DictionaryPage() {
           />
           {loading && (
             <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
+          )}
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              title="Clear search"
+              className="shrink-0 rounded-full p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <X className="size-4" />
+            </button>
           )}
         </div>
 
