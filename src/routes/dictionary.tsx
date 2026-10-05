@@ -322,7 +322,7 @@ function DictionaryPage() {
               onClick={() => setQuery("")}
               aria-label="Clear search"
               title="Clear search"
-              className="shrink-0 rounded-full p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="shrink-0 rounded-full bg-secondary p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <X className="size-4" />
             </button>
