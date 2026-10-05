@@ -317,7 +317,7 @@ function TranslatePage() {
                   onClick={() => setSource("")}
                   aria-label="Clear text"
                   title="Clear text"
-                  className="absolute right-0 top-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  className="absolute right-0 top-1 rounded-full bg-secondary p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
