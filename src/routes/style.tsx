@@ -251,7 +251,11 @@ function StylePage() {
             placeholder={t("style.placeholder")}
             className="mt-8 min-h-32 w-full resize-none bg-transparent pr-10 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
           />
-          {text ? (
+          <DictateButton
+              language={language}
+              onText={setText}
+              className="absolute right-0 top-8"
+            hasText={!!text}>
             <button
               type="button"
               onClick={() => {
@@ -265,13 +269,7 @@ function StylePage() {
             >
               <X className="size-4" />
             </button>
-          ) : (
-            <DictateButton
-              language={language}
-              onText={setText}
-              className="absolute right-0 top-8"
-            />
-          )}
+          </DictateButton>
         </div>
 
         <button

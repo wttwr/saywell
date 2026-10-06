@@ -321,7 +321,7 @@ function DictionaryPage() {
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
           />
           {loading && <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />}
-          {query ? (
+          <DictateButton language={language} onText={setQuery} className="shrink-0" hasText={!!query}>
             <button
               type="button"
               onClick={() => setQuery("")}
@@ -331,9 +331,7 @@ function DictionaryPage() {
             >
               <X className="size-4" />
             </button>
-          ) : (
-            <DictateButton language={language} onText={setQuery} className="shrink-0" />
-          )}
+          </DictateButton>
         </div>
 
         {error && <p className="mt-4 text-sm text-destructive">{error}</p>}

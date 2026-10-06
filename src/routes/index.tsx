@@ -311,7 +311,11 @@ function TranslatePage() {
                 placeholder={t("translate.placeholder")}
                 className="min-h-40 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
               />
-              {source ? (
+              <DictateButton
+                  language={from}
+                  onText={setSource}
+                  className="absolute right-0 top-1"
+                hasText={!!source}>
                 <button
                   type="button"
                   onClick={() => setSource("")}
@@ -321,13 +325,7 @@ function TranslatePage() {
                 >
                   <X className="size-4" />
                 </button>
-              ) : (
-                <DictateButton
-                  language={from}
-                  onText={setSource}
-                  className="absolute right-0 top-1"
-                />
-              )}
+              </DictateButton>
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
