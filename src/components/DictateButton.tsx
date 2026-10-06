@@ -27,7 +27,8 @@ export function DictateButton({ language, onText, className = "", label = "Voice
 
   if (!supported) return null;
 
-  const toggle = () => {
+  const toggle = (ev: React.MouseEvent<HTMLButtonElement>) => {
+    const container = ev.currentTarget.parentElement;
     if (listening) {
       recRef.current?.stop();
       return;
@@ -39,12 +40,27 @@ export function DictateButton({ language, onText, className = "", label = "Voice
     if (locale) rec.lang = locale;
     rec.interimResults = true;
     rec.continuous = false;
+    let finalText = "";
     rec.onresult = (e: any) => {
       let text = "";
       for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      finalText = text.trim();
       onTextRef.current(text);
     };
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      if (finalText) onTextRef.current(finalText);
+      // Put the cursor at the end of the transcribed text so it's ready to edit or submit.
+      requestAnimationFrame(() => {
+        const field = container?.querySelector<HTMLTextAreaElement | HTMLInputElement>(
+          "textarea, input",
+        );
+        if (!field) return;
+        field.focus();
+        const end = field.value.length;
+        field.setSelectionRange(end, end);
+      });
+    };
     rec.onerror = () => setListening(false);
     recRef.current = rec;
     rec.start();
