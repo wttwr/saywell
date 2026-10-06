@@ -147,10 +147,7 @@ function SettingsPage() {
     </section>
   );
 
-  const set =
-    <K extends keyof Settings>(key: K) =>
-    (value: Settings[K]) =>
-      update(key, value);
+  const set = <K extends keyof Settings>(key: K) => (value: Settings[K]) => update(key, value);
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -166,77 +163,66 @@ function SettingsPage() {
           {section(
             "settings.speech",
             <>
-              <Field label={t("settings.voice")}>
-                <div className="grid max-w-md grid-cols-2 gap-2 sm:grid-cols-4">
-                  {VOICES.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => {
-                        const alreadySelected = settings.voiceId === v.id;
-                        update("voiceId", v.id);
-                        if (!alreadySelected) {
-                          speech.speak(
-                            `settings:voice-${v.id}`,
-                            `Hello, I'm ${v.name}.`,
-                            "English",
-                            v.id,
-                          );
-                        }
-                      }}
-                      aria-pressed={settings.voiceId === v.id}
-                      className={`rounded-xl px-3 py-2 text-left transition-colors ${
-                        settings.voiceId === v.id
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
-                      }`}
-                    >
-                      <span className="block text-sm font-medium">{v.name}</span>
-                      <span className="block text-xs opacity-75">{v.tone[lang]}</span>
-                    </button>
-                  ))}
-                </div>
-              </Field>
-              <Field label={t("settings.speechSpeed")}>
-                <div className="flex max-w-md items-center gap-4">
-                  <Slider
-                    aria-label={t("settings.speechSpeed")}
-                    min={0.1}
-                    max={2}
-                    step={0.1}
-                    value={[settings.speechSpeed]}
-                    onValueChange={(values) => {
-                      const value = values[0];
-                      if (typeof value === "number") update("speechSpeed", value);
-                    }}
-                  />
-                  <output className="w-12 shrink-0 text-right text-sm font-medium tabular-nums text-foreground">
-                    {settings.speechSpeed.toFixed(1)}×
-                  </output>
-                </div>
-                <div className="mt-4 flex max-w-md items-center justify-between gap-4 rounded-lg bg-secondary/40 px-4 py-3">
-                  <p className="min-w-0 text-sm text-foreground">{t("settings.speechExample")}</p>
-                  <Button
+            <Field label={t("settings.voice")}>
+              <div className="grid max-w-md grid-cols-2 gap-2 sm:grid-cols-4">
+                {VOICES.map((v) => (
+                  <button
+                    key={v.id}
                     type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      speech.speak(speechExampleId, t("settings.speechExample"), speechLanguage)
-                    }
-                    aria-pressed={speechExamplePlaying}
-                    aria-label={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
-                    title={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
-                    className="shrink-0 text-muted-foreground"
+                    onClick={() => {
+                      const alreadySelected = settings.voiceId === v.id;
+                      update("voiceId", v.id);
+                      if (!alreadySelected) {
+                        speech.speak(`settings:voice-${v.id}`, `Hello, I'm ${v.name}.`, "English", v.id);
+                      }
+                    }}
+                    aria-pressed={settings.voiceId === v.id}
+                    className={`rounded-xl px-3 py-2 text-left transition-colors ${
+                      settings.voiceId === v.id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
+                    }`}
                   >
-                    {speechExampleFailed ? (
-                      <VolumeX />
-                    ) : (
-                      <Volume2 className={speechExamplePlaying ? "animate-pulse" : ""} />
-                    )}
-                    {speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
-                  </Button>
-                </div>
-              </Field>
+                    <span className="block text-sm font-medium">{v.name}</span>
+                    <span className="block text-xs opacity-75">{v.tone[lang]}</span>
+                  </button>
+                ))}
+              </div>
+            </Field>
+            <Field label={t("settings.speechSpeed")}>
+              <div className="flex max-w-md items-center gap-4">
+                <Slider
+                  aria-label={t("settings.speechSpeed")}
+                  min={0.1}
+                  max={2}
+                  step={0.1}
+                  value={[settings.speechSpeed]}
+                  onValueChange={(values) => {
+                    const value = values[0];
+                    if (typeof value === "number") update("speechSpeed", value);
+                  }}
+                />
+                <output className="w-12 shrink-0 text-right text-sm font-medium tabular-nums text-foreground">
+                  {settings.speechSpeed.toFixed(1)}×
+                </output>
+              </div>
+              <div className="mt-4 flex max-w-md items-center justify-between gap-4 rounded-lg bg-secondary/40 px-4 py-3">
+                <p className="min-w-0 text-sm text-foreground">{t("settings.speechExample")}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => speech.speak(speechExampleId, t("settings.speechExample"), speechLanguage)}
+                  aria-pressed={speechExamplePlaying}
+                  aria-label={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
+                  title={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
+                  className="shrink-0 text-muted-foreground"
+                >
+                  {speechExampleFailed ? <VolumeX /> : <Volume2 className={speechExamplePlaying ? "animate-pulse" : ""} />}
+                  {speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
+                </Button>
+              </div>
+            </Field>
             </>,
           )}
           {section(
