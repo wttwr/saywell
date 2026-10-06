@@ -36,6 +36,9 @@ const en = {
   "settings.speechSpeed": "Speech speed",
   "settings.voice": "Voice",
   "settings.speechExample": "Your happiness is number 1 in the world",
+  "dictate.stop": "Stop recording",
+  "dictate.transcribing": "Transcribing…",
+  "dictate.failed": "Couldn't transcribe",
 
   "vocab.title": "Dictionary",
   "vocab.subtitle": "Look up words, phrasal verbs, expressions, or abbreviations.",
@@ -169,6 +172,9 @@ const it: Record<TranslationKey, string> = {
   "settings.speechSpeed": "Velocità della voce",
   "settings.voice": "Voce narrante",
   "settings.speechExample": "La tua felicità è la numero 1 al mondo",
+  "dictate.stop": "Interrompi registrazione",
+  "dictate.transcribing": "Trascrizione…",
+  "dictate.failed": "Trascrizione non riuscita",
 
   "vocab.title": "Dizionario",
   "vocab.subtitle": "Cerca una parola e salva quelle che vuoi imparare.",
@@ -299,6 +305,9 @@ const zh: Record<TranslationKey, string> = {
   "settings.speechSpeed": "朗读速度",
   "settings.voice": "声音",
   "settings.speechExample": "你的幸福是世界第一",
+  "dictate.stop": "停止录音",
+  "dictate.transcribing": "正在转写…",
+  "dictate.failed": "转写失败",
 
   "vocab.title": "词典",
   "vocab.subtitle": "查询单词，保存你想记住的。",
