@@ -113,13 +113,13 @@ export function DictateButton({ language, onText, className = "", label = "Voice
       aria-label={aria}
       title={aria}
       aria-pressed={recording}
-      className={`rounded-full p-1.5 transition-colors ${
+      className={`rounded-full transition-colors ${
         recording
-          ? "bg-primary text-primary-foreground"
-          : "bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground"
+          ? "animate-pulse bg-primary p-1 text-primary-foreground"
+          : "bg-secondary p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
       } ${className}`}
     >
-      {recording ? <Square className="size-4 fill-current" /> : <Mic className="size-4" />}
+      {recording ? <Square className="size-2.5 fill-current" /> : <Mic className="size-4" />}
     </button>
   );
 }
