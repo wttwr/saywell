@@ -25,7 +25,7 @@ export function DictateButton({
   hasText = false,
   children,
 }: Props) {
-  const { lang } = useI18n() as unknown as { lang?: string };
+  const { lang } = useI18n();
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const recRef = useRef<any>(null);
@@ -84,7 +84,7 @@ export function DictateButton({
             />
           ))}
         </span>
-        <span className="text-xs font-medium">{LISTENING[lang ?? "en"] ?? LISTENING.en}</span>
+        <span className="text-xs font-medium">{LISTENING[lang] ?? LISTENING["en"]}</span>
         <span className="flex size-5 items-center justify-center rounded-full bg-primary-foreground/20">
           <Square className="size-2.5 fill-current" />
         </span>
