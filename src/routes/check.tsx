@@ -182,10 +182,11 @@ function CheckPage() {
             className="min-h-56 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
           />
           <DictateButton
-              language={language}
-              onText={setText}
-              className="absolute right-0 top-1"
-            hasText={!!text}>
+            language={language}
+            onText={setText}
+            className="absolute right-0 top-1"
+            hasText={!!text}
+          >
             <button
               type="button"
               onClick={() => {

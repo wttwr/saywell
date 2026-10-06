@@ -321,7 +321,12 @@ function DictionaryPage() {
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
           />
           {loading && <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />}
-          <DictateButton language={language} onText={setQuery} className="shrink-0" hasText={!!query}>
+          <DictateButton
+            language={language}
+            onText={setQuery}
+            className="shrink-0"
+            hasText={!!query}
+          >
             <button
               type="button"
               onClick={() => setQuery("")}

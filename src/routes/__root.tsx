@@ -86,10 +86,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "SayWell 会说 — Translate text into multiple languages" },
-      { name: "description", content: "SayWell 会说 — Translate text into multiple languages instantly" },
+      {
+        name: "description",
+        content: "SayWell 会说 — Translate text into multiple languages instantly",
+      },
       { name: "author", content: "SayWell 会说" },
       { property: "og:title", content: "SayWell 会说 — Multi-language text translator" },
-      { property: "og:description", content: "SayWell 会说 — Translate text into multiple languages instantly" },
+      {
+        property: "og:description",
+        content: "SayWell 会说 — Translate text into multiple languages instantly",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -161,7 +167,13 @@ function AppNav() {
         </Link>
         <div className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
-            <Link key={l.to} to={l.to} className={pill} activeProps={active} activeOptions={{ exact: "exact" in l }}>
+            <Link
+              key={l.to}
+              to={l.to}
+              className={pill}
+              activeProps={active}
+              activeOptions={{ exact: "exact" in l }}
+            >
               {l.label}
             </Link>
           ))}
@@ -223,6 +235,5 @@ function RootComponent() {
         </SettingsProvider>
       </I18nProvider>
     </QueryClientProvider>
-
   );
 }
