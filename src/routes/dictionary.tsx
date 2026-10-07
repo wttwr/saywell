@@ -474,7 +474,7 @@ function DictionaryPage() {
               </div>
             )}
             {tab === "multilingual" && (
-              <MultilingualTranslation entry={entry} className="mt-3" />
+              <MultilingualTranslation entry={entry} className="mt-0" />
             )}
           </section>
         )}
