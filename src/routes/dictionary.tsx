@@ -385,16 +385,16 @@ function DictionaryPage() {
                 </span>
               </p>
             )}
-            <div className="mt-6 flex flex-wrap items-center gap-2">
+            <div className="mt-6 flex items-end gap-1.5">
               {(["entry", "multilingual"] as const).map((key) => (
                 <button
                   key={key}
                   onClick={() => setTab(key)}
                   aria-pressed={tab === key}
-                  className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                  className={`rounded-t-2xl px-4 py-2 text-sm transition-colors ${
                     tab === key
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                      ? "bg-secondary/40 font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-secondary/25 hover:text-foreground"
                   }`}
                 >
                   {t(key === "entry" ? "vocab.entry" : "vocab.multilingual")}
@@ -402,7 +402,7 @@ function DictionaryPage() {
               ))}
             </div>
             {tab === "entry" && (
-              <div className="mt-3 rounded-2xl bg-secondary/40 p-5 md:p-6">
+              <div className="rounded-2xl bg-secondary/40 p-5 md:p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                 <div className="min-w-0">
                   <p className="text-2xl text-foreground">{entry.text}</p>
