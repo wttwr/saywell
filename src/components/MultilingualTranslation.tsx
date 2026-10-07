@@ -19,7 +19,13 @@ type ItemState = {
   error?: string;
 };
 
-export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
+export function MultilingualTranslation({
+  entry,
+  className = "",
+}: {
+  entry: DictionaryEntry;
+  className?: string;
+}) {
   const { t, ln } = useI18n();
   const speech = useSpeech();
 
