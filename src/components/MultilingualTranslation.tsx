@@ -103,9 +103,6 @@ export function MultilingualTranslation({
 
   return (
     <section className={`mt-10 ${className}`}>
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">
-        {t("vocab.multilingual")}
-      </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">{t("vocab.translateTo")}</span>
