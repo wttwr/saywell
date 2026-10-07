@@ -19,7 +19,13 @@ type ItemState = {
   error?: string;
 };
 
-export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
+export function MultilingualTranslation({
+  entry,
+  className = "",
+}: {
+  entry: DictionaryEntry;
+  className?: string;
+}) {
   const { t, ln } = useI18n();
   const speech = useSpeech();
 
@@ -96,7 +102,7 @@ export function MultilingualTranslation({ entry }: { entry: DictionaryEntry }) {
   const visible = [sourceLanguage, ...languages];
 
   return (
-    <section className="mt-10">
+    <section className={`mt-10 ${className}`}>
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         {t("vocab.multilingual")}
       </p>
