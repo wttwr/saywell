@@ -102,7 +102,7 @@ export function MultilingualTranslation({
   const visible = [sourceLanguage, ...languages];
 
   return (
-    <section className={`mt-10 rounded-2xl border bg-card p-5 md:p-6 ${className}`}>
+    <section className={`mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6 ${className}`}>
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">{t("vocab.translateTo")}</span>
