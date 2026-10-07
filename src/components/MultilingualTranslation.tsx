@@ -102,7 +102,7 @@ export function MultilingualTranslation({
   const visible = [sourceLanguage, ...languages];
 
   return (
-    <section className="mt-10">
+    <section className={`mt-10 ${className}`}>
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         {t("vocab.multilingual")}
       </p>
