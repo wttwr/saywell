@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { useSettings } from "@/lib/settings";
 import {
-  translateLexicalItem,
+  translateLexicalItems,
   type DictionaryEntry,
 } from "@/lib/dictionary.functions";
 
@@ -203,7 +203,7 @@ export function MultilingualTranslation({
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
                   ) : state?.error ? (
                     <button
-                      onClick={() => fetchFor(l, { current: false })}
+                      onClick={() => fetchFor([l], itemRef.current)}
                       className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <RotateCw className="size-3.5" />
