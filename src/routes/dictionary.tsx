@@ -473,9 +473,11 @@ function DictionaryPage() {
               {entry.note && <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>}
               </div>
             )}
-            {tab === "multilingual" && (
-              <MultilingualTranslation entry={entry} className="mt-3" />
-            )}
+            {/* Always mounted so translations load with the search and persist across tab switches. */}
+            <MultilingualTranslation
+              entry={entry}
+              className={tab === "multilingual" ? "mt-3" : "mt-3 hidden"}
+            />
           </section>
         )}
       </div>
