@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Loader2, RotateCw, Volume2, VolumeX, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -84,13 +84,26 @@ export function MultilingualTranslation({
       });
   };
 
+  // Cancel in-flight results and reset only when the looked-up item changes.
+  const itemRef = useRef({ current: false });
+  const requested = useRef(new Set<string>());
   useEffect(() => {
     const ref = { current: false };
-    setItems(Object.fromEntries(languages.map((l) => [l, { loading: true }])));
-    languages.forEach((target) => fetchFor(target, ref));
+    itemRef.current = ref;
+    requested.current = new Set();
+    setItems({});
     return () => {
       ref.current = true;
     };
+  }, [source, sourceLanguage, entry.type]);
+
+  // Fetch only languages not yet requested for this item.
+  useEffect(() => {
+    languages.forEach((target) => {
+      if (requested.current.has(target)) return;
+      requested.current.add(target);
+      fetchFor(target, itemRef.current);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, sourceLanguage, entry.type, languages.join("|")]);
 
