@@ -160,7 +160,7 @@ function TranslatePage() {
         }
       };
       run();
-    }, 700);
+    }, 400);
 
     return () => {
       cancelled = true;
