@@ -205,7 +205,7 @@ function DictionaryPage() {
           if (cancelled) return;
           setLoading(false);
         });
-    }, 900);
+    }, 400);
 
     return () => {
       cancelled = true;

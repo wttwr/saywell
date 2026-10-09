@@ -288,3 +288,71 @@ export const translateLexicalItem = createServerFn({ method: "POST" })
     if (translit) result.transliteration = translit;
     return result;
   });
+
+const batchSchema = z.object({
+  text: z.string().min(1).max(200),
+  sourceLanguage: z.string().min(1),
+  targetLanguages: z.array(z.string().min(1)).min(1).max(20),
+  type: z.string().default("single_word"),
+});
+
+/** Translates one dictionary entry into several languages in a single AI call. */
+export const translateLexicalItems = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => batchSchema.parse(data))
+  .handler(async ({ data }): Promise<{ results: LexicalTranslation[] }> => {
+    const apiKey = process.env["LOVABLE_API_KEY"];
+    if (!apiKey) throw new Error("The translation service is not configured.");
+
+    const system = [
+      `Translate a single lexical item from ${data.sourceLanguage} into each of these languages: ${data.targetLanguages.join(", ")}.`,
+      `The item is a ${data.type.replace("_", " ")}.`,
+      "Translate it as a lexical item (dictionary equivalent), never as an unrelated full sentence.",
+      "For abbreviations, give the meaning or the common equivalent expression in the target language; if the same abbreviation is commonly used there, you may give it instead.",
+      "Give only the single most natural equivalent per language, short.",
+      "If a target language uses a non-Latin script, add a transliteration; otherwise leave it empty.",
+      'Reply with ONLY a JSON object: {"results":[{"language":"<exact language name as given>","translation":"...","transliteration":""}]}. No markdown.',
+    ].join(" ");
+
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3.8-flash",
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: data.text },
+        ],
+      }),
+    });
+
+    if (res.status === 429)
+      throw new Error("Too many requests right now. Please try again shortly.");
+    if (res.status === 402) throw new Error("Credits are exhausted.");
+    if (!res.ok) throw new Error("Could not translate that item.");
+
+    const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+    const cleaned = (json.choices?.[0]?.message?.content ?? "")
+      .replace(/```json|```/g, "")
+      .trim();
+
+    let parsed: { results?: unknown };
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      throw new Error("Could not read the translation.");
+    }
+    const list = Array.isArray(parsed.results) ? parsed.results : [];
+    const results: LexicalTranslation[] = [];
+    for (const lang of data.targetLanguages) {
+      const hit = list.find(
+        (r) => str((r as Record<string, unknown>)["language"]).toLowerCase() === lang.toLowerCase(),
+      ) as Record<string, unknown> | undefined;
+      const translation = str(hit?.["translation"]);
+      if (!translation) continue;
+      const item: LexicalTranslation = { language: lang, translation };
+      const tr = str(hit?.["transliteration"]);
+      if (tr) item.transliteration = tr;
+      results.push(item);
+    }
+    return { results };
+  });
