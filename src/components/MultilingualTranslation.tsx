@@ -51,36 +51,45 @@ export function MultilingualTranslation({
     setLanguages(next.filter((l) => l !== sourceLanguage));
   };
 
-  const fetchFor = (target: string, cancelledRef: { current: boolean }) => {
-    setItems((prev) => ({ ...prev, [target]: { loading: true } }));
-    translateLexicalItem({
+  const fetchFor = (targets: string[], cancelledRef: { current: boolean }) => {
+    setItems((prev) => {
+      const next = { ...prev };
+      targets.forEach((l) => (next[l] = { loading: true }));
+      return next;
+    });
+    translateLexicalItems({
       data: {
         text: source,
         sourceLanguage: entry.language,
-        targetLanguage: target,
+        targetLanguages: targets,
         type: entry.type,
       },
     })
       .then((res) => {
         if (cancelledRef.current) return;
-        setItems((prev) => ({
-          ...prev,
-          [target]: {
-            loading: false,
-            translation: res.translation,
-            ...(res.transliteration ? { transliteration: res.transliteration } : {}),
-          },
-        }));
+        setItems((prev) => {
+          const next = { ...prev };
+          targets.forEach((l) => {
+            const r = res.results.find((x) => x.language === l);
+            next[l] = r
+              ? {
+                  loading: false,
+                  translation: r.translation,
+                  ...(r.transliteration ? { transliteration: r.transliteration } : {}),
+                }
+              : { loading: false, error: "Could not translate." };
+          });
+          return next;
+        });
       })
       .catch((e) => {
         if (cancelledRef.current) return;
-        setItems((prev) => ({
-          ...prev,
-          [target]: {
-            loading: false,
-            error: e instanceof Error ? e.message : "Could not translate.",
-          },
-        }));
+        const msg = e instanceof Error ? e.message : "Could not translate.";
+        setItems((prev) => {
+          const next = { ...prev };
+          targets.forEach((l) => (next[l] = { loading: false, error: msg }));
+          return next;
+        });
       });
   };
 
@@ -97,13 +106,12 @@ export function MultilingualTranslation({
     };
   }, [source, sourceLanguage, entry.type]);
 
-  // Fetch only languages not yet requested for this item.
+  // Fetch all not-yet-requested languages for this item in one batched call.
   useEffect(() => {
-    languages.forEach((target) => {
-      if (requested.current.has(target)) return;
-      requested.current.add(target);
-      fetchFor(target, itemRef.current);
-    });
+    const missing = languages.filter((l) => !requested.current.has(l));
+    if (missing.length === 0) return;
+    missing.forEach((l) => requested.current.add(l));
+    fetchFor(missing, itemRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, sourceLanguage, entry.type, languages.join("|")]);
 
