@@ -84,10 +84,21 @@ export function MultilingualTranslation({
       });
   };
 
+  // Reset only when the looked-up item changes.
+  useEffect(() => {
+    setItems({});
+  }, [source, sourceLanguage, entry.type]);
+
+  // Fetch only languages not already loaded/loading for this item.
   useEffect(() => {
     const ref = { current: false };
-    setItems(Object.fromEntries(languages.map((l) => [l, { loading: true }])));
-    languages.forEach((target) => fetchFor(target, ref));
+    languages.forEach((target) => {
+      setItems((prev) => {
+        if (prev[target]) return prev;
+        fetchFor(target, ref);
+        return { ...prev, [target]: { loading: true } };
+      });
+    });
     return () => {
       ref.current = true;
     };
