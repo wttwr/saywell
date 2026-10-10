@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
+import { SaveButton } from "@/components/SaveButton";
 import { useSpeech } from "@/lib/speech";
 import { useSettings } from "@/lib/settings";
 import {
@@ -253,6 +254,21 @@ export function MultilingualTranslation({
                       <Copy className="size-4" />
                     )}
                   </button>
+                  {!isSource && (
+                    <SaveButton
+                      compact
+                      item={{
+                        kind: "translation",
+                        text: state?.translation ?? "",
+                        language: l,
+                        source,
+                        sourceLanguage,
+                        ...(state?.transliteration
+                          ? { transliteration: state.transliteration }
+                          : {}),
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             );
