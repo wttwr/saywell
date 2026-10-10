@@ -1,4 +1,5 @@
 import { DictateButton } from "@/components/DictateButton";
+import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
@@ -128,7 +129,7 @@ function StylePage() {
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const actions = (id: string, value: string) => {
+  const actions = (id: string, value: string, label?: string) => {
     const playing = speech.playingId === id;
     const failed = speech.errorId === id;
     return (
@@ -160,6 +161,15 @@ function StylePage() {
           {copiedId === id ? <Check className="size-4" /> : <Copy className="size-4" />}
           {copiedId === id ? t("translate.copied") : t("translate.copy")}
         </button>
+        <SaveButton
+          item={{
+            kind: "style",
+            text: value,
+            language: result?.detectedLanguage ?? language,
+            ...(label ? { detail: label } : {}),
+            source: text.trim(),
+          }}
+        />
         {failed && <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>}
       </div>
     );
@@ -177,7 +187,7 @@ function StylePage() {
       {variant.explanation && (
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{variant.explanation}</p>
       )}
-      {actions(id, variant.text)}
+      {actions(id, variant.text, variant.label)}
     </div>
   );
 

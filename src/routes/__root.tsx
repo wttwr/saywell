@@ -9,7 +9,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Globe, Menu, Settings } from "lucide-react";
+import { Globe, Menu, Settings, Bookmark } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i18n";
@@ -166,6 +166,15 @@ function AppNav() {
             </Link>
           ))}
           <Link
+            to="/saved"
+            title={t("nav.saved")}
+            aria-label={t("nav.saved")}
+            className="ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            activeProps={{ className: "bg-accent text-accent-foreground" }}
+          >
+            <Bookmark className="size-4" />
+          </Link>
+          <Link
             to="/settings"
             title={t("nav.settings")}
             aria-label={t("nav.settings")}
@@ -189,7 +198,7 @@ function AppNav() {
           <SheetContent side="right" className="w-72">
             <SheetTitle className="sr-only">Menu</SheetTitle>
             <div className="mt-8 flex flex-col gap-1">
-              {[...links, { to: "/settings", label: t("nav.settings") } as const].map((l) => (
+              {[...links, { to: "/saved", label: t("nav.saved") } as const, { to: "/settings", label: t("nav.settings") } as const].map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}

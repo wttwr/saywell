@@ -1,4 +1,5 @@
 import { DictateButton } from "@/components/DictateButton";
+import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, Copy, Info, Loader2, Search, Volume2, VolumeX, X } from "lucide-react";
@@ -415,6 +416,15 @@ function DictionaryPage() {
                 </div>
                 <div className="flex shrink-0 items-start gap-4">
                   {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
+                  <SaveButton
+                    item={{
+                      kind: "dictionary",
+                      text: entry.text,
+                      language: entry.language,
+                      detail: entry.meaning,
+                      ...(entry.transliteration ? { transliteration: entry.transliteration } : {}),
+                    }}
+                  />
                 </div>
               </div>
 

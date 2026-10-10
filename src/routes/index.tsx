@@ -1,4 +1,5 @@
 import { DictateButton } from "@/components/DictateButton";
+import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -388,7 +389,18 @@ function TranslatePage() {
                 activeLang ? (results[activeLang] ?? "") : "",
                 activeLang,
               )}
-              {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
+              <div className="flex items-center gap-4">
+                <SaveButton
+                  item={{
+                    kind: "translation",
+                    text: activeLang ? (results[activeLang] ?? "") : "",
+                    language: activeLang ?? "",
+                    source: source.trim(),
+                    sourceLanguage: detectedLanguage || from,
+                  }}
+                />
+                {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
+              </div>
             </div>
           </section>
         </div>
