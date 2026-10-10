@@ -254,6 +254,21 @@ export function MultilingualTranslation({
                       <Copy className="size-4" />
                     )}
                   </button>
+                  {!isSource && (
+                    <SaveButton
+                      compact
+                      item={{
+                        kind: "translation",
+                        text: state?.translation ?? "",
+                        language: l,
+                        source,
+                        sourceLanguage,
+                        ...(state?.transliteration
+                          ? { transliteration: state.transliteration }
+                          : {}),
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             );
