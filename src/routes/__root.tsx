@@ -168,20 +168,20 @@ function AppNav() {
           <Link
             to="/saved"
             title={t("nav.saved")}
-            aria-label={t("nav.saved")}
-            className="ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            activeProps={{ className: "bg-accent text-accent-foreground" }}
+            className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
           >
-            <Bookmark className="size-4" />
+            <Bookmark className="size-4 shrink-0" />
+            {t("nav.saved")}
           </Link>
           <Link
             to="/settings"
             title={t("nav.settings")}
-            aria-label={t("nav.settings")}
-            className="ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            activeProps={{ className: "bg-accent text-accent-foreground" }}
+            className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
           >
-            <Settings className="size-4" />
+            <Settings className="size-4 shrink-0" />
+            {t("nav.settings")}
           </Link>
         </div>
         <div className="ml-auto hidden md:block">{langSelect}</div>
