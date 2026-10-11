@@ -15,6 +15,8 @@ export type SavedItem = {
   source?: string;
   sourceLanguage?: string;
   transliteration?: string;
+  /** Optional link tying several items saved together (e.g. one card). */
+  groupId?: string;
   savedAt: string;
 };
 
@@ -75,5 +77,39 @@ export function useSavedStore() {
     write(read().filter((i) => i.id !== id));
   }, []);
 
-  return { items, isSaved, toggle, remove };
+  // Save or remove a whole group of items (e.g. one multilingual card) at once.
+  const toggleGroup = useCallback(
+    (group: (Omit<SavedItem, "id" | "savedAt"> & { groupId: string })[]) => {
+      const gid = group[0]?.groupId;
+      if (!gid) return;
+      const current = read();
+      if (current.some((i) => i.groupId === gid)) {
+        write(current.filter((i) => i.groupId !== gid));
+      } else {
+        const now = new Date().toISOString();
+        const existingIds = new Set(current.map((i) => i.id));
+        const toAdd = group
+          .filter(
+            (i) =>
+              i.text.trim() && !existingIds.has(savedKey(i.kind, i.text, i.language)),
+          )
+          .map((i) => ({
+            ...i,
+            id: savedKey(i.kind, i.text, i.language),
+            savedAt: now,
+          }));
+        const updated = current.map((i) =>
+          group.some(
+            (g) => g.text.trim() && savedKey(g.kind, g.text, g.language) === i.id,
+          )
+            ? { ...i, groupId: gid }
+            : i,
+        );
+        write([...toAdd, ...updated]);
+      }
+    },
+    [],
+  );
+
+  return { items, isSaved, toggle, toggleGroup, remove };
 }
