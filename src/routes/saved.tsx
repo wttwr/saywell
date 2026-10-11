@@ -32,12 +32,14 @@ const FILTERS: { key: SavedKind | "all"; label: TranslationKey }[] = [
   { key: "dictionary", label: "saved.dictionary" },
   { key: "translation", label: "saved.translation" },
   { key: "style", label: "saved.style" },
+  { key: "check", label: "saved.check" },
 ];
 
 const KIND_LABEL: Record<SavedKind, TranslationKey> = {
   dictionary: "saved.dictionary",
   translation: "saved.translation",
   style: "saved.style",
+  check: "saved.check",
 };
 
 function SavedPage() {
