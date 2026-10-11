@@ -126,17 +126,19 @@ function AppNav() {
   const { t, lang, setLang } = useI18n();
   const [open, setOpen] = useState(false);
   const pill =
-    "rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground";
+    "flex items-center gap-1.5 rounded-full px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-4";
   const active = { className: "bg-accent font-medium text-accent-foreground" };
   const links = [
     { to: "/", label: t("nav.translate"), exact: true },
     { to: "/check", label: t("nav.check") },
     { to: "/style", label: t("nav.style") },
     { to: "/dictionary", label: t("nav.vocabulary") },
+    { to: "/saved", label: t("nav.saved"), icon: Bookmark },
+    { to: "/settings", label: t("nav.settings"), icon: Settings },
   ] as const;
 
   const langSelect = (
-    <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+    <div className="flex items-center gap-1.5 rounded-full px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-3">
       <Globe className="size-4 shrink-0" />
       <select
         aria-label={t("nav.appLanguage")}
@@ -154,35 +156,18 @@ function AppNav() {
   );
 
   return (
-    <div className="bg-background px-5 pt-6 md:px-10 md:pt-8">
-      <nav className="mx-auto flex max-w-6xl items-center gap-1">
-        <Link to="/" className="mr-1 flex shrink-0 items-center rounded-full py-1 pl-1 pr-5">
+    <div className="bg-background px-5 pt-6 md:px-6 md:pt-8 lg:px-10">
+      <nav className="mx-auto flex max-w-6xl items-center gap-0.5 lg:gap-1">
+        <Link to="/" className="mr-1 flex shrink-0 items-center rounded-full py-1 pl-1 pr-3 lg:pr-5">
           <img src={logoAsset.url} alt="SayWell 会说" className="h-9 w-auto object-contain" />
         </Link>
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-0.5 md:flex lg:gap-1">
           {links.map((l) => (
             <Link key={l.to} to={l.to} className={pill} activeProps={active} activeOptions={{ exact: "exact" in l }}>
+              {"icon" in l && <l.icon className="size-4 shrink-0" />}
               {l.label}
             </Link>
           ))}
-          <Link
-            to="/saved"
-            title={t("nav.saved")}
-            className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-          >
-            <Bookmark className="size-4 shrink-0" />
-            {t("nav.saved")}
-          </Link>
-          <Link
-            to="/settings"
-            title={t("nav.settings")}
-            className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            activeProps={{ className: "bg-accent font-medium text-accent-foreground" }}
-          >
-            <Settings className="size-4 shrink-0" />
-            {t("nav.settings")}
-          </Link>
         </div>
         <div className="ml-auto hidden md:block">{langSelect}</div>
 
@@ -198,7 +183,7 @@ function AppNav() {
           <SheetContent side="right" className="w-72">
             <SheetTitle className="sr-only">Menu</SheetTitle>
             <div className="mt-8 flex flex-col gap-1">
-              {[...links, { to: "/saved", label: t("nav.saved") } as const, { to: "/settings", label: t("nav.settings") } as const].map((l) => (
+              {links.map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}
