@@ -281,6 +281,7 @@ function CheckPage() {
                       {copied ? t("check.copied") : t("check.copy")}
                     </button>
                   </div>
+                </div>
                 <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
                   {result.corrected}
                 </p>
