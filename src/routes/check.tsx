@@ -1,4 +1,5 @@
 import { DictateButton } from "@/components/DictateButton";
+import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
@@ -261,14 +262,25 @@ function CheckPage() {
                   <h2 className="text-sm font-medium text-muted-foreground">
                     {t("check.suggestedVersion")}
                   </h2>
-                  <button
-                    onClick={onCopy}
-                    className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {copied ? <CheckIcon className="size-4" /> : <Copy className="size-4" />}
-                    {copied ? t("check.copied") : t("check.copy")}
-                  </button>
-                </div>
+                  <div className="flex items-center gap-4">
+                    <SaveButton
+                      item={{
+                        kind: "check",
+                        text: result.corrected,
+                        language: result.detectedLanguage ?? language,
+                        detail: result.summary,
+                        source:
+                          text.trim() !== result.corrected ? text.trim() : undefined,
+                      }}
+                    />
+                    <button
+                      onClick={onCopy}
+                      className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {copied ? <CheckIcon className="size-4" /> : <Copy className="size-4" />}
+                      {copied ? t("check.copied") : t("check.copy")}
+                    </button>
+                  </div>
                 <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
                   {result.corrected}
                 </p>

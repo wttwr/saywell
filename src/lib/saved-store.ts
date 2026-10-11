@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-export type SavedKind = "dictionary" | "translation" | "style";
+export type SavedKind = "dictionary" | "translation" | "style" | "check";
 
 export type SavedItem = {
   id: string;
