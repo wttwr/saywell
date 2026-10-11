@@ -269,8 +269,7 @@ function CheckPage() {
                         text: result.corrected,
                         language: result.detectedLanguage ?? language,
                         detail: result.summary,
-                        source:
-                          text.trim() !== result.corrected ? text.trim() : undefined,
+                        ...(text.trim() !== result.corrected ? { source: text.trim() } : {}),
                       }}
                     />
                     <button
