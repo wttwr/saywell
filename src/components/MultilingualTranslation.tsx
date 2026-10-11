@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
-import { SaveButton } from "@/components/SaveButton";
+import { SaveButton, type GroupItem } from "@/components/SaveButton";
 import { useSpeech } from "@/lib/speech";
 import { useSettings } from "@/lib/settings";
 import {
@@ -125,11 +125,29 @@ export function MultilingualTranslation({
   // The entry's own language always appears first, labeled as the source.
   const visible = [sourceLanguage, ...languages];
 
+  // One save action for the whole card: every current translation row at once.
+  const cardGroupId = `dict-mt-card|${sourceLanguage}|${source}`;
+  const groupItems: GroupItem[] = [];
+  languages.forEach((l) => {
+    const s = items[l];
+    if (!s?.translation) return;
+    groupItems.push({
+      kind: "translation",
+      text: s.translation,
+      language: l,
+      source,
+      sourceLanguage,
+      ...(s.transliteration ? { transliteration: s.transliteration } : {}),
+      groupId: cardGroupId,
+    });
+  });
+
   return (
     <section className={cn("mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6", className)}>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-muted-foreground">{t("vocab.translateTo")}</span>
+      <div className="flex items-start gap-3">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+          <span className="text-sm text-muted-foreground">{t("vocab.translateTo")}</span>
         {languages.map((l) => (
           <span
             key={l}
@@ -169,6 +187,8 @@ export function MultilingualTranslation({
             ))}
           </select>
         </div>
+        </div>
+        <SaveButton group={groupItems} />
       </div>
 
       {visible.length > 0 && (
@@ -254,21 +274,6 @@ export function MultilingualTranslation({
                       <Copy className="size-4" />
                     )}
                   </button>
-                  {!isSource && (
-                    <SaveButton
-                      compact
-                      item={{
-                        kind: "translation",
-                        text: state?.translation ?? "",
-                        language: l,
-                        source,
-                        sourceLanguage,
-                        ...(state?.transliteration
-                          ? { transliteration: state.transliteration }
-                          : {}),
-                      }}
-                    />
-                  )}
                 </div>
               </div>
             );
