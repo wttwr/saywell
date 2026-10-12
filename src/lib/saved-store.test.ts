@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { groupSavedItems, savedKey, toggleSavedGroup, type SavedItem } from "./saved-store";
 
-const group: Omit<SavedItem, "id" | "savedAt">[] = [
+const group: (Omit<SavedItem, "id" | "savedAt"> & { groupId: string })[] = [
   { kind: "translation" as const, text: "ciao", language: "Italian", source: "hello", sourceLanguage: "English", groupId: "hello-card" },
   { kind: "translation" as const, text: "你好", language: "Chinese (Simplified)", source: "hello", sourceLanguage: "English", groupId: "hello-card" },
 ];
