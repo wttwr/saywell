@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bookmark, Check, Copy, Volume2, VolumeX } from "lucide-react";
+import { Bookmark, Check, Copy, Search, Volume2, VolumeX } from "lucide-react";
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
