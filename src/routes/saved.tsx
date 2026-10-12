@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bookmark, Check, Copy, Search, Volume2, VolumeX } from "lucide-react";
+import { Bookmark, Check, Copy, Search, Volume2, VolumeX, X } from "lucide-react";
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { groupSavedItems, useSavedStore, type SavedKind } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { DictateButton } from "@/components/DictateButton";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({
@@ -41,6 +42,12 @@ const KIND_LABEL: Record<SavedKind, TranslationKey> = {
   translation: "saved.translation",
   style: "saved.style",
   check: "saved.check",
+};
+
+const DICTATE_LANG: Record<string, string> = {
+  en: "English",
+  it: "Italian",
+  zh: "Chinese (Simplified)",
 };
 
 function SavedPage() {
@@ -96,14 +103,32 @@ function SavedPage() {
         </div>
 
         {items.length > 0 && (
-          <div className="relative mt-6">
-            <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/60" />
+          <div className="mt-6 flex items-center gap-3 border-b border-border pb-3">
+            <Search className="size-4 shrink-0 text-muted-foreground" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t("saved.search")}
-              className="w-full border-b border-border bg-transparent pb-3 pl-7 text-lg text-foreground outline-none placeholder:text-muted-foreground/60"
+              aria-label={t("saved.search")}
+              className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
             />
+            {query ? (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                title="Clear search"
+                className="shrink-0 rounded-full bg-secondary p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <X className="size-4" />
+              </button>
+            ) : (
+              <DictateButton
+                language={DICTATE_LANG[lang] ?? "English"}
+                onText={setQuery}
+                className="shrink-0"
+              />
+            )}
           </div>
         )}
 
