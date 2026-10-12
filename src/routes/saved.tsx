@@ -4,8 +4,9 @@ import { Bookmark, Check, Copy, Volume2, VolumeX } from "lucide-react";
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
-import { useSavedStore, type SavedKind } from "@/lib/saved-store";
+import { groupSavedItems, useSavedStore, type SavedKind } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({
@@ -45,17 +46,17 @@ const KIND_LABEL: Record<SavedKind, TranslationKey> = {
 function SavedPage() {
   const { t, ln, lang } = useI18n();
   const speech = useSpeech();
-  const { items, remove } = useSavedStore();
+  const { items, remove, removeGroup } = useSavedStore();
   const [filter, setFilter] = useState<SavedKind | "all">("all");
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return items.filter(
-      (i) =>
-        (filter === "all" || i.kind === filter) &&
-        (!q || [i.text, i.detail, i.source].some((v) => v?.toLowerCase().includes(q))),
+    return groupSavedItems(items).filter(
+      (group) =>
+        group.some((i) => filter === "all" || i.kind === filter) &&
+        (!q || group.some((i) => [i.text, i.detail, i.source, i.language, i.dictionaryEntry?.etymology, ...i.dictionaryEntry?.senses.map((s) => `${s.definition} ${s.example ?? ""}`) ?? []].some((v) => v?.toLowerCase().includes(q)))),
     );
   }, [items, filter, query]);
 
@@ -113,38 +114,66 @@ function SavedPage() {
           <p className="mt-10 text-sm text-muted-foreground">{t("saved.noMatches")}</p>
         ) : (
           <ul className="mt-8 flex flex-col gap-3">
-            {visible.map((i) => {
-              const playing = speech.playingId === i.id;
-              const failed = speech.errorId === i.id;
+            {visible.map((group) => {
+              const i = group[0];
+              if (!i) return null;
+              const entry = i.dictionaryEntry;
+              const grouped = Boolean(i.groupId);
               return (
-                <li key={i.id} className="rounded-2xl bg-secondary/40 p-5 md:p-6">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <li key={i.groupId ?? i.id} className="rounded-2xl bg-secondary/40 p-5 md:p-6">
+                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span className="rounded-full bg-secondary px-2.5 py-0.5 text-secondary-foreground">
-                      {t(KIND_LABEL[i.kind])}
+                      {grouped ? t("vocab.multilingual") : t(KIND_LABEL[i.kind])}
                     </span>
                     <span>
-                      {i.sourceLanguage ? `${ln(i.sourceLanguage)} → ` : ""}
-                      {ln(i.language)}
+                      {grouped ? ln(i.sourceLanguage ?? i.language) : `${i.sourceLanguage ? `${ln(i.sourceLanguage)} → ` : ""}${ln(i.language)}`}
                     </span>
                     <span>· {new Date(i.savedAt).toLocaleDateString(locale)}</span>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => i.groupId ? removeGroup(i.groupId) : remove(i.id)}
+                    title={t("saved.unsave")}
+                    aria-label={t("saved.unsave")}
+                    className="shrink-0 text-primary"
+                  >
+                    <Bookmark className="size-4 fill-current" />
+                  </Button>
+                  </div>
                   {i.source && i.kind !== "dictionary" && (
-                    <p className="mt-3 text-sm text-muted-foreground">{i.source}</p>
+                    <div className={cn("mt-3", grouped && "pb-4")}>
+                      {grouped && <p className="text-xs text-muted-foreground">{ln(i.sourceLanguage ?? i.language)} · {t("translate.sourceLabel")}</p>}
+                      <p className={grouped ? "mt-1 whitespace-pre-wrap break-words text-xl text-foreground" : "text-sm text-muted-foreground"}>{i.source}</p>
+                    </div>
                   )}
-                  <p className="mt-2 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
-                    {i.text}
+                  <div className={cn(grouped && "divide-y divide-border/60")}>
+                  {group.map((row) => {
+                    const playing = speech.playingId === row.id;
+                    const failed = speech.errorId === row.id;
+                    return <div key={row.id} className={cn(grouped && "py-4 last:pb-0")}>
+                  {grouped && <p className="text-xs font-medium text-muted-foreground">{ln(row.language)}</p>}
+                  <p className="mt-2 whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground">
+                    {row.text}
                   </p>
-                  {i.transliteration && (
-                    <p className="mt-0.5 text-sm text-muted-foreground">{i.transliteration}</p>
+                  {row.transliteration && (
+                    <p className="mt-0.5 text-sm text-muted-foreground">{row.transliteration}</p>
                   )}
-                  {i.detail && <p className="mt-2 text-sm text-muted-foreground">{i.detail}</p>}
+                  {row.detail && <p className="mt-2 text-sm text-muted-foreground">{row.detail}</p>}
+                  {entry?.expandedForm && <div className="mt-5"><p className="text-xs text-muted-foreground">{t("vocab.expandedForm")}</p><p className="mt-1 text-foreground">{entry.expandedForm}</p></div>}
+                  {entry?.imageUrl && <img src={entry.imageUrl} alt={entry.text} loading="lazy" className="mt-5 max-h-64 w-full rounded-xl object-cover" />}
+                  {entry && entry.senses.length > 0 && <ul className="mt-5 space-y-4 border-t border-border pt-5">{entry.senses.map((sense, index) => <li key={index}><p className="text-sm text-foreground">{sense.partOfSpeech && <span className="mr-2 italic text-muted-foreground">{sense.partOfSpeech}</span>}{sense.definition}</p>{sense.example && <p className="mt-1 text-sm text-muted-foreground">{sense.example}{sense.exampleTranslation ? ` — ${sense.exampleTranslation}` : ""}</p>}</li>)}</ul>}
+                  {entry?.etymology && <div className="mt-5 border-t border-border pt-5"><p className="text-xs text-muted-foreground">{t("vocab.etymology")}</p><p className="mt-1 text-sm text-foreground/80">{entry.etymology}</p></div>}
+                  {entry?.note && <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>}
                   <div className="mt-4 flex items-center gap-4">
-                    <button
-                      onClick={() => speech.speak(i.id, i.text, i.language)}
+                    <Button
+                      variant="ghost"
+                      onClick={() => speech.speak(row.id, row.text, row.language)}
                       title={playing ? t("translate.stop") : t("translate.listen")}
                       aria-label={playing ? t("translate.stop") : t("translate.listen")}
                       className={cn(
-                        "flex items-center gap-1.5 text-sm transition-colors",
+                        "h-8 gap-1.5 px-0 text-sm font-normal transition-colors",
                         playing ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                       )}
                     >
@@ -154,22 +183,18 @@ function SavedPage() {
                         <Volume2 className={cn("size-4", playing && "animate-pulse")} />
                       )}
                       {playing ? t("translate.stop") : t("translate.listen")}
-                    </button>
-                    <button
-                      onClick={() => onCopy(i.id, i.text)}
-                      className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => onCopy(row.id, row.text)}
+                      className="h-8 gap-1.5 px-0 text-sm font-normal text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      {copiedId === i.id ? <Check className="size-4" /> : <Copy className="size-4" />}
-                      {copiedId === i.id ? t("translate.copied") : t("translate.copy")}
-                    </button>
-                    <button
-                      onClick={() => remove(i.id)}
-                      title={t("saved.unsave")}
-                      aria-label={t("saved.unsave")}
-                      className="ml-auto flex items-center text-primary transition-colors hover:text-foreground"
-                    >
-                      <Bookmark className="size-4 fill-current" />
-                    </button>
+                      {copiedId === row.id ? <Check className="size-4" /> : <Copy className="size-4" />}
+                      {copiedId === row.id ? t("translate.copied") : t("translate.copy")}
+                    </Button>
+                  </div>
+                  </div>;
+                  })}
                   </div>
                 </li>
               );

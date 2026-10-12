@@ -145,7 +145,7 @@ export function MultilingualTranslation({
   return (
     <section className={cn("mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6", className)}>
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("vocab.translateTo")}</span>
         {languages.map((l) => (
@@ -188,7 +188,10 @@ export function MultilingualTranslation({
           </select>
         </div>
         </div>
-        <SaveButton group={groupItems} />
+        <SaveButton
+          group={groupItems}
+          className="shrink-0"
+        />
       </div>
 
       {visible.length > 0 && (
@@ -210,9 +213,9 @@ export function MultilingualTranslation({
             return (
               <div
                 key={l}
-                className="flex items-start gap-4 py-4 first:pt-0 last:pb-0"
+                 className="flex items-start gap-2 py-4 first:pt-0 last:pb-0 sm:gap-4"
               >
-                <div className="w-36 shrink-0 pt-0.5">
+                <div className="w-20 shrink-0 pt-0.5 sm:w-36">
                   <p className="text-xs font-medium text-muted-foreground">
                     {ln(l)}
                     {isSource && ` · ${t("translate.sourceLabel")}`}
