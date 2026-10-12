@@ -3,7 +3,6 @@ import { Bookmark } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useSavedStore, type SavedItem } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 /** Several items saved and removed together (e.g. one multilingual card). */
 export type GroupItem = Omit<SavedItem, "id" | "savedAt"> & { groupId: string };
