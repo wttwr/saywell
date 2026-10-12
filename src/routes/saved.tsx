@@ -96,12 +96,15 @@ function SavedPage() {
         </div>
 
         {items.length > 0 && (
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("saved.search")}
-            className="mt-6 w-full border-b border-border bg-transparent pb-3 text-lg text-foreground outline-none placeholder:text-muted-foreground/60"
-          />
+          <div className="relative mt-6">
+            <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/60" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("saved.search")}
+              className="w-full border-b border-border bg-transparent pb-3 pl-7 text-lg text-foreground outline-none placeholder:text-muted-foreground/60"
+            />
+          </div>
         )}
 
         {items.length === 0 ? (
