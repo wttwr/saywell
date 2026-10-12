@@ -422,6 +422,7 @@ function DictionaryPage() {
                       text: entry.text,
                       language: entry.language,
                       detail: entry.meaning,
+                      dictionaryEntry: entry,
                       ...(entry.transliteration ? { transliteration: entry.transliteration } : {}),
                     }}
                   />
