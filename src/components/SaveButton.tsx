@@ -34,8 +34,7 @@ export function SaveButton({
       : false;
   const label = saved ? t("saved.unsave") : t("saved.save");
   return (
-    <Button
-      variant="ghost"
+    <button
       type="button"
       disabled={disabled}
       onClick={() => (group && groupId ? toggleGroup(group) : item && toggle(item))}
@@ -43,13 +42,13 @@ export function SaveButton({
       aria-label={label}
       aria-pressed={saved}
       className={cn(
-        "h-8 gap-1.5 px-1.5 py-1.5 text-sm font-normal transition-colors disabled:opacity-40",
+        "flex items-center gap-1.5 text-sm transition-colors disabled:opacity-40",
         saved ? "text-primary" : "text-muted-foreground hover:text-foreground",
         className,
       )}
     >
       <Bookmark className={cn("size-4", saved && "fill-current")} />
       {!compact && (saved ? t("saved.savedLabel") : t("saved.save"))}
-    </Button>
+    </button>
   );
 }
