@@ -1,7 +1,7 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { groupSavedItems, savedKey, toggleSavedGroup, type SavedItem } from "./saved-store";
 
-const group = [
+const group: (Omit<SavedItem, "id" | "savedAt"> & { groupId: string })[] = [
   { kind: "translation" as const, text: "ciao", language: "Italian", source: "hello", sourceLanguage: "English", groupId: "hello-card" },
   { kind: "translation" as const, text: "你好", language: "Chinese (Simplified)", source: "hello", sourceLanguage: "English", groupId: "hello-card" },
 ];
@@ -13,7 +13,7 @@ describe("entire multilingual cards", () => {
     expect(groupSavedItems(saved)[0]).toHaveLength(2);
   });
   test("un-saving a card preserves an independently saved translation", () => {
-    const individual: SavedItem = { ...group[0], id: savedKey("translation", "ciao", "Italian"), savedAt: "2026-10-11" };
+    const individual: SavedItem = { ...group[0]!, id: savedKey("translation", "ciao", "Italian"), savedAt: "2026-10-11" };
     delete individual.groupId;
     const saved = toggleSavedGroup([individual], group, "2026-10-12");
     expect(saved).toHaveLength(3);
