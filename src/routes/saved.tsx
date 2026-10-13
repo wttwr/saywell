@@ -157,16 +157,17 @@ function SavedPage() {
                       {grouped ? ln(i.sourceLanguage ?? i.language) : `${i.sourceLanguage ? `${ln(i.sourceLanguage)} → ` : ""}${ln(i.language)}`}
                     </span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <button
+                    type="button"
                     onClick={() => i.groupId ? removeGroup(i.groupId) : remove(i.id)}
                     title={t("saved.unsave")}
                     aria-label={t("saved.unsave")}
-                    className="shrink-0 text-primary"
+                    aria-pressed
+                    className="flex shrink-0 items-center gap-1.5 text-sm transition-colors text-primary"
                   >
                     <Bookmark className="size-4 fill-current" />
-                  </Button>
+                    {t("saved.savedLabel")}
+                  </button>
                   </div>
                   {i.source && i.kind !== "dictionary" && (
                     <div className={cn("mt-3", grouped && "pb-4")}>
