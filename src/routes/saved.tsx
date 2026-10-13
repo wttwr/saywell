@@ -6,7 +6,6 @@ import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { groupSavedItems, useSavedStore, type SavedKind } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { DictateButton } from "@/components/DictateButton";
 
 export const Route = createFileRoute("/saved")({
