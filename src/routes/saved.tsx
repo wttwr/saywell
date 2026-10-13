@@ -297,7 +297,7 @@ function SavedPage() {
                           {isOpen && entry?.note && (
                             <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
                           )}
-                          <div className="mt-4 flex items-center gap-4">
+                          <div className="mt-4 flex items-center justify-end gap-4">
                             <button
                               type="button"
                               onClick={() => speech.speak(row.id, row.text, row.language)}
