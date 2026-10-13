@@ -6,7 +6,6 @@ import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { groupSavedItems, useSavedStore, type SavedKind } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { DictateButton } from "@/components/DictateButton";
 
 export const Route = createFileRoute("/saved")({
@@ -299,14 +298,17 @@ function SavedPage() {
                             <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
                           )}
                           <div className="mt-4 flex items-center gap-4">
-                            <Button
-                              variant="ghost"
+                            <button
+                              type="button"
                               onClick={() => speech.speak(row.id, row.text, row.language)}
                               title={playing ? t("translate.stop") : t("translate.listen")}
                               aria-label={playing ? t("translate.stop") : t("translate.listen")}
+                              aria-pressed={playing}
                               className={cn(
-                                "h-8 gap-1.5 px-0 text-sm font-normal transition-colors",
-                                playing ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                                "flex items-center gap-1.5 text-sm transition-colors",
+                                playing
+                                  ? "text-foreground"
+                                  : "text-muted-foreground hover:text-foreground",
                               )}
                             >
                               {failed ? (
@@ -315,15 +317,21 @@ function SavedPage() {
                                 <Volume2 className={cn("size-4", playing && "animate-pulse")} />
                               )}
                               {playing ? t("translate.stop") : t("translate.listen")}
-                            </Button>
-                            <Button
-                              variant="ghost"
+                            </button>
+                            <button
+                              type="button"
                               onClick={() => onCopy(row.id, row.text)}
-                              className="h-8 gap-1.5 px-0 text-sm font-normal text-muted-foreground transition-colors hover:text-foreground"
+                              title={t("translate.copy")}
+                              aria-label={t("translate.copy")}
+                              className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                             >
-                              {copiedId === row.id ? <Check className="size-4" /> : <Copy className="size-4" />}
+                              {copiedId === row.id ? (
+                                <Check className="size-4" />
+                              ) : (
+                                <Copy className="size-4" />
+                              )}
                               {copiedId === row.id ? t("translate.copied") : t("translate.copy")}
-                            </Button>
+                            </button>
                           </div>
                         </div>
                       );
