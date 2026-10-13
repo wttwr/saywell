@@ -73,7 +73,6 @@ function SavedPage() {
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const locale = lang === "zh" ? "zh-CN" : lang === "it" ? "it-IT" : "en-US";
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -157,7 +156,6 @@ function SavedPage() {
                     <span>
                       {grouped ? ln(i.sourceLanguage ?? i.language) : `${i.sourceLanguage ? `${ln(i.sourceLanguage)} → ` : ""}${ln(i.language)}`}
                     </span>
-                    <span>· {new Date(i.savedAt).toLocaleDateString(locale)}</span>
                   </div>
                   <Button
                     variant="ghost"
