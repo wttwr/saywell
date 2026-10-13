@@ -31,6 +31,8 @@ const en = {
   "saved.emptyTitle": "Nothing saved yet",
   "saved.emptyBody": "Tap the bookmark on a dictionary entry, translation or style to keep it here.",
   "saved.noMatches": "Nothing matches your search.",
+  "saved.showMore": "Show more",
+  "saved.showLess": "Show less",
 
   "settings.title": "Settings",
   "settings.subtitle": "Changes are saved as you make them.",
@@ -182,6 +184,8 @@ const it: Record<TranslationKey, string> = {
   "saved.emptyTitle": "Ancora niente di salvato",
   "saved.emptyBody": "Tocca il segnalibro su una voce, una traduzione o uno stile per tenerlo qui.",
   "saved.noMatches": "Nessun risultato per la ricerca.",
+  "saved.showMore": "Mostra di più",
+  "saved.showLess": "Mostra meno",
 
   "settings.title": "Impostazioni",
   "settings.subtitle": "Scegli come suona SayWell — voce e velocità della voce — e le lingue con cui si apre ogni sezione. Le modifiche vengono salvate subito.",
@@ -330,6 +334,8 @@ const zh: Record<TranslationKey, string> = {
   "saved.emptyTitle": "还没有收藏",
   "saved.emptyBody": "点击词条、翻译或风格上的书签图标即可收藏到这里。",
   "saved.noMatches": "没有匹配的结果。",
+  "saved.showMore": "展开",
+  "saved.showLess": "收起",
 
   "settings.title": "设置",
   "settings.subtitle": "设置 SayWell 的声音（音色与语速），以及每个板块默认使用的语言，修改会立即保存。",
