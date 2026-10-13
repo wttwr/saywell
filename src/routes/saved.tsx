@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bookmark, Check, ChevronDown, Copy, Search, Volume2, VolumeX, X } from "lucide-react";
+import { Bookmark, Check, ChevronDown, Copy, Search, SlidersHorizontal, Volume2, VolumeX, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
@@ -57,20 +58,43 @@ function SavedPage() {
   const speech = useSpeech();
   const { items, remove, removeGroup } = useSavedStore();
   const [filter, setFilter] = useState<SavedKind | "all">("all");
+  const [langFilter, setLangFilter] = useState("all");
+  const [pairFilter, setPairFilter] = useState("all");
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   const searching = query.trim().length > 0;
 
+  const { languages, pairs } = useMemo(() => {
+    const ls = new Set<string>();
+    const ps = new Set<string>();
+    for (const i of items) {
+      if (i.language) ls.add(i.language);
+      if (i.sourceLanguage) ls.add(i.sourceLanguage);
+      if (i.sourceLanguage && i.language) ps.add(`${i.sourceLanguage}>${i.language}`);
+    }
+    return { languages: [...ls].sort(), pairs: [...ps].sort() };
+  }, [items]);
+
+  const activeCount =
+    (filter !== "all" ? 1 : 0) + (langFilter !== "all" ? 1 : 0) + (pairFilter !== "all" ? 1 : 0);
+  const FT = {
+    en: { filter: "Filter", section: "Section", language: "Language", pair: "From → to", any: "All", reset: "Reset" },
+    it: { filter: "Filtra", section: "Sezione", language: "Lingua", pair: "Da → a", any: "Tutte", reset: "Azzera" },
+    zh: { filter: "筛选", section: "板块", language: "语言", pair: "从 → 到", any: "全部", reset: "重置" },
+  }[lang as "en" | "it" | "zh"] ?? { filter: "Filter", section: "Section", language: "Language", pair: "From → to", any: "All", reset: "Reset" };
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return groupSavedItems(items).filter(
       (group) =>
         group.some((i) => filter === "all" || i.kind === filter) &&
+        (langFilter === "all" || group.some((i) => i.language === langFilter || i.sourceLanguage === langFilter)) &&
+        (pairFilter === "all" || group.some((i) => `${i.sourceLanguage}>${i.language}` === pairFilter)) &&
         (!q || group.some((i) => [i.text, i.detail, i.source, i.language, i.dictionaryEntry?.etymology, ...i.dictionaryEntry?.senses.map((s) => `${s.definition} ${s.example ?? ""}`) ?? []].some((v) => v?.toLowerCase().includes(q)))),
     );
-  }, [items, filter, query]);
+  }, [items, filter, langFilter, pairFilter, query]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
@@ -88,25 +112,71 @@ function SavedPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("saved.subtitle")}</p>
         </header>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              className={cn(
-                "rounded-full px-3.5 py-1.5 text-sm transition-colors",
-                filter === f.key
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary/60 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t(f.label)}
-            </button>
-          ))}
-        </div>
-
         {items.length > 0 && (
           <div className="mt-6 flex items-center gap-3 border-b border-border pb-3">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    "order-last flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-colors",
+                    activeCount ? "bg-primary text-primary-foreground" : "bg-secondary/60 text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <SlidersHorizontal className="size-4" />
+                  {FT.filter}
+                  {activeCount > 0 && <span>· {activeCount}</span>}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72 space-y-4">
+                {[
+                  {
+                    label: FT.section,
+                    value: filter,
+                    set: (v: string) => setFilter(v as SavedKind | "all"),
+                    options: FILTERS.filter((f) => f.key !== "all").map((f) => ({ value: f.key, label: t(f.label) })),
+                  },
+                  {
+                    label: FT.language,
+                    value: langFilter,
+                    set: setLangFilter,
+                    options: languages.map((l) => ({ value: l, label: ln(l) })),
+                  },
+                  {
+                    label: FT.pair,
+                    value: pairFilter,
+                    set: setPairFilter,
+                    options: pairs.map((p) => {
+                      const [a, b] = p.split(">");
+                      return { value: p, label: `${ln(a ?? "")} → ${ln(b ?? "")}` };
+                    }),
+                  },
+                ].map((f) => (
+                  <label key={f.label} className="block">
+                    <span className="text-xs text-muted-foreground">{f.label}</span>
+                    <select
+                      value={f.value}
+                      onChange={(e) => f.set(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none"
+                    >
+                      <option value="all">{FT.any}</option>
+                      {f.options.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+                {activeCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { setFilter("all"); setLangFilter("all"); setPairFilter("all"); }}
+                    className="text-sm text-primary"
+                  >
+                    {FT.reset}
+                  </button>
+                )}
+              </PopoverContent>
+            </Popover>
             <Search className="size-4 shrink-0 text-muted-foreground" />
             <input
               value={query}
