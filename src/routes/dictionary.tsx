@@ -2,7 +2,8 @@ import { DictateButton } from "@/components/DictateButton";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, Copy, Info, Loader2, Search, Volume2, VolumeX, X } from "lucide-react";
+import { ChevronDown, Info, Loader2, Search, X } from "lucide-react";
+import { TextActions } from "@/components/TextActions";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
@@ -220,37 +221,14 @@ function DictionaryPage() {
     setTimeout(() => setCopiedId(null), 1600);
   };
 
-  const actionButton = (id: string, text: string, itemLanguage: string, compact = false) => {
+  const actionButton = (id: string, text: string, itemLanguage: string) => {
     const playing = speech.playingId === id;
     const failed = speech.errorId === id;
     return (
-      <div className="flex shrink-0 items-center gap-4">
-        <button
-          onClick={() => speech.speak(id, text, itemLanguage)}
-          title={playing ? t("translate.stop") : t("translate.listen")}
-          aria-label={playing ? t("translate.stop") : t("translate.listen")}
-          aria-pressed={playing}
-          className={`flex items-center gap-1.5 text-sm transition-colors ${
-            playing ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {failed ? (
-            <VolumeX className="size-4" />
-          ) : (
-            <Volume2 className={`size-4 ${playing ? "animate-pulse" : ""}`} />
-          )}
-          {!compact && (playing ? t("translate.stop") : t("translate.listen"))}
-        </button>
-        <button
-          onClick={() => onCopy(id, text)}
-          title={t("translate.copy")}
-          aria-label={t("translate.copy")}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {copiedId === id ? <Check className="size-4" /> : <Copy className="size-4" />}
-          {!compact && (copiedId === id ? t("translate.copied") : t("translate.copy"))}
-        </button>
-        {failed && !compact && (
+      <div className="flex flex-wrap items-center gap-4">
+        <TextActions playing={playing} failed={failed} copied={copiedId === id}
+          onListen={() => void speech.speak(id, text, itemLanguage)} onCopy={() => void onCopy(id, text)} />
+        {failed && (
           <span className="text-xs text-muted-foreground">{t("translate.noAudio")}</span>
         )}
       </div>
@@ -404,17 +382,15 @@ function DictionaryPage() {
             </div>
             {tab === "entry" && (
               <div className="mt-3 rounded-2xl bg-secondary/40 p-5 md:p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="min-w-0">
                   <p className="text-2xl text-foreground">{entry.text}</p>
                   {entry.transliteration && (
                     <p className="mt-0.5 text-sm text-muted-foreground">{entry.transliteration}</p>
                   )}
-                  <span className="mt-3 inline-block rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
-                    {t(TYPE_KEYS[entry.type])}
-                  </span>
                 </div>
-                <div className="flex shrink-0 items-start gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   {actionButton(`dict:${entry.text}`, entry.text, entry.language)}
                   <SaveButton
                     item={{
@@ -426,6 +402,12 @@ function DictionaryPage() {
                       ...(entry.transliteration ? { transliteration: entry.transliteration } : {}),
                     }}
                   />
+                </div>
+                </div>
+                <div>
+                  <span className="inline-block rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
+                    {t(TYPE_KEYS[entry.type])}
+                  </span>
                 </div>
               </div>
 

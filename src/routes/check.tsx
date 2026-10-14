@@ -3,7 +3,9 @@ import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Check as CheckIcon, ChevronDown, Copy, Info, X } from "lucide-react";
+import { ChevronDown, Info, X } from "lucide-react";
+import { TextActions } from "@/components/TextActions";
+import { useSpeech } from "@/lib/speech";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
@@ -46,6 +48,7 @@ function labelTone(label: string) {
 
 function CheckPage() {
   const runCheck = useServerFn(checkText);
+  const speech = useSpeech();
   const { t, lang, ln } = useI18n();
 
   const [text, setText] = useState("");
@@ -258,11 +261,20 @@ function CheckPage() {
 
             {result.corrected && (
               <div>
-                <div className="flex items-center justify-between">
                   <h2 className="text-sm font-medium text-muted-foreground">
                     {t("check.suggestedVersion")}
                   </h2>
-                  <div className="flex items-center gap-4">
+                <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
+                  {result.corrected}
+                </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-4">
+                    <TextActions
+                      playing={speech.playingId === "check:corrected"}
+                      failed={speech.errorId === "check:corrected"}
+                      copied={copied}
+                      onListen={() => void speech.speak("check:corrected", result.corrected ?? "", result.detectedLanguage ?? language)}
+                      onCopy={() => void onCopy()}
+                    />
                     <SaveButton
                       item={{
                         kind: "check",
@@ -272,18 +284,7 @@ function CheckPage() {
                         ...(text.trim() !== result.corrected ? { source: text.trim() } : {}),
                       }}
                     />
-                    <button
-                      onClick={onCopy}
-                      className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {copied ? <CheckIcon className="size-4" /> : <Copy className="size-4" />}
-                      {copied ? t("check.copied") : t("check.copy")}
-                    </button>
                   </div>
-                </div>
-                <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
-                  {result.corrected}
-                </p>
               </div>
             )}
 
