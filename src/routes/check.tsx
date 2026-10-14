@@ -272,7 +272,7 @@ function CheckPage() {
                       playing={speech.playingId === "check:corrected"}
                       failed={speech.errorId === "check:corrected"}
                       copied={copied}
-                      onListen={() => void speech.speak("check:corrected", result.corrected, result.detectedLanguage ?? language)}
+                      onListen={() => void speech.speak("check:corrected", result.corrected ?? "", result.detectedLanguage ?? language)}
                       onCopy={() => void onCopy()}
                     />
                     <SaveButton

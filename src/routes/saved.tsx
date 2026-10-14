@@ -12,7 +12,7 @@ import { DictateButton } from "@/components/DictateButton";
 
 export const Route = createFileRoute("/saved")({
   validateSearch: (search: Record<string, unknown>): { detail?: string } =>
-    typeof search.detail === "string" ? { detail: search.detail } : {},
+    typeof search["detail"] === "string" ? { detail: search["detail"] } : {},
   head: () => ({
     meta: [
       { title: "Saved — Your kept words and phrases | SayWell 会说" },
