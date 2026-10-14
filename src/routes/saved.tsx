@@ -1,15 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bookmark, Check, ChevronDown, Copy, Search, SlidersHorizontal, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { useSpeech } from "@/lib/speech";
+import { Button } from "@/components/ui/button";
+import { SavedContent } from "@/components/SavedContent";
 import { groupSavedItems, useSavedStore, type SavedKind } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
 import { DictateButton } from "@/components/DictateButton";
 
 export const Route = createFileRoute("/saved")({
+  validateSearch: (search: Record<string, unknown>): { detail?: string } =>
+    typeof search.detail === "string" ? { detail: search.detail } : {},
   head: () => ({
     meta: [
       { title: "Saved — Your kept words and phrases | SayWell 会说" },
@@ -50,21 +53,17 @@ const DICTATE_LANG: Record<string, string> = {
   zh: "Chinese (Simplified)",
 };
 
-/** Above this length a collapsed card clamps its text to three lines. */
-const LONG_TEXT = 160;
-
 function SavedPage() {
   const { t, ln, lang } = useI18n();
-  const speech = useSpeech();
+  const { detail } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { items, remove, removeGroup } = useSavedStore();
   const [filter, setFilter] = useState<SavedKind | "all">("all");
   const [langFilter, setLangFilter] = useState("all");
   const [pairFilter, setPairFilter] = useState("all");
   const [query, setQuery] = useState("");
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [open, setOpen] = useState<Record<string, boolean>>({});
-
-  const searching = query.trim().length > 0;
+  const labels = { en: { back: "Back to Saved", details: "View details" }, it: { back: "Torna a Salvati", details: "Visualizza dettagli" }, zh: { back: "返回收藏", details: "查看详情" } }[lang];
+  const selected = groupSavedItems(items).find((group) => (group[0]?.groupId ?? group[0]?.id) === detail);
 
   const { languages, pairs } = useMemo(() => {
     const ls = new Set<string>();
@@ -96,12 +95,6 @@ function SavedPage() {
     );
   }, [items, filter, langFilter, pairFilter, query]);
 
-  const onCopy = async (id: string, value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 1600);
-  };
-
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
       <div className="mx-auto max-w-3xl">
@@ -112,6 +105,14 @@ function SavedPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("saved.subtitle")}</p>
         </header>
 
+        {detail ? (
+          <div>
+            <Button variant="ghost" onClick={() => void navigate({ search: {} })} className="mb-6 h-auto gap-2 p-0 text-muted-foreground hover:bg-transparent hover:text-foreground">
+              <ArrowLeft />{labels.back}
+            </Button>
+            {selected ? <SavedContent key={detail} group={selected} /> : <p className="text-sm text-muted-foreground">{t("saved.noMatches")}</p>}
+          </div>
+        ) : <>
         {items.length > 0 && (
           <div className="mt-6 flex items-center gap-3 border-b border-border pb-3">
             <Popover>
@@ -154,16 +155,19 @@ function SavedPage() {
                 ].map((f) => (
                   <label key={f.label} className="block">
                     <span className="text-xs text-muted-foreground">{f.label}</span>
+                    <div className="relative mt-1">
                     <select
                       value={f.value}
                       onChange={(e) => f.set(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none"
+                      className="w-full appearance-none rounded-lg border border-border bg-background py-2 pl-3 pr-12 text-sm text-foreground outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
                       <option value="all">{FT.any}</option>
                       {f.options.map((o) => (
                         <option key={o.value} value={o.value}>{o.label}</option>
                       ))}
                     </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                    </div>
                   </label>
                 ))}
                 {activeCount > 0 && (
@@ -218,27 +222,9 @@ function SavedPage() {
             {visible.map((group) => {
               const i = group[0];
               if (!i) return null;
-              const entry = i.dictionaryEntry;
               const grouped = Boolean(i.groupId);
               const key = i.groupId ?? i.id;
-              const isOpen = searching || Boolean(open[key]);
-              const hasMore =
-                Boolean(
-                  entry &&
-                    (entry.senses.length > 1 ||
-                      entry.expandedForm ||
-                      entry.imageUrl ||
-                      entry.etymology ||
-                      entry.note),
-                ) ||
-                (grouped && group.length > 1) ||
-                group.some(
-                  (row) =>
-                    row.text.length > LONG_TEXT || (row.detail?.length ?? 0) > LONG_TEXT ||
-                    (i.source?.length ?? 0) > LONG_TEXT,
-                );
-              const rows = isOpen || !grouped ? group : group.slice(0, 1);
-              const senses = entry ? (isOpen ? entry.senses : entry.senses.slice(0, 1)) : [];
+              const summary = i.dictionaryEntry?.meaning ?? i.detail;
 
               return (
                 <li key={key} className="rounded-2xl bg-secondary/40 p-5 md:p-6">
@@ -264,95 +250,17 @@ function SavedPage() {
                     </button>
                   </div>
 
-                  {i.source && i.kind !== "dictionary" && (
-                    <div className={cn("mt-3", grouped && "pb-4")}>
-                      {grouped && (
-                        <p className="text-xs text-muted-foreground">
-                          {ln(i.sourceLanguage ?? i.language)} · {t("translate.sourceLabel")}
-                        </p>
-                      )}
-                      <p
-                        className={cn(
-                          grouped
-                            ? "mt-1 whitespace-pre-wrap break-words text-xl text-foreground"
-                            : "text-sm text-muted-foreground",
-                          !isOpen && "line-clamp-3",
-                        )}
-                      >
-                        {i.source}
-                      </p>
+                  <div className="mt-3 flex items-center gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground">{grouped ? i.source ?? i.text : i.text}</p>
+                      {summary && !grouped && <p className="mt-1 line-clamp-2 break-words text-sm text-muted-foreground">{summary}</p>}
+                      {grouped && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{group.map((row) => ln(row.language)).join(" · ")}</p>}
                     </div>
-                  )}
-
-                  <div className={cn(grouped && "divide-y divide-border/60")}>
-                    {rows.map((row) => {
-                      const playing = speech.playingId === row.id;
-                      const failed = speech.errorId === row.id;
-                      return (
-                        <div key={row.id} className={cn(grouped && "py-4 last:pb-0")}>
-                          {grouped && (
-                            <p className="text-xs font-medium text-muted-foreground">
-                              {ln(row.language)}
-                            </p>
-                          )}
-                          <p
-                            className={cn(
-                              "mt-2 whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground",
-                              !isOpen && "line-clamp-3",
-                            )}
-                          >
-                            {row.text}
-                          </p>
-                          {row.transliteration && (
-                            <p className="mt-0.5 text-sm text-muted-foreground">
-                              {row.transliteration}
-                            </p>
-                          )}
-                          {row.detail && (
-                            <p
-                              className={cn(
-                                "mt-2 text-sm text-muted-foreground",
-                                !isOpen && "line-clamp-3",
-                              )}
-                            >
-                              {row.detail}
-                            </p>
-                          )}
-                          {isOpen && entry?.expandedForm && (
-                            <div className="mt-5">
-                              <p className="text-xs text-muted-foreground">
-                                {t("vocab.expandedForm")}
-                              </p>
-                              <p className="mt-1 text-foreground">{entry.expandedForm}</p>
-                            </div>
-                          )}
-                          {isOpen && entry?.imageUrl && (
-                            <img
-                              src={entry.imageUrl}
-                              alt={entry.text}
-                              loading="lazy"
-                              className="mt-5 max-h-64 w-full rounded-xl object-cover"
-                            />
-                          )}
-                          {senses.length > 0 && (
-                            <ul className="mt-5 space-y-4 border-t border-border pt-5">
-                              {senses.map((sense, index) => (
-                                <li key={index}>
-                                  <p className="text-sm text-foreground">
-                                    {sense.partOfSpeech && (
-                                      <span className="mr-2 italic text-muted-foreground">
-                                        {sense.partOfSpeech}
-                                      </span>
-                                    )}
-                                    {sense.definition}
-                                  </p>
-                                  {sense.example && (
-                                    <p className="mt-1 text-sm text-muted-foreground">
-                                      {sense.example}
-                                      {sense.exampleTranslation ? ` — ${sense.exampleTranslation}` : ""}
-                                    </p>
-                                  )}
-                                </li>
+                    <Button variant="ghost" size="icon" title={labels.details} aria-label={`${labels.details}: ${i.source ?? i.text}`} onClick={() => void navigate({ search: { detail: key } })} className="shrink-0 rounded-full text-muted-foreground hover:text-foreground">
+                      <ArrowRight />
+                    </Button>
+                  </div>
+                </li>
                               ))}
                             </ul>
                           )}
@@ -428,6 +336,7 @@ function SavedPage() {
             })}
           </ul>
         )}
+        </>}
       </div>
     </main>
   );
