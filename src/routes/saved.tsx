@@ -261,58 +261,7 @@ function SavedPage() {
                     </Button>
                   </div>
                 </li>
-                              ))}
-                            </ul>
-                          )}
-                          {isOpen && entry?.etymology && (
-                            <div className="mt-5 border-t border-border pt-5">
-                              <p className="text-xs text-muted-foreground">
-                                {t("vocab.etymology")}
-                              </p>
-                              <p className="mt-1 text-sm text-foreground/80">{entry.etymology}</p>
-                            </div>
-                          )}
-                          {isOpen && entry?.note && (
-                            <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>
-                          )}
-                          <div className="mt-4 flex items-center justify-end gap-4">
-                            <button
-                              type="button"
-                              onClick={() => speech.speak(row.id, row.text, row.language)}
-                              title={playing ? t("translate.stop") : t("translate.listen")}
-                              aria-label={playing ? t("translate.stop") : t("translate.listen")}
-                              aria-pressed={playing}
-                              className={cn(
-                                "flex items-center gap-1.5 text-sm transition-colors",
-                                playing
-                                  ? "text-foreground"
-                                  : "text-muted-foreground hover:text-foreground",
-                              )}
-                            >
-                              {failed ? (
-                                <VolumeX className="size-4" />
-                              ) : (
-                                <Volume2 className={cn("size-4", playing && "animate-pulse")} />
-                              )}
-                              {playing ? t("translate.stop") : t("translate.listen")}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onCopy(row.id, row.text)}
-                              title={t("translate.copy")}
-                              aria-label={t("translate.copy")}
-                              className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                            >
-                              {copiedId === row.id ? (
-                                <Check className="size-4" />
-                              ) : (
-                                <Copy className="size-4" />
-                              )}
-                              {copiedId === row.id ? t("translate.copied") : t("translate.copy")}
-                            </button>
-                          </div>
-                        </div>
-                      );
+              );
                     })}
                   </div>
 
