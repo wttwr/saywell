@@ -262,26 +262,6 @@ function SavedPage() {
                   </div>
                 </li>
               );
-                    })}
-                  </div>
-
-                  {hasMore && (
-                    <div className="mt-4 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => setOpen((prev) => ({ ...prev, [key]: !isOpen }))}
-                        aria-expanded={isOpen}
-                        className="flex items-center gap-1 rounded-full px-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        {isOpen ? t("saved.showLess") : t("saved.showMore")}
-                        <ChevronDown
-                          className={cn("size-4 transition-transform", isOpen && "rotate-180")}
-                        />
-                      </button>
-                    </div>
-                  )}
-                </li>
-              );
             })}
           </ul>
         )}
