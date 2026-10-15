@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Bookmark, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, ChevronDown, Search, SlidersHorizontal, Volume2, X } from "lucide-react";
+import { useSpeech } from "@/lib/speech";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
@@ -58,6 +59,7 @@ function SavedPage() {
   const { detail } = Route.useSearch();
   const navigate = Route.useNavigate();
   const { items, remove, removeGroup } = useSavedStore();
+  const speech = useSpeech();
   const [filter, setFilter] = useState<SavedKind | "all">("all");
   const [langFilter, setLangFilter] = useState("all");
   const [pairFilter, setPairFilter] = useState("all");
@@ -216,7 +218,16 @@ function SavedPage() {
             <p className="mt-1 text-sm text-muted-foreground">{t("saved.emptyBody")}</p>
           </div>
         ) : visible.length === 0 ? (
-          <p className="mt-10 text-sm text-muted-foreground">{t("saved.noMatches")}</p>
+          <div className="mt-10 text-sm text-muted-foreground">
+            <p>{t("saved.noMatches")}</p>
+            <button
+              type="button"
+              onClick={() => { setQuery(""); setFilter("all"); setLangFilter("all"); setPairFilter("all"); }}
+              className="mt-2 text-primary"
+            >
+              {FT.reset}
+            </button>
+          </div>
         ) : (
           <ul className="mt-8 flex flex-col gap-3">
             {visible.map((group) => {
@@ -225,9 +236,21 @@ function SavedPage() {
               const grouped = Boolean(i.groupId);
               const key = i.groupId ?? i.id;
               const summary = i.dictionaryEntry?.meaning ?? i.detail;
+              const showSource = !grouped && i.kind !== "dictionary" && i.source && i.source !== i.text;
+              const listenText = grouped ? i.source ?? i.text : i.text;
+              const listenLang = grouped ? i.sourceLanguage ?? i.language : i.language;
+              const listenId = `card:${key}`;
+              const open = () => void navigate({ search: { detail: key } });
 
               return (
-                <li key={key} className="rounded-2xl bg-secondary/40 p-5 md:p-6">
+                <li
+                  key={key}
+                  role="link"
+                  tabIndex={0}
+                  onClick={open}
+                  onKeyDown={(e) => { if (e.key === "Enter") open(); }}
+                  className="cursor-pointer rounded-2xl bg-secondary/40 p-5 transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:p-6"
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
                       <span className="rounded-full bg-secondary px-2.5 py-0.5 text-secondary-foreground">
@@ -239,7 +262,7 @@ function SavedPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => (i.groupId ? removeGroup(i.groupId) : remove(i.id))}
+                      onClick={(e) => { e.stopPropagation(); if (i.groupId) removeGroup(i.groupId); else remove(i.id); }}
                       title={t("saved.unsave")}
                       aria-label={t("saved.unsave")}
                       aria-pressed
@@ -252,13 +275,22 @@ function SavedPage() {
 
                   <div className="mt-3 flex items-center gap-4">
                     <div className="min-w-0 flex-1">
+                      {showSource && <p className="mb-1 line-clamp-2 whitespace-pre-wrap break-words text-sm text-muted-foreground">{i.source}</p>}
                       <p className="line-clamp-2 whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground">{grouped ? i.source ?? i.text : i.text}</p>
                       {summary && !grouped && <p className="mt-1 line-clamp-2 break-words text-sm text-muted-foreground">{summary}</p>}
                       {grouped && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{group.map((row) => ln(row.language)).join(" · ")}</p>}
                     </div>
-                    <Button variant="ghost" size="icon" title={labels.details} aria-label={`${labels.details}: ${i.source ?? i.text}`} onClick={() => void navigate({ search: { detail: key } })} className="shrink-0 rounded-full text-muted-foreground hover:text-foreground">
-                      <ArrowRight />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title={t("translate.listen")}
+                      aria-label={t("translate.listen")}
+                      onClick={(e) => { e.stopPropagation(); void speech.speak(listenId, listenText, listenLang); }}
+                      className={cn("shrink-0 rounded-full hover:text-foreground", speech.playingId === listenId ? "text-foreground" : "text-muted-foreground")}
+                    >
+                      <Volume2 />
                     </Button>
+                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                   </div>
                 </li>
               );
