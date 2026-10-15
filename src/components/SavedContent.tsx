@@ -22,7 +22,7 @@ export function SavedContent({ group }: { group: SavedItem[] }) {
     </div>
   );
   return (
-    <div>
+    <div className="rounded-2xl bg-secondary/40 p-5 md:p-6">
       {first.source && first.kind !== "dictionary" && (
         <section className="mb-6">
           <p className="text-xs text-muted-foreground">{first.sourceLanguage ? `${ln(first.sourceLanguage)} · ` : ""}{t("translate.sourceLabel")}</p>
