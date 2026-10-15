@@ -389,6 +389,7 @@ function TranslatePage() {
                 activeLang ? (results[activeLang] ?? "") : "",
                 activeLang,
               )}
+              {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
               <SaveButton
                 item={{
                   kind: "translation",
@@ -398,7 +399,6 @@ function TranslatePage() {
                   sourceLanguage: detectedLanguage || from,
                 }}
               />
-              {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
             </div>
           </section>
         </div>
