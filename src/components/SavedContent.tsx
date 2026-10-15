@@ -46,7 +46,7 @@ export function SavedContent({ group }: { group: SavedItem[] }) {
       {entry && entry.senses.length > 0 && <ul className="mt-6 space-y-5 border-t border-border pt-5">
         {entry.senses.map((sense, index) => <li key={index}>
           <p className="break-words text-sm leading-relaxed text-foreground">{sense.partOfSpeech && <span className="mr-2 italic text-muted-foreground">{sense.partOfSpeech}</span>}{sense.definition}</p>
-          {sense.example && <div className="mt-2"><p className="break-words text-sm leading-relaxed text-muted-foreground">{sense.example}</p>{actions(`example:${first.id}:${index}`, sense.example, first.language)}{sense.exampleTranslation && <p className="mt-2 break-words text-sm text-muted-foreground">{sense.exampleTranslation}</p>}</div>}
+          {sense.example && <div className="mt-2"><p className="break-words text-sm leading-relaxed text-muted-foreground">{sense.example}</p>{sense.exampleTranslation && <p className="mt-2 break-words text-sm text-muted-foreground">{sense.exampleTranslation}</p>}</div>}
         </li>)}
       </ul>}
       {entry?.etymology && <section className="mt-6 border-t border-border pt-5"><h2 className="text-xs text-muted-foreground">{t("vocab.etymology")}</h2><p className="mt-1 break-words text-sm leading-relaxed text-foreground/80">{entry.etymology}</p></section>}
