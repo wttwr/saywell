@@ -332,17 +332,17 @@ function TranslatePage() {
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
-                {listenButton("source", source, detectedLanguage || from)}
                 <span className="text-xs text-muted-foreground">
                   {source.length} {t("translate.characters")}
                 </span>
-              </div>
-              <div className="flex items-center gap-4">
                 {loading && (
                   <span className="text-xs text-muted-foreground">
                     {t("translate.translating")}
                   </span>
                 )}
+              </div>
+              <div className="flex items-center gap-4">
+                {listenButton("source", source, detectedLanguage || from)}
                 {copyButton("source", source)}
               </div>
             </div>
@@ -383,24 +383,22 @@ function TranslatePage() {
 
             <div className="mt-6 min-h-56 md:min-h-72">{resultBody(activeLang)}</div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-end gap-4">
               {listenButton(
                 `target:${activeLang ?? ""}`,
                 activeLang ? (results[activeLang] ?? "") : "",
                 activeLang,
               )}
-              <div className="flex items-center gap-4">
-                <SaveButton
-                  item={{
-                    kind: "translation",
-                    text: activeLang ? (results[activeLang] ?? "") : "",
-                    language: activeLang ?? "",
-                    source: source.trim(),
-                    sourceLanguage: detectedLanguage || from,
-                  }}
-                />
-                {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
-              </div>
+              <SaveButton
+                item={{
+                  kind: "translation",
+                  text: activeLang ? (results[activeLang] ?? "") : "",
+                  language: activeLang ?? "",
+                  source: source.trim(),
+                  sourceLanguage: detectedLanguage || from,
+                }}
+              />
+              {copyButton(activeLang, activeLang ? (results[activeLang] ?? "") : "")}
             </div>
           </section>
         </div>
