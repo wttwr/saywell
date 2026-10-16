@@ -132,6 +132,7 @@ function AppNav() {
     { to: "/", label: t("nav.translate"), exact: true },
     { to: "/check", label: t("nav.check") },
     { to: "/style", label: t("nav.style") },
+    { to: "/interpret", label: t("nav.interpret") },
     { to: "/dictionary", label: t("nav.vocabulary") },
     { to: "/saved", label: t("nav.saved"), icon: Bookmark },
     { to: "/settings", label: t("nav.settings"), icon: Settings },
