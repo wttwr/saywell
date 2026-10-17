@@ -270,7 +270,7 @@ function InterpretPage() {
               {tabBtn("grammar", t("interpret.tabGrammar"))}
             </div>
 
-            <div className="mt-8 space-y-8">
+            <div className="mt-3 space-y-8 rounded-2xl bg-secondary/40 p-5 md:p-6">
               {tab === "explanation" ? (
                 <>
                   <Section title={t("interpret.meaning")}>
