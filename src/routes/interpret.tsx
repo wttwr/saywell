@@ -22,12 +22,12 @@ export const Route = createFileRoute("/interpret")({
       { title: "Interpret — Understand tone and meaning | SayWell 会说" },
       {
         name: "description",
-        content: "Understand the meaning, usage and grammar behind any word, phrase or sentence.",
+        content: "Understand the meaning and usage behind any word, phrase or sentence.",
       },
       { property: "og:title", content: "Interpret — Read between the lines | SayWell 会说" },
       {
         property: "og:description",
-        content: "Paste any expression and see what it means, how it's used and how it's built.",
+        content: "Paste any expression and see what it means and how it's used.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -76,7 +76,6 @@ function InterpretPage() {
   const { settings } = useSettings();
   useDefaultOnce(() => setShortcuts(settings.styleShortcuts));
   const [result, setResult] = useState<InterpretResult | null>(null);
-  const [tab, setTab] = useState<"explanation" | "grammar">("explanation");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -90,7 +89,6 @@ function InterpretPage() {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
       setResult(await run({ data: { text: trimmed, language, explanationLanguage } }));
-      setTab("explanation");
     } catch (e) {
       setError(e instanceof Error ? e.message : t("interpret.error"));
       setResult(null);
@@ -98,20 +96,6 @@ function InterpretPage() {
       setLoading(false);
     }
   };
-
-  const tabBtn = (id: "explanation" | "grammar", label: string) => (
-    <button
-      onClick={() => setTab(id)}
-      aria-pressed={tab === id}
-      className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-        tab === id
-          ? "bg-primary text-primary-foreground"
-          : "bg-secondary/60 text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {label}
-    </button>
-  );
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
@@ -238,108 +222,59 @@ function InterpretPage() {
                 <span>{result.issue}</span>
               </p>
             )}
-            <div className="flex gap-2">
-              {tabBtn("explanation", t("interpret.tabExplanation"))}
-              {tabBtn("grammar", t("interpret.tabGrammar"))}
-            </div>
 
-            <div className="mt-3 space-y-8 rounded-2xl bg-secondary/40 p-5 md:p-6">
-              {tab === "explanation" && (
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-                  <div className="min-w-0">
-                    <p className="text-2xl leading-snug text-foreground">{text.trim()}</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-4">
-                    <TextActions
-                      playing={speech.playingId === "interpret:input"}
-                      failed={speech.errorId === "interpret:input"}
-                      copied={copied}
-                      onListen={() =>
-                        speech.speak("interpret:input", text.trim(), result.detectedLanguage)
-                      }
-                      onCopy={async () => {
-                        await navigator.clipboard.writeText(text.trim());
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1600);
-                      }}
-                    />
-                    <SaveButton
-                      item={{
-                        kind: "interpret",
-                        text: text.trim(),
-                        language: result.detectedLanguage,
-                        detail: result.explanation.meaning,
-                      }}
-                    />
-                  </div>
+            <div className="space-y-8 rounded-2xl bg-secondary/40 p-5 md:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                <div className="min-w-0">
+                  <p className="text-2xl leading-snug text-foreground">{text.trim()}</p>
                 </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  <TextActions
+                    playing={speech.playingId === "interpret:input"}
+                    failed={speech.errorId === "interpret:input"}
+                    copied={copied}
+                    onListen={() =>
+                      speech.speak("interpret:input", text.trim(), result.detectedLanguage)
+                    }
+                    onCopy={async () => {
+                      await navigator.clipboard.writeText(text.trim());
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1600);
+                    }}
+                  />
+                  <SaveButton
+                    item={{
+                      kind: "interpret",
+                      text: text.trim(),
+                      language: result.detectedLanguage,
+                      detail: result.explanation.meaning,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <Section title={t("interpret.meaning")}>
+                <p className="text-base leading-relaxed text-foreground">
+                  {result.explanation.meaning}
+                </p>
+                {result.explanation.literal && (
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    <span className="font-medium">{t("interpret.literal")}: </span>
+                    {result.explanation.literal}
+                  </p>
+                )}
+              </Section>
+              {result.explanation.usage && (
+                <Section title={t("interpret.usage")}>
+                  <p className="text-base leading-relaxed text-foreground">
+                    {result.explanation.usage}
+                  </p>
+                </Section>
               )}
-              {tab === "explanation" ? (
-                <>
-                  <Section title={t("interpret.meaning")}>
-                    <p className="text-base leading-relaxed text-foreground">
-                      {result.explanation.meaning}
-                    </p>
-                    {result.explanation.literal && (
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        <span className="font-medium">{t("interpret.literal")}: </span>
-                        {result.explanation.literal}
-                      </p>
-                    )}
-                  </Section>
-                  {result.explanation.usage && (
-                    <Section title={t("interpret.usage")}>
-                      <p className="text-base leading-relaxed text-foreground">
-                        {result.explanation.usage}
-                      </p>
-                    </Section>
-                  )}
-                  {result.explanation.examples.length > 0 && (
-                    <Section title={t("interpret.examples")}>
-                      <ExampleList items={result.explanation.examples} />
-                    </Section>
-                  )}
-                </>
-              ) : (
-                <>
-                  {result.grammar.structure.length > 0 && (
-                    <Section title={t("interpret.structure")}>
-                      <dl className="space-y-2">
-                        {result.grammar.structure.map((s, i) => (
-                          <div key={i} className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
-                            <dt className="shrink-0 text-base font-medium text-foreground sm:w-48">
-                              {s.part}
-                            </dt>
-                            <dd className="text-sm leading-relaxed text-muted-foreground sm:pt-0.5">
-                              {s.role}
-                            </dd>
-                          </div>
-                        ))}
-                      </dl>
-                    </Section>
-                  )}
-                  {result.grammar.explanation && (
-                    <Section title={t("interpret.grammarExplanation")}>
-                      <p className="whitespace-pre-wrap text-base leading-relaxed text-foreground">
-                        {result.grammar.explanation}
-                      </p>
-                    </Section>
-                  )}
-                  {result.grammar.rules.length > 0 && (
-                    <Section title={t("interpret.rules")}>
-                      <ul className="list-disc space-y-1.5 pl-5 text-base leading-relaxed text-foreground">
-                        {result.grammar.rules.map((r, i) => (
-                          <li key={i}>{r}</li>
-                        ))}
-                      </ul>
-                    </Section>
-                  )}
-                  {result.grammar.variations.length > 0 && (
-                    <Section title={t("interpret.variations")}>
-                      <ExampleList items={result.grammar.variations} />
-                    </Section>
-                  )}
-                </>
+              {result.explanation.examples.length > 0 && (
+                <Section title={t("interpret.examples")}>
+                  <ExampleList items={result.explanation.examples} />
+                </Section>
               )}
             </div>
           </div>
