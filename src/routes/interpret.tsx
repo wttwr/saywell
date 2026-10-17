@@ -211,33 +211,6 @@ function InterpretPage() {
             <DictateButton language={language} onText={setText} className="absolute right-0 top-8" />
           )}
         </div>
-        {text.trim() && (
-          <div className="mt-2 flex items-center gap-4">
-            <TextActions
-              playing={speech.playingId === "interpret:input"}
-              failed={speech.errorId === "interpret:input"}
-              copied={copied}
-              onListen={() =>
-                speech.speak("interpret:input", text.trim(), result?.detectedLanguage ?? language)
-              }
-              onCopy={async () => {
-                await navigator.clipboard.writeText(text.trim());
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1600);
-              }}
-            />
-            {result && (
-              <SaveButton
-                item={{
-                  kind: "interpret",
-                  text: text.trim(),
-                  language: result.detectedLanguage,
-                  detail: result.explanation.meaning,
-                }}
-              />
-            )}
-          </div>
-        )}
 
         <button
           onClick={onInterpret}
@@ -271,6 +244,39 @@ function InterpretPage() {
             </div>
 
             <div className="mt-3 space-y-8 rounded-2xl bg-secondary/40 p-5 md:p-6">
+              {tab === "explanation" && (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                  <div className="min-w-0">
+                    <p className="text-2xl leading-snug text-foreground">{text.trim()}</p>
+                    <p className="mt-1 text-xs font-medium text-muted-foreground">
+                      {ln(result.detectedLanguage)} · {t("translate.sourceLabel")}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <TextActions
+                      playing={speech.playingId === "interpret:input"}
+                      failed={speech.errorId === "interpret:input"}
+                      copied={copied}
+                      onListen={() =>
+                        speech.speak("interpret:input", text.trim(), result.detectedLanguage)
+                      }
+                      onCopy={async () => {
+                        await navigator.clipboard.writeText(text.trim());
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1600);
+                      }}
+                    />
+                    <SaveButton
+                      item={{
+                        kind: "interpret",
+                        text: text.trim(),
+                        language: result.detectedLanguage,
+                        detail: result.explanation.meaning,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
               {tab === "explanation" ? (
                 <>
                   <Section title={t("interpret.meaning")}>
