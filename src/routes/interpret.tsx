@@ -4,8 +4,12 @@ import { useRef, useState } from "react";
 import { ChevronDown, Info, X } from "lucide-react";
 
 import { DictateButton } from "@/components/DictateButton";
-import { AUTO_DETECT, INPUT_LANGUAGES } from "@/lib/languages";
+import { SaveButton } from "@/components/SaveButton";
+import { TextActions } from "@/components/TextActions";
+import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
+import { useSpeech } from "@/lib/speech";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 import {
   interpretText,
   type InterpretExample,
@@ -62,6 +66,15 @@ function InterpretPage() {
   const { t, lang, ln } = useI18n();
   const [text, setText] = useState("");
   const [language, setLanguage] = useState(AUTO_DETECT);
+  const [shortcuts, setShortcuts] = useState<string[]>([
+    "English",
+    "Italian",
+    "Chinese (Simplified)",
+  ]);
+  const [copied, setCopied] = useState(false);
+  const speech = useSpeech();
+  const { settings } = useSettings();
+  useDefaultOnce(() => setShortcuts(settings.styleShortcuts));
   const [result, setResult] = useState<InterpretResult | null>(null);
   const [tab, setTab] = useState<"explanation" | "grammar">("explanation");
   const [loading, setLoading] = useState(false);
@@ -131,6 +144,46 @@ function InterpretPage() {
             </select>
           </div>
         </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2 md:gap-3">
+          <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
+          {shortcuts.map((s) => (
+            <button
+              key={s}
+              onClick={() => setLanguage(s)}
+              className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                s === language
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {ln(s)}
+            </button>
+          ))}
+          <div className="relative inline-flex">
+            <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
+              + {t("translate.add")}
+            </span>
+            <select
+              aria-label={t("translate.addLanguage")}
+              value=""
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
+                e.target.value = "";
+              }}
+              className="absolute inset-0 size-full cursor-pointer opacity-0"
+            >
+              <option value="" disabled>
+                {t("translate.addLanguage")}
+              </option>
+              {LANGUAGES.filter((l) => !shortcuts.includes(l)).map((l) => (
+                <option key={l} value={l}>
+                  {ln(l)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         <div className="relative">
           <textarea
@@ -158,6 +211,33 @@ function InterpretPage() {
             <DictateButton language={language} onText={setText} className="absolute right-0 top-8" />
           )}
         </div>
+        {text.trim() && (
+          <div className="mt-2 flex items-center gap-4">
+            <TextActions
+              playing={speech.playingId === "interpret:input"}
+              failed={speech.errorId === "interpret:input"}
+              copied={copied}
+              onListen={() =>
+                speech.speak("interpret:input", text.trim(), result?.detectedLanguage ?? language)
+              }
+              onCopy={async () => {
+                await navigator.clipboard.writeText(text.trim());
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1600);
+              }}
+            />
+            {result && (
+              <SaveButton
+                item={{
+                  kind: "interpret",
+                  text: text.trim(),
+                  language: result.detectedLanguage,
+                  detail: result.explanation.meaning,
+                }}
+              />
+            )}
+          </div>
+        )}
 
         <button
           onClick={onInterpret}
