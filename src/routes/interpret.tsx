@@ -341,10 +341,6 @@ function InterpretPage() {
             </div>
           </div>
         )}
-
-        {!loading && !result && !error && (
-          <p className="mt-10 text-sm text-muted-foreground/70">{t("interpret.empty")}</p>
-        )}
       </div>
     </main>
   );
