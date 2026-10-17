@@ -39,6 +39,7 @@ const FILTERS: { key: SavedKind | "all"; label: TranslationKey }[] = [
   { key: "translation", label: "saved.translation" },
   { key: "style", label: "saved.style" },
   { key: "check", label: "saved.check" },
+  { key: "interpret", label: "saved.interpret" },
 ];
 
 const KIND_LABEL: Record<SavedKind, TranslationKey> = {
@@ -46,6 +47,7 @@ const KIND_LABEL: Record<SavedKind, TranslationKey> = {
   translation: "saved.translation",
   style: "saved.style",
   check: "saved.check",
+  interpret: "saved.interpret",
 };
 
 const DICTATE_LANG: Record<string, string> = {
