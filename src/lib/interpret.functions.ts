@@ -9,17 +9,10 @@ const schema = z.object({
 });
 
 export type InterpretExample = { text: string; transliteration?: string; note?: string };
-export type GrammarPart = { part: string; role: string };
 
 export type InterpretResult = {
   detectedLanguage: string;
   explanation: { meaning: string; literal?: string; usage: string; examples: InterpretExample[] };
-  grammar: {
-    structure: GrammarPart[];
-    explanation: string;
-    rules: string[];
-    variations: InterpretExample[];
-  };
   issue?: string;
 };
 
@@ -49,18 +42,14 @@ export const interpretText = createServerFn({ method: "POST" })
         ? "The user chose auto-detect."
         : `The language picker is set to ${data.language}, but it is only a preference; analyze the text in its actual language.`,
       "The input may be a word, phrase, sentence or expression. Interpret it like a thoughtful language teacher.",
-      `Write ALL explanations, labels, roles, rules and notes in ${data.explanationLanguage}. Keep the expression itself, examples and variations in the original input language. Only add a translation inside notes when it genuinely clarifies meaning.`,
+      `Write ALL explanations and notes in ${data.explanationLanguage}. Keep the expression itself and examples in the original input language. Only add a translation inside notes when it genuinely clarifies meaning.`,
       "explanation.meaning: what it means, including implied or figurative meaning. explanation.literal: the literal meaning only when it differs from the idiomatic one, else empty string.",
       "explanation.usage: when and how people naturally use it — tone, formality, cultural nuance only when real. Never invent cultural interpretations.",
       "explanation.examples: 2-3 realistic examples in different contexts, each with an optional short note.",
-      "grammar.structure: break the input into meaningful components (part = exact text from input, role = its grammatical function). For a single word give just its word class and form.",
-      "grammar.explanation: concise explanation of important words, forms and patterns, using the grammatical framework natural to that language (e.g. particles and measure words for Chinese, clitics and agreement for Italian), not forced English grammar.",
-      "grammar.rules: 0-4 short key rules that explain why the structure works. Never invent rules.",
-      "grammar.variations: 0-3 alternative grammatical constructions with a short note each, only when useful.",
       "If ambiguous, explain the most likely interpretations in meaning. If the input is grammatically incorrect, do NOT silently fix it: describe the likely intended meaning and put the grammatical problem in 'issue'; otherwise issue is empty string.",
-      "For non-Latin scripts, add transliteration (e.g. pinyin) to examples and variations; otherwise omit it.",
+      "For non-Latin scripts, add transliteration (e.g. pinyin) to examples; otherwise omit it.",
       "Be concise; avoid repetition.",
-      'Reply with ONLY a JSON object: {"detectedLanguage":"English","explanation":{"meaning":"...","literal":"","usage":"...","examples":[{"text":"...","transliteration":"","note":"..."}]},"grammar":{"structure":[{"part":"...","role":"..."}],"explanation":"...","rules":["..."],"variations":[{"text":"...","note":"..."}]},"issue":""}. No markdown.',
+      'Reply with ONLY a JSON object: {"detectedLanguage":"English","explanation":{"meaning":"...","literal":"","usage":"...","examples":[{"text":"...","transliteration":"","note":"..."}]},"issue":""}. No markdown.',
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -89,7 +78,6 @@ export const interpretText = createServerFn({ method: "POST" })
     }
 
     const e = (p["explanation"] ?? {}) as Record<string, unknown>;
-    const g = (p["grammar"] ?? {}) as Record<string, unknown>;
     const meaning = str(e["meaning"]);
     if (!meaning) throw new Error("Could not read the result. Please try again.");
     const det = str(p["detectedLanguage"]);
@@ -105,17 +93,6 @@ export const interpretText = createServerFn({ method: "POST" })
         meaning,
         usage: str(e["usage"]),
         examples: arr(e["examples"]).map(example).filter((x): x is InterpretExample => !!x).slice(0, 3),
-      },
-      grammar: {
-        structure: arr(g["structure"])
-          .map((s) => {
-            const o = (s ?? {}) as Record<string, unknown>;
-            return { part: str(o["part"]), role: str(o["role"]) };
-          })
-          .filter((s) => s.part && s.role),
-        explanation: str(g["explanation"]),
-        rules: arr(g["rules"]).map(str).filter(Boolean).slice(0, 4),
-        variations: arr(g["variations"]).map(example).filter((x): x is InterpretExample => !!x).slice(0, 3),
       },
     };
     const literal = str(e["literal"]);
