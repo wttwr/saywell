@@ -248,9 +248,6 @@ function InterpretPage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                   <div className="min-w-0">
                     <p className="text-2xl leading-snug text-foreground">{text.trim()}</p>
-                    <p className="mt-1 text-xs font-medium text-muted-foreground">
-                      {ln(result.detectedLanguage)} · {t("translate.sourceLabel")}
-                    </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-4">
                     <TextActions
