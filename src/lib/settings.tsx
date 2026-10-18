@@ -22,6 +22,7 @@ export type Settings = {
   styleLanguage: string;
   styleShortcuts: string[];
   interpretLanguage: string;
+  interpretShortcuts: string[];
   dictionaryLanguage: string;
   dictionaryShortcuts: string[];
   dictionaryTranslateTo: string[];
@@ -37,6 +38,7 @@ export const DEFAULT_SETTINGS: Settings = {
   styleLanguage: AUTO_DETECT,
   styleShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   interpretLanguage: AUTO_DETECT,
+  interpretShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryLanguage: AUTO_DETECT,
   dictionaryShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryTranslateTo: ["Italian", "Chinese (Simplified)", "Finnish"],

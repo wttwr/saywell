@@ -320,7 +320,13 @@ function SettingsPage() {
                   options={INPUT_LANGUAGES}
                 />
               </Field>
-              <p className="text-xs text-muted-foreground">{t("settings.interpretShortcutsNote")}</p>
+              <Field label={t("settings.shortcuts")}>
+                <LanguageList
+                  label={t("settings.shortcuts")}
+                  values={settings.interpretShortcuts}
+                  onChange={set("interpretShortcuts")}
+                />
+              </Field>
             </>,
           )}
 
