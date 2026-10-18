@@ -16,7 +16,7 @@ export const Route = createFileRoute("/settings")({
       {
         name: "description",
         content:
-          "Set how SayWell sounds — voice and speech speed — and the languages each section starts with: translate, check, style and dictionary defaults, saved automatically.",
+          "Set how SayWell sounds — voice and speech speed — and the languages each section starts with: translate, check, style, interpret and dictionary defaults, saved automatically.",
       },
       { property: "og:title", content: "Settings — Default languages | SayWell 会说" },
       {
@@ -306,6 +306,21 @@ function SettingsPage() {
                   onChange={set("styleShortcuts")}
                 />
               </Field>
+            </>,
+          )}
+
+          {section(
+            "nav.interpret",
+            <>
+              <Field label={t("settings.defaultLanguage")}>
+                <SelectPill
+                  label={t("settings.defaultLanguage")}
+                  value={settings.interpretLanguage}
+                  onChange={set("interpretLanguage")}
+                  options={INPUT_LANGUAGES}
+                />
+              </Field>
+              <p className="text-xs text-muted-foreground">{t("settings.interpretShortcutsNote")}</p>
             </>,
           )}
 
