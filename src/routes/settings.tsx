@@ -69,14 +69,25 @@ function LanguageList({
   values,
   onChange,
   label,
+  sourceLanguage,
 }: {
   values: string[];
   onChange: (next: string[]) => void;
   label: string;
+  /** Shown first, labeled as the source, and not removable. */
+  sourceLanguage?: string;
 }) {
   const { t, ln } = useI18n();
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {sourceLanguage && (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3.5 py-1.5 text-sm text-secondary-foreground">
+          {ln(sourceLanguage)}
+          <span className="text-xs text-muted-foreground">
+            · {t("translate.sourceLabel")}
+          </span>
+        </span>
+      )}
       {values.map((l) => (
         <span
           key={l}
@@ -109,11 +120,14 @@ function LanguageList({
           <option value="" disabled>
             {t("translate.addLanguage")}
           </option>
-          {LANGUAGES.map((o) => (
-            <option key={o} value={o} disabled={values.includes(o)}>
-              {values.includes(o) ? `✓ ${ln(o)}` : ln(o)}
-            </option>
-          ))}
+          {LANGUAGES.map((o) => {
+            const added = values.includes(o) || o === sourceLanguage;
+            return (
+              <option key={o} value={o} disabled={added}>
+                {added ? `✓ ${ln(o)}` : ln(o)}
+              </option>
+            );
+          })}
         </select>
       </div>
     </div>
@@ -349,11 +363,11 @@ function SettingsPage() {
                 />
               </Field>
               <Field label={t("settings.defaultMultilingual")}>
-                <p className="text-xs text-muted-foreground">{t("settings.sourceExcluded")}</p>
                 <LanguageList
                   label={t("settings.defaultMultilingual")}
                   values={settings.dictionaryTranslateTo}
                   onChange={set("dictionaryTranslateTo")}
+                  sourceLanguage={settings.dictionaryLanguage}
                 />
               </Field>
             </>,
