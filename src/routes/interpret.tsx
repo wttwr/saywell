@@ -196,13 +196,20 @@ function InterpretPage() {
           )}
         </div>
 
-        <button
-          onClick={onInterpret}
-          disabled={!text.trim() || loading}
-          className="mt-4 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
-        >
-          {loading ? t("interpret.loading") : t("interpret.action")}
-        </button>
+        <div className="mt-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">
+              {text.length} {t("check.characters")}
+            </span>
+          </div>
+          <button
+            onClick={onInterpret}
+            disabled={!text.trim() || loading}
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            {loading ? t("interpret.loading") : t("interpret.action")}
+          </button>
+        </div>
 
         {error && <p className="mt-8 text-base text-destructive">{error}</p>}
 
