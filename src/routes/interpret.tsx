@@ -74,7 +74,10 @@ function InterpretPage() {
   const [copied, setCopied] = useState(false);
   const speech = useSpeech();
   const { settings } = useSettings();
-  useDefaultOnce(() => setShortcuts(settings.styleShortcuts));
+  useDefaultOnce(() => {
+    setLanguage(settings.interpretLanguage);
+    setShortcuts(settings.styleShortcuts);
+  });
   const [result, setResult] = useState<InterpretResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
