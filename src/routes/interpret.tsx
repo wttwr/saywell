@@ -76,7 +76,7 @@ function InterpretPage() {
   const { settings } = useSettings();
   useDefaultOnce(() => {
     setLanguage(settings.interpretLanguage);
-    setShortcuts(settings.styleShortcuts);
+    setShortcuts(settings.interpretShortcuts);
   });
   const [result, setResult] = useState<InterpretResult | null>(null);
   const [loading, setLoading] = useState(false);
