@@ -154,8 +154,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const update = useCallback<SettingsValue["update"]>((key, value) => {
     setSettings((prev) => {
       const next = { ...prev, [key]: value };
-      if (isChild(key as string) && !prev.sectionOverrides.includes(key as string)) {
-        next.sectionOverrides = [...prev.sectionOverrides, key as string];
+      if (isChild(key as string)) {
+        const parent = (LANGUAGE_CHILDREN as readonly string[]).includes(key as string)
+          ? prev.sectionLanguage
+          : prev.sectionShortcuts;
+        const others = prev.sectionOverrides.filter((k) => k !== key);
+        // Picking the same value as the parent means following it again.
+        next.sectionOverrides =
+          JSON.stringify(value) === JSON.stringify(parent) ? others : [...others, key as string];
       }
       persist(next);
       return next;
