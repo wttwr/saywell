@@ -26,7 +26,39 @@ export type Settings = {
   dictionaryLanguage: string;
   dictionaryShortcuts: string[];
   dictionaryTranslateTo: string[];
+  /** Parent defaults that every section follows unless it is overridden. */
+  sectionLanguage: string;
+  sectionShortcuts: string[];
+  /** Child keys that have their own value instead of following the parent. */
+  sectionOverrides: string[];
 };
+
+export const LANGUAGE_CHILDREN = [
+  "translateSource",
+  "checkLanguage",
+  "styleLanguage",
+  "interpretLanguage",
+  "dictionaryLanguage",
+] as const;
+export const SHORTCUT_CHILDREN = [
+  "checkShortcuts",
+  "styleShortcuts",
+  "interpretShortcuts",
+  "dictionaryShortcuts",
+] as const;
+export type ChildKey = (typeof LANGUAGE_CHILDREN)[number] | (typeof SHORTCUT_CHILDREN)[number];
+const isChild = (k: string): k is ChildKey =>
+  (LANGUAGE_CHILDREN as readonly string[]).includes(k) ||
+  (SHORTCUT_CHILDREN as readonly string[]).includes(k);
+
+/** Child sections take the parent value unless the user customised them. */
+export function resolveSettings(raw: Settings): Settings {
+  const out = { ...raw };
+  for (const k of LANGUAGE_CHILDREN) if (!raw.sectionOverrides.includes(k)) out[k] = raw.sectionLanguage;
+  for (const k of SHORTCUT_CHILDREN)
+    if (!raw.sectionOverrides.includes(k)) out[k] = [...raw.sectionShortcuts];
+  return out;
+}
 
 export const DEFAULT_SETTINGS: Settings = {
   speechSpeed: 0.8,
@@ -42,12 +74,20 @@ export const DEFAULT_SETTINGS: Settings = {
   dictionaryLanguage: AUTO_DETECT,
   dictionaryShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryTranslateTo: ["Italian", "Chinese (Simplified)", "Finnish"],
+  sectionLanguage: AUTO_DETECT,
+  sectionShortcuts: ["English", "Italian", "Chinese (Simplified)"],
+  sectionOverrides: [],
 };
 
 const STORAGE_KEY = "lingua.settings";
 
 type SettingsValue = {
+  /** Effective values: children already resolved against the parent. */
   settings: Settings;
+  /** Stored values, including which children are overridden. */
+  raw: Settings;
+  isOverridden: (key: ChildKey) => boolean;
+  resetToParent: (key: ChildKey) => void;
   /** True once the stored preferences have been read in the browser. */
   loaded: boolean;
   update: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
@@ -80,7 +120,21 @@ function parse(raw: string): Partial<Settings> {
       (out[key] as string | undefined) = value;
     }
   }
+  // Older saves had no parent: keep any section value that was customised.
+  if (!Array.isArray(parsed.sectionOverrides)) {
+    out.sectionOverrides = ([...LANGUAGE_CHILDREN, ...SHORTCUT_CHILDREN] as ChildKey[]).filter(
+      (k) => k in out && JSON.stringify(out[k]) !== JSON.stringify(DEFAULT_SETTINGS[k]),
+    );
+  }
   return out;
+}
+
+function persist(next: Settings) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
@@ -100,22 +154,42 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const update = useCallback<SettingsValue["update"]>((key, value) => {
     setSettings((prev) => {
       const next = { ...prev, [key]: value };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        /* ignore */
+      if (isChild(key as string) && !prev.sectionOverrides.includes(key as string)) {
+        next.sectionOverrides = [...prev.sectionOverrides, key as string];
       }
+      persist(next);
       return next;
     });
   }, []);
 
-  const value = useMemo(() => ({ settings, loaded, update }), [settings, loaded, update]);
+  const resetToParent = useCallback((key: ChildKey) => {
+    setSettings((prev) => {
+      const next = { ...prev, sectionOverrides: prev.sectionOverrides.filter((k) => k !== key) };
+      persist(next);
+      return next;
+    });
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      settings: resolveSettings(settings),
+      raw: settings,
+      isOverridden: (k: ChildKey) => settings.sectionOverrides.includes(k),
+      resetToParent,
+      loaded,
+      update,
+    }),
+    [settings, loaded, update, resetToParent],
+  );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }
 
 const FALLBACK: SettingsValue = {
   settings: DEFAULT_SETTINGS,
+  raw: DEFAULT_SETTINGS,
+  isOverridden: () => false,
+  resetToParent: () => {},
   loaded: false,
   update: () => {},
 };
