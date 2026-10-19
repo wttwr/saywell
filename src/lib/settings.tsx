@@ -121,7 +121,7 @@ function parse(raw: string): Partial<Settings> {
     }
   }
   // Older saves had no parent: keep any section value that was customised.
-  if (!Array.isArray(parsed.sectionOverrides)) {
+  if (!Array.isArray(parsed["sectionOverrides"])) {
     out.sectionOverrides = ([...LANGUAGE_CHILDREN, ...SHORTCUT_CHILDREN] as ChildKey[]).filter(
       (k) => k in out && JSON.stringify(out[k]) !== JSON.stringify(DEFAULT_SETTINGS[k]),
     );
