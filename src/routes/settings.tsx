@@ -4,7 +4,7 @@ import { AudioLines, ChevronDown, Languages, Volume2, VolumeX, X } from "lucide-
 
 import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { APP_LANGUAGES, useI18n, type TranslationKey } from "@/lib/i18n";
-import { useSettings, type Settings } from "@/lib/settings";
+import { useSettings, type ChildKey, type Settings } from "@/lib/settings";
 import { useSpeech } from "@/lib/speech";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -146,7 +146,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function SettingsPage() {
   const { t, lang, setLang, ln } = useI18n();
-  const { settings, update } = useSettings();
+  const { settings, update, isOverridden, resetToParent } = useSettings();
   const speech = useSpeech();
   const [tab, setTab] = useState<"speech" | "language">("speech");
   const speechExampleId = "settings:speech-example";
@@ -161,6 +161,36 @@ function SettingsPage() {
       </h2>
       <div className="mt-5 space-y-6">{children}</div>
     </section>
+  );
+
+  const child = (key: ChildKey, label: string, control: React.ReactNode) => (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        {isOverridden(key) ? (
+          <span className="text-xs text-muted-foreground">
+            {t("settings.custom")} ·{" "}
+            <button
+              type="button"
+              onClick={() => resetToParent(key)}
+              className="text-primary underline-offset-2 hover:underline"
+            >
+              {t("settings.useParent")}
+            </button>
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">{t("settings.follows")}</span>
+        )}
+      </div>
+      {control}
+    </div>
+  );
+
+  const childSection = (titleKey: TranslationKey, children: React.ReactNode) => (
+    <div className="border-l-2 border-border pl-5">
+      <h3 className="text-sm font-semibold text-foreground">{t(titleKey)}</h3>
+      <div className="mt-4 space-y-5">{children}</div>
+    </div>
   );
 
   const set = <K extends keyof Settings>(key: K) => (value: Settings[K]) => update(key, value);
@@ -293,16 +323,34 @@ function SettingsPage() {
             </Field>,
           )}
           {section(
+            "settings.sectionLanguage",
+            <>
+              <p className="-mt-2 text-sm text-muted-foreground">{t("settings.sectionNote")}</p>
+              <Field label={t("settings.defaultLanguage")}>
+                <SelectPill
+                  label={t("settings.defaultLanguage")}
+                  value={settings.sectionLanguage}
+                  onChange={set("sectionLanguage")}
+                  options={INPUT_LANGUAGES}
+                />
+              </Field>
+              <Field label={t("settings.shortcuts")}>
+                <LanguageList
+                  label={t("settings.shortcuts")}
+                  values={settings.sectionShortcuts}
+                  onChange={set("sectionShortcuts")}
+                />
+              </Field>
+              <div className="space-y-8 pt-2">
+          {childSection(
             "settings.translate",
             <>
-              <Field label={t("settings.defaultSource")}>
-                <SelectPill
+              {child("translateSource", t("settings.defaultSource"), (<SelectPill
                   label={t("settings.defaultSource")}
                   value={settings.translateSource}
                   onChange={set("translateSource")}
                   options={SOURCE_LANGUAGES}
-                />
-              </Field>
+                />))}
               <Field label={t("settings.defaultTargets")}>
                 <LanguageList
                   label={t("settings.defaultTargets")}
@@ -313,87 +361,71 @@ function SettingsPage() {
             </>,
           )}
 
-          {section(
+          {childSection(
             "settings.check",
             <>
-              <Field label={t("settings.defaultLanguage")}>
-                <SelectPill
+              {child("checkLanguage", t("settings.defaultLanguage"), (<SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.checkLanguage}
                   onChange={set("checkLanguage")}
                   options={INPUT_LANGUAGES}
-                />
-              </Field>
-              <Field label={t("settings.shortcuts")}>
-                <LanguageList
+                />))}
+              {child("checkShortcuts", t("settings.shortcuts"), (<LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.checkShortcuts}
                   onChange={set("checkShortcuts")}
-                />
-              </Field>
+                />))}
             </>,
           )}
 
-          {section(
+          {childSection(
             "settings.style",
             <>
-              <Field label={t("settings.defaultLanguage")}>
-                <SelectPill
+              {child("styleLanguage", t("settings.defaultLanguage"), (<SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.styleLanguage}
                   onChange={set("styleLanguage")}
                   options={INPUT_LANGUAGES}
-                />
-              </Field>
-              <Field label={t("settings.shortcuts")}>
-                <LanguageList
+                />))}
+              {child("styleShortcuts", t("settings.shortcuts"), (<LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.styleShortcuts}
                   onChange={set("styleShortcuts")}
-                />
-              </Field>
+                />))}
             </>,
           )}
 
-          {section(
+          {childSection(
             "nav.interpret",
             <>
-              <Field label={t("settings.defaultLanguage")}>
-                <SelectPill
+              {child("interpretLanguage", t("settings.defaultLanguage"), (<SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.interpretLanguage}
                   onChange={set("interpretLanguage")}
                   options={INPUT_LANGUAGES}
-                />
-              </Field>
-              <Field label={t("settings.shortcuts")}>
-                <LanguageList
+                />))}
+              {child("interpretShortcuts", t("settings.shortcuts"), (<LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.interpretShortcuts}
                   onChange={set("interpretShortcuts")}
-                />
-              </Field>
+                />))}
             </>,
           )}
 
-          {section(
+          {childSection(
             "settings.dictionary",
             <>
-              <Field label={t("settings.defaultLanguage")}>
-                <SelectPill
+              {child("dictionaryLanguage", t("settings.defaultLanguage"), (<SelectPill
                   label={t("settings.defaultLanguage")}
                   value={settings.dictionaryLanguage}
                   onChange={set("dictionaryLanguage")}
                   options={INPUT_LANGUAGES}
-                />
-              </Field>
-              <Field label={t("settings.shortcuts")}>
-                <LanguageList
+                />))}
+              {child("dictionaryShortcuts", t("settings.shortcuts"), (<LanguageList
                   label={t("settings.shortcuts")}
                   values={settings.dictionaryShortcuts}
                   onChange={set("dictionaryShortcuts")}
-                />
-              </Field>
+                />))}
               <Field label={t("settings.defaultMultilingual")}>
                 <LanguageList
                   label={t("settings.defaultMultilingual")}
@@ -402,6 +434,9 @@ function SettingsPage() {
                   sourceLanguage={settings.dictionaryLanguage}
                 />
               </Field>
+            </>,
+          )}
+              </div>
             </>,
           )}
           </div>
