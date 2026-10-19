@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { AudioLines, ChevronDown, Languages, Volume2, VolumeX, X } from "lucide-react";
+import { ChevronDown, Volume2, VolumeX, X } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { APP_LANGUAGES, useI18n, type TranslationKey } from "@/lib/i18n";
@@ -148,14 +147,13 @@ function SettingsPage() {
   const { t, lang, setLang, ln } = useI18n();
   const { settings, update } = useSettings();
   const speech = useSpeech();
-  const [tab, setTab] = useState<"speech" | "language">("speech");
   const speechExampleId = "settings:speech-example";
   const speechLanguage = { en: "English", it: "Italian", zh: "Chinese (Simplified)" }[lang];
   const speechExamplePlaying = speech.playingId === speechExampleId;
   const speechExampleFailed = speech.errorId === speechExampleId;
 
   const section = (titleKey: TranslationKey, children: React.ReactNode) => (
-    <section className="border-t border-border pt-8 first:border-t-0 first:pt-0">
+    <section className="border-t border-border pt-8">
       <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {t(titleKey)}
       </h2>
@@ -164,14 +162,10 @@ function SettingsPage() {
   );
 
   const set = <K extends keyof Settings>(key: K) => (value: Settings[K]) => update(key, value);
-  const tabs = [
-    { key: "speech", label: t("settings.speech"), icon: AudioLines },
-    { key: "language", label: t("settings.languageTab"), icon: Languages },
-  ] as const;
 
   return (
     <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-3xl">
         <header className="mb-10">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("settings.title")}
@@ -179,28 +173,6 @@ function SettingsPage() {
           <p className="mt-1 text-sm text-muted-foreground">{t("settings.subtitle")}</p>
         </header>
 
-        <div className="flex flex-col gap-8 md:flex-row md:gap-12">
-        <nav className="flex gap-1 md:w-44 md:shrink-0 md:flex-col" aria-label={t("settings.title")}>
-          {tabs.map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setTab(key)}
-              aria-current={tab === key ? "page" : undefined}
-              className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                tab === key
-                  ? "bg-secondary font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-              }`}
-            >
-              <Icon className="size-4" />
-              {label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="min-w-0 flex-1">
-        {tab === "speech" && (
         <div className="space-y-10">
           {section(
             "settings.speech",
@@ -267,10 +239,6 @@ function SettingsPage() {
             </Field>
             </>,
           )}
-          </div>
-          )}
-          {tab === "language" && (
-          <div className="space-y-10">
           {section(
             "settings.appLanguage",
             <Field label={t("settings.interfaceLanguage")}>
@@ -404,9 +372,6 @@ function SettingsPage() {
               </Field>
             </>,
           )}
-          </div>
-          )}
-        </div>
         </div>
       </div>
     </main>
