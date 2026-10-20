@@ -11,6 +11,7 @@ import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
+import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -105,9 +106,9 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   return (
-    <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
+    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
       <div className="mx-auto max-w-3xl">
-        <header className="mb-10">
+        <header className={mode === "widget" ? "sr-only" : "mb-10"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("check.title")}
           </h1>
