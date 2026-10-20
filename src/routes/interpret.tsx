@@ -173,6 +173,19 @@ function InterpretPage() {
           </div>
         </div>
 
+        <div className="mt-8">
+          <label htmlFor="interpret-context" className="text-xs text-muted-foreground">
+            {t("interpret.contextLabel")}
+          </label>
+          <input
+            id="interpret-context"
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            placeholder={t("interpret.contextPlaceholder")}
+            className="mt-1 w-full border-b border-border bg-transparent py-2 text-base text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-primary"
+          />
+        </div>
+
         <div className="relative">
           <textarea
             ref={ref}
