@@ -62,12 +62,16 @@ function ExampleList({ items }: { items: InterpretExample[] }) {
 }
 
 function InterpretPage() {
+  return <InterpretFeature mode="focus" />;
+}
+
+export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const run = useServerFn(interpretText);
   const { t, lang, ln } = useI18n();
-  const [text, setText] = useState("");
-  const [context, setContext] = useState("");
-  const [language, setLanguage] = useState(AUTO_DETECT);
-  const [shortcuts, setShortcuts] = useState<string[]>([
+  const [text, setText] = useFeatureState("interpret", "text", "");
+  const [context, setContext] = useFeatureState("interpret", "context", "");
+  const [language, setLanguage] = useFeatureState("interpret", "language", AUTO_DETECT);
+  const [shortcuts, setShortcuts] = useFeatureState<string[]>("interpret", "shortcuts", [
     "English",
     "Italian",
     "Chinese (Simplified)",
@@ -76,12 +80,13 @@ function InterpretPage() {
   const speech = useSpeech();
   const { settings } = useSettings();
   useDefaultOnce(() => {
+    if (!markSeeded("interpret")) return;
     setLanguage(settings.interpretLanguage);
     setShortcuts(settings.interpretShortcuts);
   });
-  const [result, setResult] = useState<InterpretResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useFeatureState<InterpretResult | null>("interpret", "result", null);
+  const [loading, setLoading] = useFeatureState("interpret", "loading", false);
+  const [error, setError] = useFeatureState<string | null>("interpret", "error", null);
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const onInterpret = async () => {

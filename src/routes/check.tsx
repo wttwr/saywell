@@ -47,21 +47,26 @@ function labelTone(label: string) {
 }
 
 function CheckPage() {
+  return <CheckFeature mode="focus" />;
+}
+
+export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const runCheck = useServerFn(checkText);
   const speech = useSpeech();
   const { t, lang, ln } = useI18n();
 
-  const [text, setText] = useState("");
-  const [language, setLanguage] = useState("English");
-  const [shortcuts, setShortcuts] = useState<string[]>([]);
-  const [result, setResult] = useState<CheckResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [text, setText] = useFeatureState("check", "text", "");
+  const [language, setLanguage] = useFeatureState("check", "language", "English");
+  const [shortcuts, setShortcuts] = useFeatureState<string[]>("check", "shortcuts", []);
+  const [result, setResult] = useFeatureState<CheckResult | null>("check", "result", null);
+  const [loading, setLoading] = useFeatureState("check", "loading", false);
+  const [error, setError] = useFeatureState<string | null>("check", "error", null);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
+    if (!markSeeded("check")) return;
     setLanguage(settings.checkLanguage);
     setShortcuts(settings.checkShortcuts);
   });
