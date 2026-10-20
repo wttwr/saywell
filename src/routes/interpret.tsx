@@ -65,6 +65,7 @@ function InterpretPage() {
   const run = useServerFn(interpretText);
   const { t, lang, ln } = useI18n();
   const [text, setText] = useState("");
+  const [context, setContext] = useState("");
   const [language, setLanguage] = useState(AUTO_DETECT);
   const [shortcuts, setShortcuts] = useState<string[]>([
     "English",
@@ -91,7 +92,7 @@ function InterpretPage() {
     try {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
-      setResult(await run({ data: { text: trimmed, language, explanationLanguage } }));
+      setResult(await run({ data: { text: trimmed, language, explanationLanguage, context: context.trim() } }));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("interpret.error"));
       setResult(null);

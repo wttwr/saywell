@@ -6,6 +6,7 @@ const schema = z.object({
   text: z.string().min(1).max(1000),
   language: z.string().min(1),
   explanationLanguage: z.string().min(1).default("English"),
+  context: z.string().max(1000).optional().default(""),
 });
 
 export type InterpretExample = { text: string; transliteration?: string; note?: string };
@@ -48,6 +49,7 @@ export const interpretText = createServerFn({ method: "POST" })
       "explanation.examples: 2-3 realistic examples in different contexts, each with an optional short note.",
       "If ambiguous, explain the most likely interpretations in meaning. If the input is grammatically incorrect, do NOT silently fix it: describe the likely intended meaning and put the grammatical problem in 'issue'; otherwise issue is empty string.",
       "For non-Latin scripts, add transliteration (e.g. pinyin) to examples; otherwise omit it.",
+      data.context ? `The text follows this earlier line in a conversation (context only, do not interpret it separately): "${data.context}". Use it to infer tone, intent and meaning.` : "",
       "Be concise; avoid repetition.",
       'Reply with ONLY a JSON object: {"detectedLanguage":"English","explanation":{"meaning":"...","literal":"","usage":"...","examples":[{"text":"...","transliteration":"","note":"..."}]},"issue":""}. No markdown.',
     ].join(" ");
