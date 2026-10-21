@@ -9,7 +9,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Globe, Menu, Settings, Bookmark } from "lucide-react";
+import { Globe, Menu, Settings, Bookmark, LayoutGrid } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i18n";
@@ -134,6 +134,7 @@ function AppNav() {
     { to: "/style", label: t("nav.style") },
     { to: "/interpret", label: t("nav.interpret") },
     { to: "/dictionary", label: t("nav.vocabulary") },
+    { to: "/dashboard", label: t("nav.dashboard"), icon: LayoutGrid },
     { to: "/saved", label: t("nav.saved"), icon: Bookmark },
     { to: "/settings", label: t("nav.settings"), icon: Settings },
   ] as const;
