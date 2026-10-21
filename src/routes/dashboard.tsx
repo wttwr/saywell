@@ -1,7 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight } from "lucide-react";
-import { FEATURES } from "@/lib/features";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, ArrowUpRight, Plus, X } from "lucide-react";
+import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
+import { TranslateFeature } from "./index";
+import { StyleFeature } from "./style";
+import { DictionaryFeature } from "./dictionary";
 import { CheckFeature } from "./check";
 import { InterpretFeature } from "./interpret";
 
@@ -9,9 +13,9 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — SayWell 会说" },
-      { name: "description", content: "Your SayWell tools side by side: check and interpret text in compact cards." },
+      { name: "description", content: "Your SayWell tools side by side: compact cards you can add, remove and reorder." },
       { property: "og:title", content: "Dashboard — SayWell 会说" },
-      { property: "og:description", content: "Compact Check and Interpret cards, with one tap to the full view." },
+      { property: "og:description", content: "Compact SayWell cards you can arrange, with one tap to the full view." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -19,23 +23,87 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
 });
 
-const WIDGETS = { check: CheckFeature, interpret: InterpretFeature } as const;
+const WIDGETS = {
+  translate: TranslateFeature,
+  check: CheckFeature,
+  style: StyleFeature,
+  interpret: InterpretFeature,
+  dictionary: DictionaryFeature,
+} as const;
+
+const KEY = "saywell.dashboard";
+
+function useLayout() {
+  const [layout, setLayout] = useState<FeatureId[]>(DEFAULT_LAYOUT);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) setLayout(sanitizeLayout(JSON.parse(raw)));
+    } catch {}
+  }, []);
+  const save = (next: FeatureId[]) => {
+    setLayout(next);
+    localStorage.setItem(KEY, JSON.stringify(next));
+  };
+  return [layout, save] as const;
+}
+
+const iconBtn =
+  "rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30";
 
 function DashboardPage() {
   const { t } = useI18n();
+  const [layout, setLayout] = useLayout();
+  const [editing, setEditing] = useState(false);
+  const byId = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
+  const available = FEATURES.filter((f) => !layout.includes(f.id));
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
-      <header className="mb-8">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
+        <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+        </div>
+        <button
+          onClick={() => setEditing((e) => !e)}
+          className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
+        >
+          {editing ? t("dashboard.done") : t("dashboard.customize")}
+        </button>
       </header>
+      {editing && available.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <span className="text-sm text-muted-foreground">{t("dashboard.add")}</span>
+          {available.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setLayout([...layout, f.id])}
+              className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              <Plus className="size-3.5" /> {t(f.label)}
+            </button>
+          ))}
+        </div>
+      )}
+      {layout.length === 0 && (
+        <p className="py-16 text-center text-sm text-muted-foreground">{t("dashboard.empty")}</p>
+      )}
       <div className="grid gap-6 lg:grid-cols-2">
-        {FEATURES.map((f) => {
+        {layout.map((id, i) => {
+          const f = byId[id]!;
           const Widget = WIDGETS[f.id];
           return (
             <section key={f.id} className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background">
               <div className="flex items-center justify-between px-4 pt-4">
                 <h2 className="text-base font-medium">{t(f.label)}</h2>
+                <div className="flex items-center">
+                {editing ? (
+                  <>
+                    <button className={iconBtn} aria-label={t("dashboard.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
+                    <button className={iconBtn} aria-label={t("dashboard.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
+                    <button className={iconBtn} aria-label={t("dashboard.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
+                  </>
+                ) : (
                 <Link
                   to={f.focusPath}
                   aria-label={t("dashboard.open")}
@@ -44,6 +112,8 @@ function DashboardPage() {
                 >
                   <ArrowUpRight className="size-4" />
                 </Link>
+                )}
+                </div>
               </div>
               <Widget mode="widget" />
             </section>
