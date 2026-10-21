@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckRouteImport } from './routes/check'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DictionaryRouteImport } from './routes/dictionary'
 import { Route as InterpretRouteImport } from './routes/interpret'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const CheckRoute = CheckRouteImport.update({
   id: '/check',
   path: '/check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DictionaryRoute = DictionaryRouteImport.update({
@@ -68,6 +74,7 @@ const ApiTtsRoute = ApiTtsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
+  '/dashboard': typeof DashboardRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
   '/saved': typeof SavedRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
+  '/dashboard': typeof DashboardRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
   '/saved': typeof SavedRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
+  '/dashboard': typeof DashboardRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
   '/saved': typeof SavedRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/check'
+    | '/dashboard'
     | '/dictionary'
     | '/interpret'
     | '/saved'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/check'
+    | '/dashboard'
     | '/dictionary'
     | '/interpret'
     | '/saved'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/check'
+    | '/dashboard'
     | '/dictionary'
     | '/interpret'
     | '/saved'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckRoute: typeof CheckRoute
+  DashboardRoute: typeof DashboardRoute
   DictionaryRoute: typeof DictionaryRoute
   InterpretRoute: typeof InterpretRoute
   SavedRoute: typeof SavedRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/check'
       fullPath: '/check'
       preLoaderRoute: typeof CheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dictionary': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckRoute: CheckRoute,
+  DashboardRoute: DashboardRoute,
   DictionaryRoute: DictionaryRoute,
   InterpretRoute: InterpretRoute,
   SavedRoute: SavedRoute,
