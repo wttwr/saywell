@@ -137,7 +137,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </select>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          <div className={mode === "widget" ? "hidden" : "flex flex-wrap items-center gap-2 md:gap-3"}>
             <span className="text-sm text-muted-foreground">{t("check.changeTo")}</span>
             {shortcuts.map((shortcut) => (
               <button
