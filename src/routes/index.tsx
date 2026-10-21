@@ -19,6 +19,7 @@ import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
+import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/")({
@@ -78,24 +79,29 @@ function LanguageSelect({
 }
 
 function TranslatePage() {
+  return <TranslateFeature mode="focus" />;
+}
+
+export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const translate = useServerFn(translateText);
   const { t, ln } = useI18n();
   const speech = useSpeech();
 
-  const [source, setSource] = useState("");
-  const [from, setFrom] = useState("English");
-  const [targets, setTargets] = useState<string[]>(["Chinese (Simplified)", "Italian"]);
-  const [active, setActive] = useState(0);
-  const [results, setResults] = useState<Record<string, string>>({});
-  const [detectedLanguage, setDetectedLanguage] = useState("");
-  const [languageMismatch, setLanguageMismatch] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useFeatureState("translate", "source", "");
+  const [from, setFrom] = useFeatureState("translate", "from", "English");
+  const [targets, setTargets] = useFeatureState<string[]>("translate", "targets", ["Chinese (Simplified)", "Italian"]);
+  const [active, setActive] = useFeatureState("translate", "active", 0);
+  const [results, setResults] = useFeatureState<Record<string, string>>("translate", "results", {});
+  const [detectedLanguage, setDetectedLanguage] = useFeatureState("translate", "detectedLanguage", "");
+  const [languageMismatch, setLanguageMismatch] = useFeatureState("translate", "languageMismatch", false);
+  const [loading, setLoading] = useFeatureState("translate", "loading", false);
+  const [error, setError] = useFeatureState<string | null>("translate", "error", null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
   const addRef = useRef<HTMLDivElement>(null);
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
+    if (!markSeeded("translate")) return;
     setFrom(settings.translateSource);
     if (settings.translateTargets.length > 0) {
       setTargets(settings.translateTargets);
@@ -282,9 +288,9 @@ function TranslatePage() {
   };
 
   return (
-    <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
+    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
       <div className="mx-auto max-w-6xl">
-        <header className="mb-8 md:mb-12">
+        <header className={mode === "widget" ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("translate.title")}
           </h1>

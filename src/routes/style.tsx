@@ -9,6 +9,7 @@ import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { exploreStyles, type StyleResult, type StyleVariant } from "@/lib/style.functions";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
+import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/style")({
@@ -71,25 +72,30 @@ function LanguageSelect({
 }
 
 function StylePage() {
+  return <StyleFeature mode="focus" />;
+}
+
+export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const run = useServerFn(exploreStyles);
   const { t, lang, ln } = useI18n();
   const speech = useSpeech();
 
-  const [text, setText] = useState("");
-  const [language, setLanguage] = useState("English");
-  const [shortcuts, setShortcuts] = useState<string[]>([
+  const [text, setText] = useFeatureState("style", "text", "");
+  const [language, setLanguage] = useFeatureState("style", "language", "English");
+  const [shortcuts, setShortcuts] = useFeatureState<string[]>("style", "shortcuts", [
     "English",
     "Italian",
     "Chinese (Simplified)",
   ]);
-  const [result, setResult] = useState<StyleResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useFeatureState<StyleResult | null>("style", "result", null);
+  const [loading, setLoading] = useFeatureState("style", "loading", false);
+  const [error, setError] = useFeatureState<string | null>("style", "error", null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
+    if (!markSeeded("style")) return;
     setLanguage(settings.styleLanguage);
     setShortcuts(settings.styleShortcuts);
   });
@@ -192,9 +198,9 @@ function StylePage() {
   );
 
   return (
-    <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
+    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
       <div className="mx-auto max-w-3xl">
-        <header className="mb-8 md:mb-12">
+        <header className={mode === "widget" ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("style.title")}
           </h1>
@@ -211,7 +217,7 @@ function StylePage() {
               options={INPUT_LANGUAGES}
             />
           </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          <div className={`${mode === "widget" ? "hidden" : "flex flex-wrap items-center gap-2 md:gap-3"}`}>
             <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
             {shortcuts.map((s) => (
               <button

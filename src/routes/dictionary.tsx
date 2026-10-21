@@ -10,6 +10,7 @@ import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
 import { MultilingualTranslation } from "@/components/MultilingualTranslation";
+import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/dictionary")({
@@ -138,25 +139,30 @@ function SelectPill({
 }
 
 function DictionaryPage() {
+  return <DictionaryFeature mode="focus" />;
+}
+
+export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const { t, lang, ln } = useI18n();
   const speech = useSpeech();
 
-  const [language, setLanguage] = useState(() => defaultDictionaryLanguage(lang));
-  const [shortcuts, setShortcuts] = useState<string[]>([
+  const [language, setLanguage] = useFeatureState("dictionary", "language", defaultDictionaryLanguage(lang));
+  const [shortcuts, setShortcuts] = useFeatureState<string[]>("dictionary", "shortcuts", [
     "English",
     "Italian",
     "Chinese (Simplified)",
   ]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useFeatureState("dictionary", "query", "");
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [entry, setEntry] = useState<DictionaryEntry | null>(null);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<"entry" | "multilingual">("entry");
+  const [entry, setEntry] = useFeatureState<DictionaryEntry | null>("dictionary", "entry", null);
+  const [suggestions, setSuggestions] = useFeatureState<string[]>("dictionary", "suggestions", []);
+  const [loading, setLoading] = useFeatureState("dictionary", "loading", false);
+  const [error, setError] = useFeatureState<string | null>("dictionary", "error", null);
+  const [tab, setTab] = useFeatureState<"entry" | "multilingual">("dictionary", "tab", "entry");
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
+    if (!markSeeded("dictionary")) return;
     setLanguage(settings.dictionaryLanguage);
     setShortcuts(settings.dictionaryShortcuts);
   });
@@ -236,9 +242,9 @@ function DictionaryPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background px-5 py-10 md:px-10 md:py-16">
+    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
       <div className="mx-auto max-w-3xl">
-        <header className="mb-8 md:mb-12">
+        <header className={mode === "widget" ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("vocab.title")}
           </h1>
@@ -250,7 +256,7 @@ function DictionaryPage() {
             <span className="text-sm text-muted-foreground">{t("vocab.language")}</span>
             <SelectPill label={t("vocab.language")} value={language} onChange={setLanguage} />
           </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          <div className={`${mode === "widget" ? "hidden" : "flex flex-wrap items-center gap-2 md:gap-3"}`}>
             <span className="text-sm text-muted-foreground">{t("vocab.changeTo")}</span>
             {shortcuts.map((s) => (
               <button

@@ -138,7 +138,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             </select>
           </div>
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2 md:gap-3">
+        <div className={mode === "widget" ? "hidden" : "mt-3 flex flex-wrap items-center gap-2 md:gap-3"}>
           <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
           {shortcuts.map((s) => (
             <button
