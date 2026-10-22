@@ -1,10 +1,10 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-/** How a feature is presented: full section page or compact dashboard card. */
+/** How a feature is presented: full section page or compact workspace card. */
 export type FeatureMode = "focus" | "widget";
 
 // In-memory state shared by every view of a feature, so inputs and results
-// survive switching between a dashboard widget and Focus Mode.
+// survive switching between a workspace widget and Focus Mode.
 const store = new Map<string, unknown>();
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());

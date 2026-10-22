@@ -9,18 +9,18 @@ import { DictionaryFeature } from "./dictionary";
 import { CheckFeature } from "./check";
 import { InterpretFeature } from "./interpret";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/workspace")({
   head: () => ({
     meta: [
-      { title: "Dashboard — SayWell 会说" },
+      { title: "Workspace — SayWell 会说" },
       { name: "description", content: "Your SayWell tools side by side: compact cards you can add, remove and reorder." },
-      { property: "og:title", content: "Dashboard — SayWell 会说" },
+      { property: "og:title", content: "Workspace — SayWell 会说" },
       { property: "og:description", content: "Compact SayWell cards you can arrange, with one tap to the full view." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: DashboardPage,
+  component: WorkspacePage,
 });
 
 const WIDGETS = {
@@ -51,7 +51,7 @@ function useLayout() {
 const iconBtn =
   "rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30";
 
-function DashboardPage() {
+function WorkspacePage() {
   const { t } = useI18n();
   const [layout, setLayout] = useLayout();
   const [editing, setEditing] = useState(false);
@@ -61,19 +61,19 @@ function DashboardPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("workspace.title")}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t("workspace.subtitle")}</p>
         </div>
         <button
           onClick={() => setEditing((e) => !e)}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
         >
-          {editing ? t("dashboard.done") : t("dashboard.customize")}
+          {editing ? t("workspace.done") : t("workspace.customize")}
         </button>
       </header>
       {editing && available.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-sm text-muted-foreground">{t("dashboard.add")}</span>
+          <span className="text-sm text-muted-foreground">{t("workspace.add")}</span>
           {available.map((f) => (
             <button
               key={f.id}
@@ -86,7 +86,7 @@ function DashboardPage() {
         </div>
       )}
       {layout.length === 0 && (
-        <p className="py-16 text-center text-sm text-muted-foreground">{t("dashboard.empty")}</p>
+        <p className="py-16 text-center text-sm text-muted-foreground">{t("workspace.empty")}</p>
       )}
       <div className="grid gap-4 lg:grid-cols-2">
         {layout.map((id, i) => {
@@ -99,15 +99,15 @@ function DashboardPage() {
                 <div className="flex items-center">
                 {editing ? (
                   <>
-                    <button className={iconBtn} aria-label={t("dashboard.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
-                    <button className={iconBtn} aria-label={t("dashboard.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
-                    <button className={iconBtn} aria-label={t("dashboard.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
+                    <button className={iconBtn} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
+                    <button className={iconBtn} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
+                    <button className={iconBtn} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
                   </>
                 ) : (
                 <Link
                   to={f.focusPath}
-                  aria-label={t("dashboard.open")}
-                  title={t("dashboard.open")}
+                  aria-label={t("workspace.open")}
+                  title={t("workspace.open")}
                   className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 >
                   <ArrowUpRight className="size-4" />
