@@ -88,13 +88,13 @@ function DashboardPage() {
       {layout.length === 0 && (
         <p className="py-16 text-center text-sm text-muted-foreground">{t("dashboard.empty")}</p>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {layout.map((id, i) => {
           const f = byId[id]!;
           const Widget = WIDGETS[f.id];
           return (
             <section key={f.id} className={`flex h-[540px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-background ${f.id === "translate" ? "lg:col-span-2" : ""}`}>
-              <div className="flex items-center justify-between px-4 pt-4">
+              <div className="flex items-center justify-between px-4 pt-4 pb-2">
                 <h2 className="text-base font-medium">{t(f.label)}</h2>
                 <div className="flex items-center">
                 {editing ? (
@@ -115,7 +115,7 @@ function DashboardPage() {
                 )}
                 </div>
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
                 <Widget mode="widget" />
               </div>
             </section>

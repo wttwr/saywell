@@ -106,8 +106,8 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   return (
-    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
-      <div className="mx-auto max-w-3xl">
+    <main className={mode === "widget" ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
+      <div className={mode === "widget" ? "mx-auto flex w-full max-w-3xl flex-1 flex-col" : "mx-auto max-w-3xl"}>
         <header className={mode === "widget" ? "sr-only" : "mb-10"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("check.title")}
@@ -183,13 +183,13 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         </div>
 
-        <div className="relative mt-6">
+        <div className={mode === "widget" ? "relative mt-4 flex flex-1 flex-col" : "relative mt-6"}>
           <textarea
             ref={textareaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={t("check.placeholder")}
-            className="min-h-56 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
+            className={`w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 ${mode === "widget" ? "min-h-24 flex-1" : "min-h-56"}`}
           />
           {text ? (
             <button

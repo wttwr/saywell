@@ -288,8 +288,8 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   return (
-    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
-      <div className="mx-auto max-w-6xl">
+    <main className={mode === "widget" ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
+      <div className={mode === "widget" ? "mx-auto flex w-full max-w-6xl flex-1 flex-col" : "mx-auto max-w-6xl"}>
         <header className={mode === "widget" ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("translate.title")}
@@ -297,7 +297,7 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <p className="mt-1 text-sm text-muted-foreground">{t("translate.subtitle")}</p>
         </header>
 
-        <div className="relative grid gap-10 md:grid-cols-2">
+        <div className={`relative grid md:grid-cols-2 ${mode === "widget" ? "flex-1 gap-6" : "gap-10"}`}>
           <div className="absolute left-1/2 top-1 z-10 hidden -translate-x-1/2 md:block">
             {SwapControl}
           </div>
@@ -311,12 +311,12 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 options={SOURCE_LANGUAGES}
               />
             </div>
-            <div className="relative mt-6 flex-1">
+            <div className={mode === "widget" ? "relative mt-4 flex flex-1 flex-col" : "relative mt-6 flex-1"}>
               <textarea
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder={t("translate.placeholder")}
-                className="min-h-40 w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
+                className={`w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 ${mode === "widget" ? "min-h-24 flex-1" : "min-h-40"}`}
               />
               {source ? (
                 <button
@@ -387,7 +387,7 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </div>
             </div>
 
-            <div className="mt-6 min-h-56 md:min-h-72">{resultBody(activeLang)}</div>
+            <div className={mode === "widget" ? "mt-4 min-h-24 flex-1" : "mt-6 min-h-56 md:min-h-72"}>{resultBody(activeLang)}</div>
 
             <div className="mt-6 flex flex-wrap items-center justify-end gap-4">
               {listenButton(
