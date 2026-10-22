@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckRouteImport } from './routes/check'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DictionaryRouteImport } from './routes/dictionary'
 import { Route as InterpretRouteImport } from './routes/interpret'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StyleRouteImport } from './routes/style'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiSttRouteImport } from './routes/api/stt'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 
@@ -28,11 +28,6 @@ const IndexRoute = IndexRouteImport.update({
 const CheckRoute = CheckRouteImport.update({
   id: '/check',
   path: '/check',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DictionaryRoute = DictionaryRouteImport.update({
@@ -60,6 +55,11 @@ const StyleRoute = StyleRouteImport.update({
   path: '/style',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSttRoute = ApiSttRouteImport.update({
   id: '/api/stt',
   path: '/api/stt',
@@ -74,24 +74,24 @@ const ApiTtsRoute = ApiTtsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
-  '/dashboard': typeof DashboardRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
-  '/dashboard': typeof DashboardRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -99,12 +99,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/check': typeof CheckRoute
-  '/dashboard': typeof DashboardRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -113,36 +113,36 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/check'
-    | '/dashboard'
     | '/dictionary'
     | '/interpret'
     | '/saved'
     | '/settings'
     | '/style'
+    | '/workspace'
     | '/api/stt'
     | '/api/tts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/check'
-    | '/dashboard'
     | '/dictionary'
     | '/interpret'
     | '/saved'
     | '/settings'
     | '/style'
+    | '/workspace'
     | '/api/stt'
     | '/api/tts'
   id:
     | '__root__'
     | '/'
     | '/check'
-    | '/dashboard'
     | '/dictionary'
     | '/interpret'
     | '/saved'
     | '/settings'
     | '/style'
+    | '/workspace'
     | '/api/stt'
     | '/api/tts'
   fileRoutesById: FileRoutesById
@@ -150,12 +150,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckRoute: typeof CheckRoute
-  DashboardRoute: typeof DashboardRoute
   DictionaryRoute: typeof DictionaryRoute
   InterpretRoute: typeof InterpretRoute
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
   StyleRoute: typeof StyleRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   ApiSttRoute: typeof ApiSttRoute
   ApiTtsRoute: typeof ApiTtsRoute
 }
@@ -174,13 +174,6 @@ declare module '@tanstack/react-router' {
       path: '/check'
       fullPath: '/check'
       preLoaderRoute: typeof CheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dictionary': {
@@ -218,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StyleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/stt': {
       id: '/api/stt'
       path: '/api/stt'
@@ -238,12 +238,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckRoute: CheckRoute,
-  DashboardRoute: DashboardRoute,
   DictionaryRoute: DictionaryRoute,
   InterpretRoute: InterpretRoute,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
   StyleRoute: StyleRoute,
+  WorkspaceRoute: WorkspaceRoute,
   ApiSttRoute: ApiSttRoute,
   ApiTtsRoute: ApiTtsRoute,
 }
