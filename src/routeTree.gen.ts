@@ -17,6 +17,7 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StyleRouteImport } from './routes/style'
 import { Route as TranslateRouteImport } from './routes/translate'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ApiSttRouteImport } from './routes/api/stt'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 
@@ -60,6 +61,11 @@ const TranslateRoute = TranslateRouteImport.update({
   path: '/translate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSttRoute = ApiSttRouteImport.update({
   id: '/api/stt',
   path: '/api/stt',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
   '/translate': typeof TranslateRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
   '/translate': typeof TranslateRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
   '/translate': typeof TranslateRoute
+  '/workspace': typeof WorkspaceRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/style'
     | '/translate'
+    | '/workspace'
     | '/api/stt'
     | '/api/tts'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/style'
     | '/translate'
+    | '/workspace'
     | '/api/stt'
     | '/api/tts'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/style'
     | '/translate'
+    | '/workspace'
     | '/api/stt'
     | '/api/tts'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   StyleRoute: typeof StyleRoute
   TranslateRoute: typeof TranslateRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   ApiSttRoute: typeof ApiSttRoute
   ApiTtsRoute: typeof ApiTtsRoute
 }
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TranslateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/stt': {
       id: '/api/stt'
       path: '/api/stt'
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   StyleRoute: StyleRoute,
   TranslateRoute: TranslateRoute,
+  WorkspaceRoute: WorkspaceRoute,
   ApiSttRoute: ApiSttRoute,
   ApiTtsRoute: ApiTtsRoute,
 }
