@@ -242,8 +242,8 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   return (
-    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
-      <div className="mx-auto max-w-3xl">
+    <main className={mode === "widget" ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
+      <div className={mode === "widget" ? "mx-auto flex w-full max-w-3xl flex-1 flex-col" : "mx-auto max-w-3xl"}>
         <header className={mode === "widget" ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("vocab.title")}
