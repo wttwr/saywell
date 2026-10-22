@@ -1,8 +1,8 @@
 import type { TranslationKey } from "@/lib/i18n";
 
 /**
- * Registry of features that can appear as dashboard widgets or in Focus Mode.
- * Order here is the default dashboard order; add, remove or reorder entries freely.
+ * Registry of features that can appear as workspace widgets or in Focus Mode.
+ * Order here is the default workspace order; add, remove or reorder entries freely.
  */
 export type FeatureId = "translate" | "check" | "style" | "interpret" | "dictionary";
 

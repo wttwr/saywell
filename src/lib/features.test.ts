@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { moveItem, sanitizeLayout } from "./features";
 
-describe("dashboard layout", () => {
+describe("workspace layout", () => {
   it("drops unknown and duplicate cards", () => {
     expect(sanitizeLayout(["check", "bogus", "check", "style"])).toEqual(["check", "style"]);
   });
