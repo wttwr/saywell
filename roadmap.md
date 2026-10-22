@@ -13,3 +13,4 @@
 - [x] Preserve full dictionary entries and show saved multilingual cards as one group
 - [x] Verify saving and reviewing both dictionary card types
 - [x] Saved: detail content inside a card matching the dictionary entry card
+- [x] Workspace as the default landing page, with Translate moved to its own address and the old one redirected

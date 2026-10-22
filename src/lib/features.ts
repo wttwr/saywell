@@ -9,11 +9,11 @@ export type FeatureId = "translate" | "check" | "style" | "interpret" | "diction
 export interface FeatureDefinition {
   id: FeatureId;
   label: TranslationKey;
-  focusPath: "/" | "/check" | "/style" | "/interpret" | "/dictionary";
+  focusPath: "/translate" | "/check" | "/style" | "/interpret" | "/dictionary";
 }
 
 export const FEATURES: FeatureDefinition[] = [
-  { id: "translate", label: "nav.translate" as TranslationKey, focusPath: "/" },
+  { id: "translate", label: "nav.translate" as TranslationKey, focusPath: "/translate" },
   { id: "check", label: "nav.check" as TranslationKey, focusPath: "/check" },
   { id: "style", label: "nav.style" as TranslationKey, focusPath: "/style" },
   { id: "interpret", label: "nav.interpret" as TranslationKey, focusPath: "/interpret" },
