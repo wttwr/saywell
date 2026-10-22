@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpRight, Plus, X } from "lucide-react";
 import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
-import { TranslateFeature } from "./index";
+import { TranslateFeature } from "./translate";
 import { StyleFeature } from "./style";
 import { DictionaryFeature } from "./dictionary";
 import { CheckFeature } from "./check";
 import { InterpretFeature } from "./interpret";
 
-export const Route = createFileRoute("/workspace")({
+export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Workspace — SayWell 会说" },

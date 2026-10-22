@@ -129,7 +129,7 @@ function AppNav() {
     "flex items-center gap-1.5 rounded-full px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-4";
   const active = { className: "bg-accent font-medium text-accent-foreground" };
   const links = [
-    { to: "/workspace", label: t("nav.workspace"), icon: LayoutGrid },
+    { to: "/", label: t("nav.workspace"), icon: LayoutGrid, exact: true },
     { to: "/saved", label: t("nav.saved"), icon: Bookmark },
     { to: "/settings", label: t("nav.settings"), icon: Settings },
   ] as const;

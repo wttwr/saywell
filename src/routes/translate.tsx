@@ -22,7 +22,7 @@ import { useSpeech } from "@/lib/speech";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/translate")({
   head: () => ({
     meta: [
       { title: "SayWell 会说 — Translate text into many languages at once" },

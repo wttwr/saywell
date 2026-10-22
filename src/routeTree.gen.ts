@@ -16,7 +16,7 @@ import { Route as InterpretRouteImport } from './routes/interpret'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StyleRouteImport } from './routes/style'
-import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as TranslateRouteImport } from './routes/translate'
 import { Route as ApiSttRouteImport } from './routes/api/stt'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 
@@ -55,9 +55,9 @@ const StyleRoute = StyleRouteImport.update({
   path: '/style',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkspaceRoute = WorkspaceRouteImport.update({
-  id: '/workspace',
-  path: '/workspace',
+const TranslateRoute = TranslateRouteImport.update({
+  id: '/translate',
+  path: '/translate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSttRoute = ApiSttRouteImport.update({
@@ -79,7 +79,7 @@ export interface FileRoutesByFullPath {
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
-  '/workspace': typeof WorkspaceRoute
+  '/translate': typeof TranslateRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -91,7 +91,7 @@ export interface FileRoutesByTo {
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
-  '/workspace': typeof WorkspaceRoute
+  '/translate': typeof TranslateRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -104,7 +104,7 @@ export interface FileRoutesById {
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
-  '/workspace': typeof WorkspaceRoute
+  '/translate': typeof TranslateRoute
   '/api/stt': typeof ApiSttRoute
   '/api/tts': typeof ApiTtsRoute
 }
@@ -118,7 +118,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/style'
-    | '/workspace'
+    | '/translate'
     | '/api/stt'
     | '/api/tts'
   fileRoutesByTo: FileRoutesByTo
@@ -130,7 +130,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/style'
-    | '/workspace'
+    | '/translate'
     | '/api/stt'
     | '/api/tts'
   id:
@@ -142,7 +142,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/style'
-    | '/workspace'
+    | '/translate'
     | '/api/stt'
     | '/api/tts'
   fileRoutesById: FileRoutesById
@@ -155,7 +155,7 @@ export interface RootRouteChildren {
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
   StyleRoute: typeof StyleRoute
-  WorkspaceRoute: typeof WorkspaceRoute
+  TranslateRoute: typeof TranslateRoute
   ApiSttRoute: typeof ApiSttRoute
   ApiTtsRoute: typeof ApiTtsRoute
 }
@@ -211,11 +211,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StyleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workspace': {
-      id: '/workspace'
-      path: '/workspace'
-      fullPath: '/workspace'
-      preLoaderRoute: typeof WorkspaceRouteImport
+    '/translate': {
+      id: '/translate'
+      path: '/translate'
+      fullPath: '/translate'
+      preLoaderRoute: typeof TranslateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/stt': {
@@ -243,7 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
   StyleRoute: StyleRoute,
-  WorkspaceRoute: WorkspaceRoute,
+  TranslateRoute: TranslateRoute,
   ApiSttRoute: ApiSttRoute,
   ApiTtsRoute: ApiTtsRoute,
 }
