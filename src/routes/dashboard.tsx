@@ -93,7 +93,7 @@ function DashboardPage() {
           const f = byId[id]!;
           const Widget = WIDGETS[f.id];
           return (
-            <section key={f.id} className="flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background">
+            <section key={f.id} className={`flex h-[540px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-background ${f.id === "translate" ? "lg:col-span-2" : ""}`}>
               <div className="flex items-center justify-between px-4 pt-4">
                 <h2 className="text-base font-medium">{t(f.label)}</h2>
                 <div className="flex items-center">
@@ -115,7 +115,9 @@ function DashboardPage() {
                 )}
                 </div>
               </div>
-              <Widget mode="widget" />
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <Widget mode="widget" />
+              </div>
             </section>
           );
         })}
