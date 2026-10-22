@@ -108,8 +108,8 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   return (
-    <main className={mode === "widget" ? "bg-background p-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
-      <div className="mx-auto max-w-3xl">
+    <main className={mode === "widget" ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
+      <div className={mode === "widget" ? "mx-auto flex w-full max-w-3xl flex-1 flex-col" : "mx-auto max-w-3xl"}>
         <header className={mode === "widget" ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {t("nav.interpret")}
@@ -179,7 +179,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className={mode === "widget" ? "mt-4" : "mt-8"}>
           <label htmlFor="interpret-context" className="text-xs text-muted-foreground">
             {t("interpret.contextLabel")}
           </label>
@@ -192,13 +192,13 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           />
         </div>
 
-        <div className="relative">
+        <div className={mode === "widget" ? "relative mt-4 flex flex-1 flex-col" : "relative"}>
           <textarea
             ref={ref}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={t("interpret.placeholder")}
-            className="mt-8 min-h-32 w-full resize-none bg-transparent pr-10 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60"
+            className={`w-full resize-none bg-transparent pr-10 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 ${mode === "widget" ? "min-h-20 flex-1" : "mt-8 min-h-32"}`}
           />
           {text ? (
             <button
@@ -210,12 +210,12 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               }}
               aria-label="Clear text"
               title="Clear text"
-              className="absolute right-0 top-8 rounded-full bg-secondary p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className={`absolute right-0 rounded-full bg-secondary p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground ${mode === "widget" ? "top-1" : "top-8"}`}
             >
               <X className="size-4" />
             </button>
           ) : (
-            <DictateButton language={language} onText={setText} className="absolute right-0 top-8" />
+            <DictateButton language={language} onText={setText} className={`absolute right-0 ${mode === "widget" ? "top-1" : "top-8"}`} />
           )}
         </div>
 
