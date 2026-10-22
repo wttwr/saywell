@@ -14,5 +14,6 @@
 - Saved multilingual rows use group-scoped IDs and are grouped before filtering; this keeps whole cards intact without overwriting standalone bookmarks. Dictionary saves carry a complete entry snapshot so definitions and examples survive navigation.
 - Saved detail screens use the Saved route's validated detail search parameter to retain list filters and search while enabling browser back navigation; full content lives in SavedContent, with shared TextActions for text-scoped Listen and Copy controls.
 
-- Feature state that must survive switching between dashboard widget and Focus Mode lives in useFeatureState (src/lib/feature-state.ts); features expose a `<XFeature mode>` component and are listed in src/lib/features.ts — so views share one implementation.
-- Dashboard card layout is a list of FeatureIds in localStorage (saywell.dashboard), validated by sanitizeLayout in src/lib/features.ts — so unknown/removed features never break saved layouts.
+- Feature state that must survive switching between workspace widget and Focus Mode lives in useFeatureState (src/lib/feature-state.ts); features expose a `<XFeature mode>` component and are listed in src/lib/features.ts — so views share one implementation.
+- Workspace card layout is a list of FeatureIds in localStorage (saywell.dashboard), validated by sanitizeLayout in src/lib/features.ts — so unknown/removed features never break saved layouts.
+- Top navigation lists only Workspace, Saved and Settings: feature sections are reached from their Workspace card or the logo (Translate), so nav stays calm as features are added.
