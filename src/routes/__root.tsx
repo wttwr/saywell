@@ -4,12 +4,14 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Globe, Menu, Settings, Bookmark } from "lucide-react";
+import { ArrowLeft, Globe, Menu, Settings, Bookmark } from "lucide-react";
+import { FEATURES } from "../lib/features";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { WorkspaceIcon } from "@/components/WorkspaceIcon";
 
@@ -202,6 +204,19 @@ function AppNav() {
   );
 }
 
+function BackToWorkspace() {
+  const { t } = useI18n();
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  if (!FEATURES.some((f) => f.focusPath === path)) return null;
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
+      <Link to="/" className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+        <ArrowLeft className="size-4" /> {t("workspace.back")}
+      </Link>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -210,6 +225,7 @@ function RootComponent() {
       <I18nProvider>
         <SettingsProvider>
           <AppNav />
+          <BackToWorkspace />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </SettingsProvider>
