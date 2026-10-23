@@ -9,8 +9,9 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Globe, Menu, Settings, Bookmark, LayoutGrid } from "lucide-react";
+import { Globe, Menu, Settings, Bookmark } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { WorkspaceIcon } from "@/components/WorkspaceIcon";
 
 import { APP_LANGUAGES, I18nProvider, useI18n, type AppLanguage } from "../lib/i18n";
 import { SettingsProvider } from "../lib/settings";
@@ -129,7 +130,7 @@ function AppNav() {
     "flex items-center gap-1.5 rounded-full px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-4";
   const active = { className: "bg-accent font-medium text-accent-foreground" };
   const links = [
-    { to: "/", label: t("nav.workspace"), icon: LayoutGrid, exact: true },
+    { to: "/", label: t("nav.workspace"), icon: WorkspaceIcon, exact: true },
     { to: "/saved", label: t("nav.saved"), icon: Bookmark },
     { to: "/settings", label: t("nav.settings"), icon: Settings },
   ] as const;
