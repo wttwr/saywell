@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpRight, Plus, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CheckCheck, Languages, LayoutGrid, List, MessageCircleQuestion, Plus, Sparkles, X } from "lucide-react";
 import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { TranslateFeature } from "./translate";
@@ -32,6 +32,20 @@ const WIDGETS = {
 } as const;
 
 const KEY = "saywell.dashboard";
+const VIEW_KEY = "saywell.workspaceView";
+type View = "dashboard" | "list";
+
+const ICONS = { translate: Languages, check: CheckCheck, style: Sparkles, interpret: MessageCircleQuestion, dictionary: BookOpen } as const;
+
+function useView() {
+  const [view, setView] = useState<View>("dashboard");
+  useEffect(() => {
+    const v = localStorage.getItem(VIEW_KEY);
+    if (v === "list" || v === "dashboard") setView(v);
+  }, []);
+  const save = (v: View) => { setView(v); localStorage.setItem(VIEW_KEY, v); };
+  return [view, save] as const;
+}
 
 function useLayout() {
   const [layout, setLayout] = useState<FeatureId[]>(DEFAULT_LAYOUT);
@@ -55,6 +69,7 @@ function WorkspacePage() {
   const { t } = useI18n();
   const [layout, setLayout] = useLayout();
   const [editing, setEditing] = useState(false);
+  const [view, setView] = useView();
   const byId = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
   const available = FEATURES.filter((f) => !layout.includes(f.id));
   return (
@@ -64,12 +79,22 @@ function WorkspacePage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("workspace.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("workspace.subtitle")}</p>
         </div>
+        <div className="flex items-center gap-2">
+        <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
+          {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
+            <button key={v} onClick={() => setView(v)} aria-pressed={view === v} aria-label={t(label)} title={t(label)}
+              className={`rounded-full p-1.5 transition-colors ${view === v ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+              <Icon className="size-4" />
+            </button>
+          ))}
+        </div>
         <button
           onClick={() => setEditing((e) => !e)}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
         >
           {editing ? t("workspace.done") : t("workspace.customize")}
         </button>
+        </div>
       </header>
       {editing && available.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
@@ -88,6 +113,23 @@ function WorkspacePage() {
       {layout.length === 0 && (
         <p className="py-16 text-center text-sm text-muted-foreground">{t("workspace.empty")}</p>
       )}
+      {view === "list" && !editing ? (
+        <ul className="flex flex-col gap-2">
+          {layout.map((id) => {
+            const f = byId[id]!;
+            const Icon = ICONS[f.id];
+            return (
+              <li key={f.id}>
+                <Link to={f.focusPath} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background px-4 py-4 transition-colors hover:bg-secondary/50">
+                  <span className="rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>
+                  <span className="flex-1 text-base font-medium">{t(f.label)}</span>
+                  <ArrowRight className="size-4 text-muted-foreground" />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
       <div className="grid gap-4 lg:grid-cols-2">
         {layout.map((id, i) => {
           const f = byId[id]!;
@@ -122,6 +164,7 @@ function WorkspacePage() {
           );
         })}
       </div>
+      )}
     </main>
   );
 }
