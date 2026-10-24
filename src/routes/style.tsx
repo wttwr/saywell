@@ -207,57 +207,15 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <p className="mt-1 text-sm text-muted-foreground">{t("style.subtitle")}</p>
         </header>
 
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <span className="text-sm text-muted-foreground">{t("style.language")}</span>
-            <LanguageSelect
-              label={t("style.language")}
-              value={language}
-              onChange={setLanguage}
-              options={INPUT_LANGUAGES}
-            />
-          </div>
-          <div className={`${mode === "widget" ? "hidden" : "flex flex-wrap items-center gap-2 md:gap-3"}`}>
-            <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
-            {shortcuts.map((s) => (
-              <button
-                key={s}
-                onClick={() => setLanguage(s)}
-                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                  s === language
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary/60 text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {ln(s)}
-              </button>
-            ))}
-            <div className="relative inline-flex">
-              <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
-                + {t("translate.add")}
-              </span>
-              <select
-                aria-label={t("translate.addLanguage")}
-                value=""
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
-                  e.target.value = "";
-                }}
-                className="absolute inset-0 size-full cursor-pointer opacity-0"
-              >
-                <option value="" disabled>
-                  {t("translate.addLanguage")}
-                </option>
-                {LANGUAGES.map((o) => (
-                  <option key={o} value={o} disabled={shortcuts.includes(o)}>
-                    {shortcuts.includes(o) ? `✓ ${ln(o)}` : ln(o)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+        <LanguageSelectorBar
+          label={t("style.language")}
+          shortcutsLabel={t("style.changeTo")}
+          value={language}
+          onChange={setLanguage}
+          shortcuts={shortcuts}
+          setShortcuts={setShortcuts}
+          compact={mode === "widget"}
+        />
 
         <div className={mode === "widget" ? "relative mt-4 flex flex-1 flex-col" : "relative"}>
           <textarea
