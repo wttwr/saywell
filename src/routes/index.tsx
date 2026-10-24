@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CheckCheck, Languages, LayoutGrid, List, MessageCircleQuestion, Plus, Sparkles, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CheckCheck, Languages, LayoutGrid, List, MessageCircleQuestion, Plus, Search, Sparkles, X } from "lucide-react";
 import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { TranslateFeature } from "./translate";
@@ -70,8 +70,12 @@ function WorkspacePage() {
   const [layout, setLayout] = useLayout();
   const [editing, setEditing] = useState(false);
   const [view, setView] = useView();
+  const [query, setQuery] = useState("");
   const byId = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
   const available = FEATURES.filter((f) => !layout.includes(f.id));
+  const q = query.trim().toLowerCase();
+  const shown = q ? layout.filter((id) => t(byId[id]!.label).toLowerCase().includes(q)) : layout;
+  const editingActive = editing && !q;
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
@@ -88,15 +92,38 @@ function WorkspacePage() {
             </button>
           ))}
         </div>
-        <button
-          onClick={() => setEditing((e) => !e)}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
-        >
-          {editing ? t("workspace.done") : t("workspace.customize")}
-        </button>
+        {!q && (
+          <button
+            onClick={() => setEditing((e) => !e)}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
+          >
+            {editing ? t("workspace.done") : t("workspace.customize")}
+          </button>
+        )}
         </div>
       </header>
-      {editing && available.length > 0 && (
+      <div className="mb-6 flex items-center gap-3 border-b border-border pb-3">
+        <Search className="size-4 shrink-0 text-muted-foreground" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("workspace.search")}
+          aria-label={t("workspace.search")}
+          className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            aria-label="Clear search"
+            title="Clear search"
+            className="shrink-0 rounded-full bg-secondary p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <X className="size-4" />
+          </button>
+        )}
+      </div>
+      {editingActive && available.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("workspace.add")}</span>
           {available.map((f) => (
@@ -113,9 +140,12 @@ function WorkspacePage() {
       {layout.length === 0 && (
         <p className="py-16 text-center text-sm text-muted-foreground">{t("workspace.empty")}</p>
       )}
-      {view === "list" && !editing ? (
+      {layout.length > 0 && shown.length === 0 && (
+        <p className="py-16 text-center text-sm text-muted-foreground">{t("workspace.noResults")}</p>
+      )}
+      {view === "list" && !editingActive ? (
         <ul className="flex flex-col gap-2">
-          {layout.map((id) => {
+          {shown.map((id) => {
             const f = byId[id]!;
             const Icon = ICONS[f.id];
             return (
@@ -131,7 +161,7 @@ function WorkspacePage() {
         </ul>
       ) : (
       <div className="grid gap-4 lg:grid-cols-2">
-        {layout.map((id, i) => {
+        {shown.map((id, i) => {
           const f = byId[id]!;
           const Widget = WIDGETS[f.id];
           return (
@@ -139,7 +169,7 @@ function WorkspacePage() {
               <div className="flex items-center justify-between px-4 pt-4 pb-2">
                 <h2 className="text-base font-medium">{t(f.label)}</h2>
                 <div className="flex items-center">
-                {editing ? (
+                {editingActive ? (
                   <>
                     <button className={iconBtn} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
                     <button className={iconBtn} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
