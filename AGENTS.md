@@ -18,3 +18,4 @@
 - Workspace card layout is a list of FeatureIds in localStorage (saywell.dashboard), validated by sanitizeLayout in src/lib/features.ts — so unknown/removed features never break saved layouts.
 - Top navigation lists only Workspace, Saved and Settings: Workspace is the home page and feature sections are reached from their Workspace card, so nav stays calm as features are added.
 - The home route renders the Workspace; each feature keeps its own focus route (Translate at /translate) and any moved or renamed route keeps its old path as a permanent redirect, so published addresses keep working.
+- Shared UI primitives used by several sections live in src/components/ds/ (e.g. LanguageSelectorBar) — so sections stay visually in sync and new sections like Listen reuse them.

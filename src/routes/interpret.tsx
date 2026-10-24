@@ -117,67 +117,15 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <p className="mt-1 text-sm text-muted-foreground">{t("interpret.subtitle")}</p>
         </header>
 
-        <div className="flex flex-wrap items-center gap-2 md:gap-3">
-          <span className="text-sm text-muted-foreground">{t("interpret.language")}</span>
-          <div className="relative inline-flex">
-            <span className="pointer-events-none flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
-              {ln(language)}
-              <ChevronDown className="size-3.5 opacity-60" />
-            </span>
-            <select
-              aria-label={t("interpret.language")}
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="absolute inset-0 size-full cursor-pointer opacity-0"
-            >
-              {INPUT_LANGUAGES.map((o) => (
-                <option key={o} value={o}>
-                  {ln(o)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className={mode === "widget" ? "hidden" : "mt-3 flex flex-wrap items-center gap-2 md:gap-3"}>
-          <span className="text-sm text-muted-foreground">{t("style.changeTo")}</span>
-          {shortcuts.map((s) => (
-            <button
-              key={s}
-              onClick={() => setLanguage(s)}
-              className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                s === language
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary/60 text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {ln(s)}
-            </button>
-          ))}
-          <div className="relative inline-flex">
-            <span className="pointer-events-none rounded-full border border-dashed border-border px-3.5 py-1.5 text-sm text-muted-foreground">
-              + {t("translate.add")}
-            </span>
-            <select
-              aria-label={t("translate.addLanguage")}
-              value=""
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v) setShortcuts((prev) => (prev.includes(v) ? prev : [...prev, v]));
-                e.target.value = "";
-              }}
-              className="absolute inset-0 size-full cursor-pointer opacity-0"
-            >
-              <option value="" disabled>
-                {t("translate.addLanguage")}
-              </option>
-              {LANGUAGES.filter((l) => !shortcuts.includes(l)).map((l) => (
-                <option key={l} value={l}>
-                  {ln(l)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <LanguageSelectorBar
+          label={t("interpret.language")}
+          shortcutsLabel={t("style.changeTo")}
+          value={language}
+          onChange={setLanguage}
+          shortcuts={shortcuts}
+          setShortcuts={setShortcuts}
+          compact={mode === "widget"}
+        />
 
         <div className={mode === "widget" ? "mt-4" : "mt-8"}>
           <label htmlFor="interpret-context" className="text-xs text-muted-foreground">
