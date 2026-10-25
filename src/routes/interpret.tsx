@@ -3,7 +3,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useRef, useState } from "react";
 import { ChevronDown, Info, X } from "lucide-react";
 
-import { DictateButton } from "@/components/DictateButton";
+import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
+import { TextInputSurface } from "@/components/ds/TextInputSurface";
+import { ResultCard } from "@/components/ds/ResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { TextActions } from "@/components/TextActions";
 import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
@@ -140,47 +142,23 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           />
         </div>
 
-        <div className={mode === "widget" ? "relative mt-4 flex flex-1 flex-col" : "relative"}>
-          <textarea
-            ref={ref}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={t("interpret.placeholder")}
-            className={`w-full resize-none bg-transparent pr-10 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 ${mode === "widget" ? "min-h-20 flex-1" : "mt-8 min-h-32"}`}
-          />
-          {text ? (
-            <button
-              type="button"
-              onClick={() => {
-                setText("");
-                setResult(null);
-                ref.current?.focus();
-              }}
-              aria-label="Clear text"
-              title="Clear text"
-              className={`absolute right-0 rounded-full bg-secondary p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground ${mode === "widget" ? "top-1" : "top-8"}`}
-            >
-              <X className="size-4" />
-            </button>
-          ) : (
-            <DictateButton language={language} onText={setText} className={`absolute right-0 ${mode === "widget" ? "top-1" : "top-8"}`} />
-          )}
-        </div>
-
-        <div className="mt-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">
-              {text.length} {t("check.characters")}
-            </span>
-          </div>
-          <button
-            onClick={onInterpret}
-            disabled={!text.trim() || loading}
-            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-          >
-            {loading ? t("interpret.loading") : t("interpret.action")}
-          </button>
-        </div>
+        <TextInputSurface
+          value={text}
+          onChange={setText}
+          onClear={() => {
+            setText("");
+            setResult(null);
+          }}
+          placeholder={t("interpret.placeholder")}
+          language={language}
+          textareaRef={ref}
+          widget={mode === "widget"}
+          textareaClassName={mode === "widget" ? "min-h-20" : "mt-8 min-h-32"}
+          buttonClassName={mode === "widget" ? "top-1" : "top-8"}
+          actionLabel={loading ? t("interpret.loading") : t("interpret.action")}
+          onAction={onInterpret}
+          actionDisabled={!text.trim() || loading}
+        />
 
         {error && <p className="mt-8 text-base text-destructive">{error}</p>}
 
