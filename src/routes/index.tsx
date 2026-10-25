@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CheckCheck, Languages, LayoutGrid, List, MessageCircleQuestion, Plus, Search, Sparkles, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, Languages, LayoutGrid, List, MessageCircleQuestion, Plus, Search, Sparkles, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { TranslateFeature } from "./translate";
@@ -89,6 +90,38 @@ function useWidths() {
     });
   };
   return [widths, set] as const;
+}
+
+const WIDTH_FILL: Record<Width, number> = { third: 1 / 3, half: 1 / 2, twoThirds: 2 / 3, full: 1 };
+
+function WidthIcon({ w }: { w: Width }) {
+  return (
+    <svg viewBox="0 0 20 14" className="h-3.5 w-5" aria-hidden="true">
+      <rect x="0.75" y="0.75" width="18.5" height="12.5" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="2.5" y="2.5" width={15 * WIDTH_FILL[w]} height="9" rx="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+function WidthMenu({ value, onChange }: { value: Width; onChange: (w: Width) => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger aria-label="Width" title="Width"
+        className="mr-1 flex items-center gap-1 rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <WidthIcon w={value} />
+        <ChevronDown className="size-3 opacity-60" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="rounded-xl">
+        {WIDTH_OPTIONS.map(([v, l]) => (
+          <DropdownMenuItem key={v} onSelect={() => onChange(v)} className="gap-3 rounded-lg">
+            <WidthIcon w={v} />
+            <span className="flex-1">{l}</span>
+            {v === value && <Check className="size-4 text-primary" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 const iconBtn =
@@ -201,10 +234,7 @@ function WorkspacePage() {
                 <div className="flex items-center">
                 {editingActive ? (
                   <>
-                    <select aria-label="Width" value={widths[f.id] ?? defaultWidth(f.id)} onChange={(e) => setWidth(f.id, e.target.value as Width)}
-                      className="mr-1 rounded-full border-0 bg-secondary px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-                      {WIDTH_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                    </select>
+                    <WidthMenu value={widths[f.id] ?? defaultWidth(f.id)} onChange={(w) => setWidth(f.id, w)} />
                     <button className={iconBtn} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
                     <button className={iconBtn} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
                     <button className={iconBtn} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
