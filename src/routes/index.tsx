@@ -62,6 +62,35 @@ function useLayout() {
   return [layout, save] as const;
 }
 
+type Width = "third" | "half" | "twoThirds" | "full";
+const WIDTH_KEY = "saywell.workspaceWidths";
+const WIDTH_CLASS: Record<Width, string> = { third: "lg:col-span-2", half: "lg:col-span-3", twoThirds: "lg:col-span-4", full: "lg:col-span-6" };
+const WIDTH_OPTIONS: [Width, string][] = [["third", "1/3"], ["half", "1/2"], ["twoThirds", "2/3"], ["full", "Full"]];
+const defaultWidth = (id: FeatureId): Width => (id === "translate" ? "full" : "half");
+
+function useWidths() {
+  const [widths, setWidths] = useState<Partial<Record<FeatureId, Width>>>({});
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(WIDTH_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        const clean: Partial<Record<FeatureId, Width>> = {};
+        for (const [k, v] of Object.entries(parsed)) if (typeof v === "string" && v in WIDTH_CLASS) clean[k as FeatureId] = v as Width;
+        setWidths(clean);
+      }
+    } catch {}
+  }, []);
+  const set = (id: FeatureId, w: Width) => {
+    setWidths((prev) => {
+      const next = { ...prev, [id]: w };
+      localStorage.setItem(WIDTH_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+  return [widths, set] as const;
+}
+
 const iconBtn =
   "rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30";
 
@@ -69,6 +98,7 @@ function WorkspacePage() {
   const { t } = useI18n();
   const [layout, setLayout] = useLayout();
   const [editing, setEditing] = useState(false);
+  const [widths, setWidth] = useWidths();
   const [view, setView] = useView();
   const [query, setQuery] = useState("");
   const byId = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
