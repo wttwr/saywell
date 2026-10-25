@@ -1,4 +1,5 @@
-import { DictateButton } from "@/components/DictateButton";
+import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
+import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -125,51 +126,23 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           compact={mode === "widget"}
         />
 
-        <div className={mode === "widget" ? "relative mt-4 flex flex-1 flex-col" : "relative mt-6"}>
-          <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={t("check.placeholder")}
-            className={`w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 ${mode === "widget" ? "min-h-24 flex-1" : "min-h-56"}`}
-          />
-          {text ? (
-            <button
-              type="button"
-              onClick={() => {
-                setText("");
-                setResult(null);
-                textareaRef.current?.focus();
-              }}
-              aria-label="Clear text"
-              title="Clear text"
-              className="absolute right-0 top-1 rounded-full bg-secondary p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <X className="size-4" />
-            </button>
-          ) : (
-            <DictateButton
-              language={language}
-              onText={setText}
-              className="absolute right-0 top-1"
-            />
-          )}
-        </div>
-
-        <div className="mt-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">
-              {text.length} {t("check.characters")}
-            </span>
-          </div>
-          <button
-            onClick={onCheck}
-            disabled={loading || !canCheck}
-            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-          >
-            {loading ? t("check.checking") : t("check.button")}
-          </button>
-        </div>
+        <TextInputSurface
+          value={text}
+          onChange={setText}
+          onClear={() => {
+            setText("");
+            setResult(null);
+          }}
+          placeholder={t("check.placeholder")}
+          language={language}
+          textareaRef={textareaRef}
+          widget={mode === "widget"}
+          wrapperClassName={mode === "widget" ? "" : "mt-6"}
+          textareaClassName={mode === "widget" ? "min-h-24 pr-8" : "min-h-56 pr-8"}
+          actionLabel={loading ? t("check.checking") : t("check.button")}
+          onAction={onCheck}
+          actionDisabled={loading || !canCheck}
+        />
 
         {error && <p className="mt-10 text-base text-destructive">{error}</p>}
 
