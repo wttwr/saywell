@@ -137,7 +137,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           language={language}
           textareaRef={textareaRef}
           widget={mode === "widget"}
-          wrapperClassName={mode === "widget" ? undefined : "mt-6"}
+          wrapperClassName={mode === "widget" ? "" : "mt-6"}
           textareaClassName={mode === "widget" ? "min-h-24 pr-8" : "min-h-56 pr-8"}
           actionLabel={loading ? t("check.checking") : t("check.button")}
           onAction={onCheck}
