@@ -179,7 +179,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </p>
             )}
 
-            <div className="space-y-8 rounded-2xl bg-secondary/40 p-5 md:p-6">
+            <ResultCard className="space-y-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="min-w-0">
                   <p className="text-2xl leading-snug text-foreground">{text.trim()}</p>
@@ -232,7 +232,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                   <ExampleList items={result.explanation.examples} />
                 </Section>
               )}
-            </div>
+            </ResultCard>
           </div>
         )}
       </div>
