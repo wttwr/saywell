@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckRouteImport } from './routes/check'
 import { Route as DictionaryRouteImport } from './routes/dictionary'
 import { Route as InterpretRouteImport } from './routes/interpret'
+import { Route as ListenRouteImport } from './routes/listen'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StyleRouteImport } from './routes/style'
@@ -39,6 +40,11 @@ const DictionaryRoute = DictionaryRouteImport.update({
 const InterpretRoute = InterpretRouteImport.update({
   id: '/interpret',
   path: '/interpret',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListenRoute = ListenRouteImport.update({
+  id: '/listen',
+  path: '/listen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
+  '/listen': typeof ListenRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
+  '/listen': typeof ListenRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/check': typeof CheckRoute
   '/dictionary': typeof DictionaryRoute
   '/interpret': typeof InterpretRoute
+  '/listen': typeof ListenRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/style': typeof StyleRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/check'
     | '/dictionary'
     | '/interpret'
+    | '/listen'
     | '/saved'
     | '/settings'
     | '/style'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/check'
     | '/dictionary'
     | '/interpret'
+    | '/listen'
     | '/saved'
     | '/settings'
     | '/style'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/check'
     | '/dictionary'
     | '/interpret'
+    | '/listen'
     | '/saved'
     | '/settings'
     | '/style'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   CheckRoute: typeof CheckRoute
   DictionaryRoute: typeof DictionaryRoute
   InterpretRoute: typeof InterpretRoute
+  ListenRoute: typeof ListenRoute
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
   StyleRoute: typeof StyleRoute
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/interpret'
       fullPath: '/interpret'
       preLoaderRoute: typeof InterpretRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/listen': {
+      id: '/listen'
+      path: '/listen'
+      fullPath: '/listen'
+      preLoaderRoute: typeof ListenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckRoute: CheckRoute,
   DictionaryRoute: DictionaryRoute,
   InterpretRoute: InterpretRoute,
+  ListenRoute: ListenRoute,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
   StyleRoute: StyleRoute,
