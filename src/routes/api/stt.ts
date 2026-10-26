@@ -37,8 +37,8 @@ export const Route = createFileRoute("/api/stt")({
           console.error(`ElevenLabs STT failed [${res.status}]: ${err}`);
           return new Response(err || "Transcription failed", { status: res.status || 502 });
         }
-        const data = (await res.json()) as { text?: string };
-        return Response.json({ text: (data.text ?? "").trim() }, { headers: { "Cache-Control": "no-store" } });
+        const data = (await res.json()) as { text?: string; language_code?: string };
+        return Response.json({ text: (data.text ?? "").trim(), languageCode: data.language_code ?? null }, { headers: { "Cache-Control": "no-store" } });
       },
     },
   },
