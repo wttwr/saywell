@@ -40,6 +40,9 @@ export const SPEECH_LOCALES: Record<string, string> = {
  * falling back to the browser voice if the service fails.
  * Only one clip plays at a time; clicking the same id again stops it.
  */
+/** Session-only cache of generated reference audio, so replays (including slow) never refetch. */
+const audioCache = new Map<string, Blob>();
+
 export function useSpeech() {
   const { settings } = useSettings();
   const speed = settings.speechSpeed;
@@ -110,14 +113,21 @@ export function useSpeech() {
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       try {
-        const res = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text.slice(0, 2500), voiceId: voiceOverride ?? voiceId }),
-          signal: ctrl.signal,
-        });
-        if (!res.ok) throw new Error(`TTS ${res.status}`);
-        const blob = await res.blob();
+        const v = voiceOverride ?? voiceId;
+        const cacheKey = `${v}\u0000${text.slice(0, 2500)}`;
+        let blob = audioCache.get(cacheKey);
+        if (!blob) {
+          const res = await fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text.slice(0, 2500), voiceId: v }),
+            signal: ctrl.signal,
+          });
+          if (!res.ok) throw new Error(`TTS ${res.status}`);
+          blob = await res.blob();
+          if (audioCache.size > 50) audioCache.delete(audioCache.keys().next().value!);
+          audioCache.set(cacheKey, blob);
+        }
         if (currentId.current !== id) return;
         const url = URL.createObjectURL(blob);
         urlRef.current = url;
