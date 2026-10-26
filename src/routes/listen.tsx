@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef } from "react";
-import { Mic, RotateCcw, Snail, Volume2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Loader2, Mic, Play, RotateCcw, Snail, Square, Volume2 } from "lucide-react";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
 import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
-import { useSpeech } from "@/lib/speech";
+import { SPEECH_LOCALES, useSpeech } from "@/lib/speech";
+import { compareWords, summarize, type DiffOp } from "@/lib/pronunciation";
 import { useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,16 @@ export const Route = createFileRoute("/listen")({
   component: () => <ListenFeature mode="focus" />,
 });
 
+type Attempt = { reference: string; heard: string; ops: DiffOp[]; audioUrl: string };
+type Phase = "idle" | "recording" | "transcribing";
+
+const MARK: Record<DiffOp["type"], string> = {
+  match: "text-foreground",
+  missing: "rounded bg-destructive/10 px-1 text-destructive line-through decoration-destructive/50",
+  different: "rounded bg-primary/15 px-1 text-foreground underline decoration-primary decoration-2 underline-offset-4",
+  extra: "rounded bg-secondary px-1 text-muted-foreground italic",
+};
+
 const ghost = "inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40";
 
 export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
@@ -41,6 +52,94 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const ref = useRef<HTMLTextAreaElement>(null);
   const trimmed = text.trim();
   const lang = language === AUTO_DETECT ? "" : language;
+  const [attempt, setAttempt] = useFeatureState<Attempt | null>("listen", "attempt", null);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [error, setError] = useState<string | null>(null);
+  const recRef = useRef<MediaRecorder | null>(null);
+  const playerRef = useRef<HTMLAudioElement | null>(null);
+  const [playingMine, setPlayingMine] = useState(false);
+  const shown = attempt && attempt.reference === trimmed ? attempt : null;
+
+  useEffect(() => () => {
+    const r = recRef.current;
+    if (r && r.state !== "inactive") { r.onstop = null; r.stop(); r.stream.getTracks().forEach((tr) => tr.stop()); }
+    playerRef.current?.pause();
+  }, []);
+
+  const discard = () => {
+    playerRef.current?.pause();
+    setPlayingMine(false);
+    if (attempt) URL.revokeObjectURL(attempt.audioUrl);
+    setAttempt(null);
+    setError(null);
+  };
+
+  const transcribe = async (blob: Blob, reference: string) => {
+    setPhase("transcribing");
+    try {
+      const fd = new FormData();
+      fd.append("audio", blob, "recording.webm");
+      const locale = SPEECH_LOCALES[language];
+      if (locale) fd.append("language", locale.slice(0, 2));
+      const res = await fetch("/api/stt", { method: "POST", body: fd });
+      if (!res.ok) throw new Error(await res.text());
+      const { text: heard } = (await res.json()) as { text: string };
+      setAttempt({ reference, heard, ops: heard ? compareWords(reference, heard) : [], audioUrl: URL.createObjectURL(blob) });
+    } catch (e) {
+      console.error("Listen transcription failed", e);
+      setError(t("listen.failed"));
+    } finally {
+      setPhase("idle");
+    }
+  };
+
+  const toggleRecord = async () => {
+    if (phase === "recording") { recRef.current?.stop(); return; }
+    if (phase !== "idle" || !trimmed) return;
+    speech.stop();
+    discard();
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      setError(t("listen.micUnsupported"));
+      return;
+    }
+    const reference = trimmed;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      const rec = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+      rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+      rec.onstop = () => {
+        stream.getTracks().forEach((tr) => tr.stop());
+        const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
+        if (blob.size) void transcribe(blob, reference);
+        else { setPhase("idle"); setError(t("listen.nothingHeard")); }
+      };
+      recRef.current = rec;
+      rec.start();
+      setPhase("recording");
+    } catch (e) {
+      console.error("Microphone unavailable", e);
+      const denied = e instanceof DOMException && (e.name === "NotAllowedError" || e.name === "SecurityError");
+      setError(t(denied ? "listen.micDenied" : "listen.failed"));
+    }
+  };
+
+  const playMine = () => {
+    if (!shown) return;
+    if (playingMine) { playerRef.current?.pause(); setPlayingMine(false); return; }
+    speech.stop();
+    const a = new Audio(shown.audioUrl);
+    playerRef.current = a;
+    a.onended = () => setPlayingMine(false);
+    setPlayingMine(true);
+    void a.play().catch(() => setPlayingMine(false));
+  };
+
+  const recording = phase === "recording";
+  const busy = phase === "transcribing";
+  const stats = shown ? summarize(shown.ops) : null;
+  const refTotal = stats ? stats.match + stats.missing + stats.different : 0;
+  const issues = stats ? stats.missing + stats.different : 0;
 
   return (
     <main className={widget ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
@@ -70,9 +169,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           widget={widget}
           textareaClassName={widget ? "min-h-20" : "mt-8 min-h-32"}
           buttonClassName={widget ? "top-1" : "top-8"}
-          actionLabel={t("listen.record")}
-          onAction={() => {}}
-          actionDisabled={!trimmed}
+          actionLabel={recording ? t("listen.stop") : busy ? t("listen.transcribing") : t("listen.record")}
+          onAction={toggleRecord}
+          actionDisabled={!trimmed || busy}
         />
 
         <div className={cn("flex flex-wrap items-center gap-5", widget ? "mt-4" : "mt-8")}>
@@ -89,21 +188,73 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             <Snail className={cn("size-4", speech.playingId === "listen:slow" && "animate-pulse")} />
             {t("listen.slow")}
           </button>
-          <button type="button" className={cn(ghost, "ml-auto")} disabled={!trimmed} aria-label={t("listen.record")} title={t("listen.record")}>
-            <span className="rounded-full bg-secondary p-2"><Mic className="size-4" /></span>
-            {t("listen.record")}
+          <button type="button" onClick={toggleRecord} className={cn(ghost, "ml-auto")} disabled={!trimmed || busy}
+            aria-pressed={recording} aria-label={recording ? t("listen.stop") : t("listen.record")}>
+            <span className={cn("rounded-full p-2", recording ? "animate-pulse bg-primary text-primary-foreground" : "bg-secondary")}>
+              {busy ? <Loader2 className="size-4 animate-spin" /> : recording ? <Square className="size-4 fill-current" /> : <Mic className="size-4" />}
+            </span>
+            {recording ? t("listen.stop") : busy ? t("listen.transcribing") : t("listen.record")}
           </button>
         </div>
 
         <ResultCard className={widget ? "mt-4" : "mt-10"}>
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
-            <button type="button" className={ghost} disabled>
-              <RotateCcw className="size-4" />
-              {t("listen.tryAgain")}
-            </button>
+            <div className="flex items-center gap-4">
+              {shown && (
+                <button type="button" className={ghost} onClick={playMine} aria-pressed={playingMine}>
+                  {playingMine ? <Square className="size-4" /> : <Play className="size-4" />}
+                  {playingMine ? t("listen.stop") : t("listen.playback")}
+                </button>
+              )}
+              <button type="button" className={ghost} disabled={(!shown && !error) || busy || recording}
+                onClick={() => { discard(); void toggleRecord(); }}>
+                <RotateCcw className="size-4" />
+                {t("listen.tryAgain")}
+              </button>
+            </div>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("listen.resultsEmpty")}</p>
+          {busy ? (
+            <div className="mt-5 space-y-3">
+              <div className="h-5 w-2/3 animate-pulse rounded bg-secondary" />
+              <div className="h-5 w-1/2 animate-pulse rounded bg-secondary" />
+            </div>
+          ) : error ? (
+            <p className="mt-4 text-sm leading-relaxed text-destructive">{error}</p>
+          ) : shown ? (
+            !shown.heard ? (
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("listen.nothingHeard")}</p>
+            ) : (
+              <div className="mt-5 space-y-5">
+                <p className="flex flex-wrap gap-x-1.5 gap-y-2 text-xl leading-relaxed">
+                  {shown.ops.map((o, i) => (
+                    <span key={i} className={MARK[o.type]} title={o.type === "match" ? undefined : o.type === "different" ? `${t("listen.different")}: “${o.heard}”` : t(`listen.${o.type}`)}>
+                      {o.word}
+                    </span>
+                  ))}
+                </p>
+                <div>
+                  <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.heard")}</h3>
+                  <p className="mt-1 text-base text-foreground">{shown.heard}</p>
+                </div>
+                <p className="text-sm leading-relaxed text-foreground">
+                  {issues === 0 && stats!.extra === 0
+                    ? t("listen.allMatched")
+                    : t("listen.mismatch").replace("{n}", String(issues + stats!.extra)).replace("{total}", String(refTotal))}
+                </p>
+                {issues + stats!.extra > 0 && (
+                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    {stats!.missing > 0 && <span className={MARK.missing}>{t("listen.missing")}</span>}
+                    {stats!.different > 0 && <span className={MARK.different}>{t("listen.different")}</span>}
+                    {stats!.extra > 0 && <span className={MARK.extra}>{t("listen.extra")}</span>}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">{t("listen.note")}</p>
+              </div>
+            )
+          ) : (
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("listen.resultsEmpty")}</p>
+          )}
         </ResultCard>
       </div>
     </main>
