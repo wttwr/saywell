@@ -71,7 +71,7 @@ export function useSpeech() {
 
   useEffect(() => () => stop(), [stop]);
 
-  const browserSpeak = useCallback((id: string, text: string, language: string) => {
+  const browserSpeak = useCallback((id: string, text: string, language: string, rate?: number) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       currentId.current = null;
       setPlayingId(null);
@@ -86,7 +86,7 @@ export function useSpeech() {
     const u = new SpeechSynthesisUtterance(text);
     if (locale) u.lang = locale;
     if (voice) u.voice = voice;
-    u.rate = speed;
+    u.rate = rate ?? speed;
     const done = (err: boolean) => {
       if (currentId.current !== id) return;
       currentId.current = null;
@@ -99,7 +99,7 @@ export function useSpeech() {
   }, [speed]);
 
   const speak = useCallback(
-    async (id: string, text: string, language: string, voiceOverride?: string) => {
+    async (id: string, text: string, language: string, voiceOverride?: string, rate?: number) => {
       const wasPlaying = currentId.current === id;
       stop();
       if (wasPlaying || !text.trim()) return;
@@ -122,7 +122,7 @@ export function useSpeech() {
         const url = URL.createObjectURL(blob);
         urlRef.current = url;
         const audio = new Audio(url);
-        audio.playbackRate = speed;
+        audio.playbackRate = rate ?? speed;
         audio.preservesPitch = true;
         audioRef.current = audio;
         const finish = () => {
@@ -137,7 +137,7 @@ export function useSpeech() {
         await audio.play();
       } catch (e) {
         if ((e as Error).name === "AbortError" || currentId.current !== id) return;
-        browserSpeak(id, text, language);
+        browserSpeak(id, text, language, rate);
       }
     },
     [stop, browserSpeak, speed, voiceId],
