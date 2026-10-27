@@ -9,7 +9,8 @@ import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { SPEECH_LOCALES, useSpeech } from "@/lib/speech";
 import { compareWords, summarize, type DiffOp } from "@/lib/pronunciation";
-import { useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/listen")({
@@ -48,6 +49,12 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     "Italian",
     "Chinese (Simplified)",
   ]);
+  const { settings } = useSettings();
+  useDefaultOnce(() => {
+    if (!markSeeded("listen")) return;
+    setLanguage(settings.listenLanguage);
+    setShortcuts(settings.listenShortcuts);
+  });
   const speech = useSpeech();
   const ref = useRef<HTMLTextAreaElement>(null);
   const trimmed = text.trim();
