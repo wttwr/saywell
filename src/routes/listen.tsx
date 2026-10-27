@@ -195,13 +195,6 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             <Snail className={cn("size-4", speech.playingId === "listen:slow" && "animate-pulse")} />
             {t("listen.slow")}
           </button>
-          <button type="button" onClick={toggleRecord} className={cn(ghost, "ml-auto")} disabled={!trimmed || busy}
-            aria-pressed={recording} aria-label={recording ? t("listen.stop") : t("listen.record")}>
-            <span className={cn("rounded-full p-2", recording ? "animate-pulse bg-primary text-primary-foreground" : "bg-secondary")}>
-              {busy ? <Loader2 className="size-4 animate-spin" /> : recording ? <Square className="size-4 fill-current" /> : <Mic className="size-4" />}
-            </span>
-            {recording ? t("listen.stop") : busy ? t("listen.transcribing") : t("listen.record")}
-          </button>
         </div>
 
         {(shown || error || busy) && (
