@@ -345,6 +345,27 @@ function SettingsPage() {
           )}
 
           {section(
+            "nav.listen",
+            <>
+              <Field label={t("settings.defaultLanguage")}>
+                <SelectPill
+                  label={t("settings.defaultLanguage")}
+                  value={settings.listenLanguage}
+                  onChange={set("listenLanguage")}
+                  options={INPUT_LANGUAGES}
+                />
+              </Field>
+              <Field label={t("settings.shortcuts")}>
+                <LanguageList
+                  label={t("settings.shortcuts")}
+                  values={settings.listenShortcuts}
+                  onChange={set("listenShortcuts")}
+                />
+              </Field>
+            </>,
+          )}
+
+          {section(
             "settings.dictionary",
             <>
               <Field label={t("settings.defaultLanguage")}>
