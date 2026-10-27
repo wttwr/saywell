@@ -179,22 +179,23 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           actionLabel={recording ? t("listen.stop") : busy ? t("listen.transcribing") : t("listen.record")}
           onAction={toggleRecord}
           actionDisabled={!trimmed || busy}
+          actionsBefore={
+            <>
+              <button type="button" className={ghost} disabled={!trimmed}
+                aria-pressed={speech.playingId === "listen:normal"}
+                onClick={() => speech.speak("listen:normal", trimmed, lang)}>
+                <Volume2 className={cn("size-4", speech.playingId === "listen:normal" && "animate-pulse")} />
+                {speech.playingId === "listen:normal" ? t("translate.stop") : t("translate.listen")}
+              </button>
+              <button type="button" className={ghost} disabled={!trimmed}
+                aria-pressed={speech.playingId === "listen:slow"}
+                onClick={() => speech.speak("listen:slow", trimmed, lang, undefined, 0.6)}>
+                <Snail className={cn("size-4", speech.playingId === "listen:slow" && "animate-pulse")} />
+                {t("listen.slow")}
+              </button>
+            </>
+          }
         />
-
-        <div className={cn("flex flex-wrap items-center gap-5", widget ? "mt-4" : "mt-8")}>
-          <button type="button" className={ghost} disabled={!trimmed}
-            aria-pressed={speech.playingId === "listen:normal"}
-            onClick={() => speech.speak("listen:normal", trimmed, lang)}>
-            <Volume2 className={cn("size-4", speech.playingId === "listen:normal" && "animate-pulse")} />
-            {speech.playingId === "listen:normal" ? t("translate.stop") : t("translate.listen")}
-          </button>
-          <button type="button" className={ghost} disabled={!trimmed}
-            aria-pressed={speech.playingId === "listen:slow"}
-            onClick={() => speech.speak("listen:slow", trimmed, lang, undefined, 0.6)}>
-            <Snail className={cn("size-4", speech.playingId === "listen:slow" && "animate-pulse")} />
-            {t("listen.slow")}
-          </button>
-        </div>
 
         {(shown || error || busy) && (
         <ResultCard className={widget ? "mt-4" : "mt-10"}>
