@@ -204,6 +204,7 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </button>
         </div>
 
+        {(shown || error || busy) && (
         <ResultCard className={widget ? "mt-4" : "mt-10"}>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
@@ -259,10 +260,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 <p className="text-xs text-muted-foreground">{t("listen.note")}</p>
               </div>
             )
-          ) : (
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("listen.resultsEmpty")}</p>
-          )}
+          ) : null}
         </ResultCard>
+        )}
       </div>
     </main>
   );
