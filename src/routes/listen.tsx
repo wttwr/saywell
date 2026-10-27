@@ -182,7 +182,6 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         />
 
         <div className={cn("flex flex-wrap items-center gap-5", widget ? "mt-4" : "mt-8")}>
-          <span className="text-xs uppercase tracking-wide text-muted-foreground">{t("listen.reference")}</span>
           <button type="button" className={ghost} disabled={!trimmed}
             aria-pressed={speech.playingId === "listen:normal"}
             onClick={() => speech.speak("listen:normal", trimmed, lang)}>
