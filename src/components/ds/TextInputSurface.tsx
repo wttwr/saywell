@@ -20,6 +20,7 @@ export function TextInputSurface({
   actionLabel,
   onAction,
   actionDisabled,
+  actionsBefore,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -34,6 +35,7 @@ export function TextInputSurface({
   actionLabel: string;
   onAction: () => void;
   actionDisabled: boolean;
+  actionsBefore?: React.ReactNode;
 }) {
   const { t } = useI18n();
   return (
@@ -75,13 +77,16 @@ export function TextInputSurface({
         <span className="text-xs text-muted-foreground">
           {value.length} {t("check.characters")}
         </span>
-        <button
-          onClick={onAction}
-          disabled={actionDisabled}
-          className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-        >
-          {actionLabel}
-        </button>
+        <div className="flex items-center gap-4">
+          {actionsBefore}
+          <button
+            onClick={onAction}
+            disabled={actionDisabled}
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            {actionLabel}
+          </button>
+        </div>
       </div>
     </>
   );
