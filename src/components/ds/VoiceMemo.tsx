@@ -59,19 +59,19 @@ export function VoiceMemo({ src, className }: { src: string; className?: string 
   const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
   return (
-    <div className={cn("flex items-center gap-4 rounded-full border border-border bg-card px-3 py-2 shadow-sm", className)}>
+    <div className={cn("flex items-center gap-4 rounded-full border border-border/60 bg-background px-2 py-2", className)}>
       <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"}
-        className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-primary text-primary transition-colors hover:bg-primary/10">
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90">
         {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
       </button>
-      <div className="flex h-10 flex-1 cursor-pointer items-center gap-[3px]" onClick={seek}>
+      <div className="flex h-8 flex-1 cursor-pointer items-center gap-[3px]" onClick={seek}>
         {peaks.map((p, i) => (
           <span key={i}
-            className={cn("w-[3px] flex-1 rounded-full transition-colors", i / BARS < progress ? "bg-primary" : "bg-muted-foreground/35")}
+            className={cn("w-[3px] flex-1 rounded-full transition-colors", i / BARS < progress ? "bg-primary" : "bg-muted-foreground/25")}
             style={{ height: `${p * 100}%` }} />
         ))}
       </div>
-      <span className="w-10 shrink-0 text-right text-sm tabular-nums text-foreground">{fmt(shownTime)}</span>
+      <span className="w-10 shrink-0 pr-2 text-right text-xs tabular-nums text-muted-foreground">{fmt(shownTime)}</span>
     </div>
   );
 }
