@@ -5,6 +5,7 @@ import { Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-react";
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
+import { VoiceMemo } from "@/components/ds/VoiceMemo";
 import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { SPEECH_LOCALES, useSpeech } from "@/lib/speech";
@@ -199,17 +200,8 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
 
         {(shown || error || busy) && (
         <ResultCard className={widget ? "mt-4" : "mt-10"}>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
-            <div className="flex items-center gap-4">
-              {shown && (
-                <button type="button" className={ghost} onClick={playMine} aria-pressed={playingMine}>
-                  {playingMine ? <Square className="size-4" /> : <Play className="size-4" />}
-                  {playingMine ? t("listen.stop") : t("listen.playback")}
-                </button>
-              )}
-            </div>
-          </div>
+          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
+          {shown && <VoiceMemo src={shown.audioUrl} className="mt-4" />}
           {busy ? (
             <div className="mt-5 space-y-3">
               <div className="h-5 w-2/3 animate-pulse rounded bg-secondary" />
