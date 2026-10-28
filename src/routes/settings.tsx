@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, Volume2, VolumeX, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { APP_LANGUAGES, useI18n, type TranslationKey } from "@/lib/i18n";
@@ -147,10 +147,7 @@ function SettingsPage() {
   const { t, lang, setLang, ln } = useI18n();
   const { settings, update } = useSettings();
   const speech = useSpeech();
-  const speechExampleId = "settings:speech-example";
   const speechLanguage = { en: "English", it: "Italian", zh: "Chinese (Simplified)" }[lang];
-  const speechExamplePlaying = speech.playingId === speechExampleId;
-  const speechExampleFailed = speech.errorId === speechExampleId;
 
   const section = (titleKey: TranslationKey, children: React.ReactNode) => (
     <section className="border-t border-border pt-8">
