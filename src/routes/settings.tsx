@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, Volume2, VolumeX, X } from "lucide-react";
 
 import { INPUT_LANGUAGES, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { APP_LANGUAGES, useI18n, type TranslationKey } from "@/lib/i18n";
@@ -147,6 +147,10 @@ function SettingsPage() {
   const { t, lang, setLang, ln } = useI18n();
   const { settings, update } = useSettings();
   const speech = useSpeech();
+  const speechExampleId = "settings:speech-example";
+  const speechLanguage = { en: "English", it: "Italian", zh: "Chinese (Simplified)" }[lang];
+  const speechExamplePlaying = speech.playingId === speechExampleId;
+  const speechExampleFailed = speech.errorId === speechExampleId;
 
   const section = (titleKey: TranslationKey, children: React.ReactNode) => (
     <section className="border-t border-border pt-8">
@@ -215,6 +219,22 @@ function SettingsPage() {
                 <output className="w-12 shrink-0 text-right text-sm font-medium tabular-nums text-foreground">
                   {settings.speechSpeed.toFixed(1)}×
                 </output>
+              </div>
+              <div className="mt-4 flex max-w-md items-center justify-between gap-4 rounded-lg bg-secondary/40 px-4 py-3">
+                <p className="min-w-0 text-sm text-foreground">{t("settings.speechExample")}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => speech.speak(speechExampleId, t("settings.speechExample"), speechLanguage)}
+                  aria-pressed={speechExamplePlaying}
+                  aria-label={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
+                  title={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
+                  className="shrink-0 text-muted-foreground"
+                >
+                  {speechExampleFailed ? <VolumeX /> : <Volume2 className={speechExamplePlaying ? "animate-pulse" : ""} />}
+                  {speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
+                </Button>
               </div>
             </Field>
             </>,
