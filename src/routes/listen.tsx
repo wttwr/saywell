@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Play, RotateCcw, Snail, Square, Volume2 } from "lucide-react";
+import { Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-react";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
@@ -208,11 +208,6 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                   {playingMine ? t("listen.stop") : t("listen.playback")}
                 </button>
               )}
-              <button type="button" className={ghost} disabled={(!shown && !error) || busy || recording}
-                onClick={() => { discard(); void toggleRecord(); }}>
-                <RotateCcw className="size-4" />
-                {t("listen.tryAgain")}
-              </button>
             </div>
           </div>
           {busy ? (
