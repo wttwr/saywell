@@ -220,22 +220,6 @@ function SettingsPage() {
                   {settings.speechSpeed.toFixed(1)}×
                 </output>
               </div>
-              <div className="mt-4 flex max-w-md items-center justify-between gap-4 rounded-lg bg-secondary/40 px-4 py-3">
-                <p className="min-w-0 text-sm text-foreground">{t("settings.speechExample")}</p>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => speech.speak(speechExampleId, t("settings.speechExample"), speechLanguage)}
-                  aria-pressed={speechExamplePlaying}
-                  aria-label={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
-                  title={speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
-                  className="shrink-0 text-muted-foreground"
-                >
-                  {speechExampleFailed ? <VolumeX /> : <Volume2 className={speechExamplePlaying ? "animate-pulse" : ""} />}
-                  {speechExamplePlaying ? t("translate.stop") : t("translate.listen")}
-                </Button>
-              </div>
             </Field>
             </>,
           )}
