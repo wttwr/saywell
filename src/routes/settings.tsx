@@ -147,7 +147,6 @@ function SettingsPage() {
   const { t, lang, setLang, ln } = useI18n();
   const { settings, update } = useSettings();
   const speech = useSpeech();
-  const speechLanguage = { en: "English", it: "Italian", zh: "Chinese (Simplified)" }[lang];
 
   const section = (titleKey: TranslationKey, children: React.ReactNode) => (
     <section className="border-t border-border pt-8">
