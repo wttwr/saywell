@@ -190,7 +190,7 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </button>
               <button type="button" className={ghost} disabled={!trimmed}
                 aria-pressed={speech.playingId === "listen:slow"}
-                onClick={() => speech.speak("listen:slow", trimmed, lang, undefined, 0.6)}>
+                onClick={() => speech.speak("listen:slow", trimmed, lang, undefined, 0.45)}>
                 <Snail className={cn("size-4", speech.playingId === "listen:slow" && "animate-pulse")} />
                 {t("listen.slow")}
               </button>
