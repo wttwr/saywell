@@ -245,7 +245,6 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                     {stats!.extra > 0 && <span className={MARK.extra}>{t("listen.extra")}</span>}
                   </div>
                 )}
-                <p className="text-xs text-muted-foreground">{t("listen.note")}</p>
               </div>
             )
           ) : null}
