@@ -225,11 +225,6 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                   <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.heard")}</h3>
                   <p className="mt-1 text-base text-foreground">{shown.heard}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground">
-                  {issues === 0 && stats!.extra === 0
-                    ? t("listen.allMatched")
-                    : t("listen.mismatch").replace("{n}", String(issues + stats!.extra)).replace("{total}", String(refTotal))}
-                </p>
                 {issues + stats!.extra > 0 && (
                   <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
                     {stats!.missing > 0 && <span className={MARK.missing}>{t("listen.missing")}</span>}
