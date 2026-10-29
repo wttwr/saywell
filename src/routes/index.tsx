@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, Languages, LayoutGrid, List, MessageCircleQuestion, Mic, Plus, Search, Sparkles, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, Languages, LayoutGrid, List, MapPin, MessageCircleQuestion, Mic, Plus, Search, Sparkles, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
@@ -10,6 +10,7 @@ import { DictionaryFeature } from "./dictionary";
 import { CheckFeature } from "./check";
 import { InterpretFeature } from "./interpret";
 import { ListenFeature } from "./listen";
+import { SituationsFeature } from "./situations";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +32,7 @@ const WIDGETS = {
   style: StyleFeature,
   interpret: InterpretFeature,
   listen: ListenFeature,
+  situations: SituationsFeature,
   dictionary: DictionaryFeature,
 } as const;
 
@@ -38,7 +40,7 @@ const KEY = "saywell.dashboard";
 const VIEW_KEY = "saywell.workspaceView";
 type View = "dashboard" | "list";
 
-const ICONS = { translate: Languages, check: CheckCheck, style: Sparkles, interpret: MessageCircleQuestion, listen: Mic, dictionary: BookOpen } as const;
+const ICONS = { translate: Languages, check: CheckCheck, style: Sparkles, interpret: MessageCircleQuestion, listen: Mic, situations: MapPin, dictionary: BookOpen } as const;
 
 function useView() {
   const [view, setView] = useState<View>("dashboard");
