@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useRef } from "react";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
@@ -43,6 +44,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   ]);
   const [style, setStyle] = useFeatureState<string>("situations", "style", "everyday");
   const ready = Boolean(custom.trim() || preset);
+  const ref = useRef<HTMLTextAreaElement>(null);
   const k = (s: string) => s as TranslationKey;
 
   return (
@@ -88,6 +90,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           onClear={() => setCustom("")}
           placeholder={t(k("situations.custom"))}
           language=""
+          textareaRef={ref}
           widget={widget}
           textareaClassName={widget ? "min-h-16" : "mt-6 min-h-24"}
           buttonClassName={widget ? "top-1" : "top-6"}
