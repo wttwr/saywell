@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-react";
+import { CircleCheck, Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-react";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
@@ -219,6 +219,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                       {o.word}
                     </span>
                   ))}
+                  {issues === 0 && stats!.extra === 0 && (
+                    <CircleCheck className="size-6 self-center text-primary" aria-label={t("listen.allMatched")} />
+                  )}
                 </p>
                 <div>
                   <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.heard")}</h3>
