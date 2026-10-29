@@ -6,7 +6,7 @@ const BARS = 40;
 
 /** Voice-memo style player: play button, waveform bars from the recording, and time. */
 export function VoiceMemo({ src, className }: { src: string; className?: string }) {
-  const [peaks, setPeaks] = useState<number[]>(() => Array(BARS).fill(0.2));
+  const [, setPeaks] = useState<number[]>(() => Array(BARS).fill(0.2));
   const [duration, setDuration] = useState(0);
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
