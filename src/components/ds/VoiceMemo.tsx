@@ -64,12 +64,8 @@ export function VoiceMemo({ src, className }: { src: string; className?: string 
         className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90">
         {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
       </button>
-      <div className="flex h-8 flex-1 cursor-pointer items-center gap-[3px]" onClick={seek}>
-        {peaks.map((p, i) => (
-          <span key={i}
-            className={cn("w-[3px] flex-1 rounded-full transition-colors", i / BARS < progress ? "bg-primary" : "bg-muted-foreground/25")}
-            style={{ height: `${p * 100}%` }} />
-        ))}
+      <div className="relative h-1 flex-1 cursor-pointer rounded-full bg-muted-foreground/25" onClick={seek}>
+        <div className="absolute inset-y-0 left-0 rounded-full bg-primary" style={{ width: `${progress * 100}%` }} />
       </div>
       <span className="w-10 shrink-0 pr-2 text-right text-xs tabular-nums text-muted-foreground">{fmt(shownTime)}</span>
     </div>
