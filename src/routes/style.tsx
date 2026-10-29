@@ -258,7 +258,8 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 </span>
               </p>
             )}
-            <section className="border-t border-border pt-6">
+            <div className="rounded-2xl bg-secondary/40 p-5 md:p-6">
+            <section>
               <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("style.primary")}
               </h2>
@@ -281,6 +282,7 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{result.note}</p>
               )
             )}
+            </div>
           </div>
         )}
       </div>

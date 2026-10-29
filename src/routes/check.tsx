@@ -166,7 +166,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {result && !loading && (
-          <section className="mt-12 space-y-10">
+          <section className="mt-10 space-y-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
             <div>
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
