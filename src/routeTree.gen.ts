@@ -16,6 +16,7 @@ import { Route as InterpretRouteImport } from './routes/interpret'
 import { Route as ListenRouteImport } from './routes/listen'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SituationsRouteImport } from './routes/situations'
 import { Route as StyleRouteImport } from './routes/style'
 import { Route as TranslateRouteImport } from './routes/translate'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
@@ -57,6 +58,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SituationsRoute = SituationsRouteImport.update({
+  id: '/situations',
+  path: '/situations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StyleRoute = StyleRouteImport.update({
   id: '/style',
   path: '/style',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/listen': typeof ListenRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
+  '/situations': typeof SituationsRoute
   '/style': typeof StyleRoute
   '/translate': typeof TranslateRoute
   '/workspace': typeof WorkspaceRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/listen': typeof ListenRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
+  '/situations': typeof SituationsRoute
   '/style': typeof StyleRoute
   '/translate': typeof TranslateRoute
   '/workspace': typeof WorkspaceRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/listen': typeof ListenRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
+  '/situations': typeof SituationsRoute
   '/style': typeof StyleRoute
   '/translate': typeof TranslateRoute
   '/workspace': typeof WorkspaceRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/listen'
     | '/saved'
     | '/settings'
+    | '/situations'
     | '/style'
     | '/translate'
     | '/workspace'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/listen'
     | '/saved'
     | '/settings'
+    | '/situations'
     | '/style'
     | '/translate'
     | '/workspace'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/listen'
     | '/saved'
     | '/settings'
+    | '/situations'
     | '/style'
     | '/translate'
     | '/workspace'
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   ListenRoute: typeof ListenRoute
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
+  SituationsRoute: typeof SituationsRoute
   StyleRoute: typeof StyleRoute
   TranslateRoute: typeof TranslateRoute
   WorkspaceRoute: typeof WorkspaceRoute
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/situations': {
+      id: '/situations'
+      path: '/situations'
+      fullPath: '/situations'
+      preLoaderRoute: typeof SituationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/style': {
       id: '/style'
       path: '/style'
@@ -283,6 +303,7 @@ const rootRouteChildren: RootRouteChildren = {
   ListenRoute: ListenRoute,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
+  SituationsRoute: SituationsRoute,
   StyleRoute: StyleRoute,
   TranslateRoute: TranslateRoute,
   WorkspaceRoute: WorkspaceRoute,
