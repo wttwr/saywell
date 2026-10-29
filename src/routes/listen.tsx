@@ -146,7 +146,6 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const recording = phase === "recording";
   const busy = phase === "transcribing";
   const stats = shown ? summarize(shown.ops) : null;
-  const refTotal = stats ? stats.match + stats.missing + stats.different : 0;
   const issues = stats ? stats.missing + stats.different : 0;
 
   return (
