@@ -116,7 +116,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           ))}
         </div>
 
-        <div className={cn("flex flex-wrap items-center gap-2 md:gap-3", widget ? "mt-3" : "mt-6")}>
+        <div className={cn("flex flex-wrap items-center gap-2 md:gap-3", widget ? "hidden" : "mt-6")}>
           <span className="text-sm text-muted-foreground">{t(k("situations.situation"))}</span>
           {PRESETS.map((p) => (
             <button key={p} type="button" aria-pressed={!custom.trim() && preset === p}
