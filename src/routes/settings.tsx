@@ -366,6 +366,27 @@ function SettingsPage() {
           )}
 
           {section(
+            "nav.situations" as TranslationKey,
+            <>
+              <Field label={t("settings.defaultLanguage")}>
+                <SelectPill
+                  label={t("settings.defaultLanguage")}
+                  value={settings.situationsLanguage}
+                  onChange={set("situationsLanguage")}
+                  options={[...LANGUAGES]}
+                />
+              </Field>
+              <Field label={t("settings.shortcuts")}>
+                <LanguageList
+                  label={t("settings.shortcuts")}
+                  values={settings.situationsShortcuts}
+                  onChange={set("situationsShortcuts")}
+                />
+              </Field>
+            </>,
+          )}
+
+          {section(
             "settings.dictionary",
             <>
               <Field label={t("settings.defaultLanguage")}>

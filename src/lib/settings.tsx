@@ -25,6 +25,8 @@ export type Settings = {
   interpretShortcuts: string[];
   listenLanguage: string;
   listenShortcuts: string[];
+  situationsLanguage: string;
+  situationsShortcuts: string[];
   dictionaryLanguage: string;
   dictionaryShortcuts: string[];
   dictionaryTranslateTo: string[];
@@ -43,6 +45,8 @@ export const DEFAULT_SETTINGS: Settings = {
   interpretShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   listenLanguage: AUTO_DETECT,
   listenShortcuts: ["English", "Italian", "Chinese (Simplified)"],
+  situationsLanguage: "Italian",
+  situationsShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryLanguage: AUTO_DETECT,
   dictionaryShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryTranslateTo: ["Italian", "Chinese (Simplified)", "Finnish"],

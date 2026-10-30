@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
+import { useDefaultOnce, useSettings } from "@/lib/settings";
 import { useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -11,7 +13,7 @@ import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { markSeeded, sendToFeature, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/situations")({
@@ -55,6 +57,18 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     "Chinese (Simplified)",
   ]);
   const [style, setStyle] = useFeatureState<string>("situations", "style", "everyday");
+  const { settings } = useSettings();
+  const navigate = useNavigate();
+  useDefaultOnce(() => {
+    if (!markSeeded("situations")) return;
+    setLanguage(settings.situationsLanguage);
+    setShortcuts(settings.situationsShortcuts);
+  });
+  const SEND = [
+    { feature: "interpret", to: "/interpret", label: "nav.interpret", shortcuts: settings.interpretShortcuts },
+    { feature: "style", to: "/style", label: "nav.style", shortcuts: settings.styleShortcuts },
+    { feature: "listen", to: "/listen", label: "nav.listen", shortcuts: settings.listenShortcuts },
+  ] as const;
   const ready = Boolean(custom.trim() || preset);
   const ref = useRef<HTMLTextAreaElement>(null);
   const k = (s: string) => s as TranslationKey;
@@ -160,6 +174,15 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                 onListen={() => void speech.speak(id, e.text, result.language)}
                                 onCopy={() => void navigator.clipboard.writeText(e.text).then(() => { setCopiedId(id); setTimeout(() => setCopiedId(null), 1600); })} />
                               <SaveButton item={{ kind: "translation", text: e.text, language: result.language, source: e.meaning, sourceLanguage: globalLanguage === "Simplified Chinese" ? "Chinese (Simplified)" : globalLanguage, ...(e.transliteration ? { transliteration: e.transliteration } : {}), ...(e.note ? { detail: e.note } : {}) }} />
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                              {SEND.map((s) => (
+                                <button key={s.feature} type="button"
+                                  onClick={() => { sendToFeature(s.feature, { text: e.text, language: result.language, shortcuts: [...s.shortcuts] }); void navigate({ to: s.to }); }}
+                                  className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
+                                  <ArrowUpRight className="size-3.5" />{t(k(s.label))}
+                                </button>
+                              ))}
                             </div>
                           </li>
                         );

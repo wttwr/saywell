@@ -33,6 +33,24 @@ export function useFeatureState<T>(feature: string, key: string, initial: T) {
   return [value, set] as const;
 }
 
+/**
+ * Hand text to another feature (e.g. Situations → Style): sets its text and
+ * language, clears its previous result, and marks it seeded with the given
+ * shortcuts so its settings defaults don't overwrite the handed-over language.
+ */
+export function sendToFeature(feature: string, values: { text: string; language: string; shortcuts: string[] }) {
+  const seededId = `${feature}:__seeded`;
+  if (!store.has(seededId)) {
+    store.set(seededId, true);
+    store.set(`${feature}:shortcuts`, values.shortcuts);
+  }
+  store.set(`${feature}:text`, values.text);
+  store.set(`${feature}:language`, values.language);
+  store.set(`${feature}:result`, null);
+  store.set(`${feature}:error`, null);
+  emit();
+}
+
 /** True once a feature's defaults were applied, so remounts keep user edits. */
 export function markSeeded(feature: string): boolean {
   const id = `${feature}:__seeded`;
