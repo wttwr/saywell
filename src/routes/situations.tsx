@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+
+import { SaveButton } from "@/components/SaveButton";
+import { TextActions } from "@/components/TextActions";
+import { exploreSituations, type SituationsResult } from "@/lib/situations.functions";
+import { useSpeech } from "@/lib/speech";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
@@ -32,7 +38,13 @@ const chip = (on: boolean) =>
   );
 
 export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const run = useServerFn(exploreSituations);
+  const speech = useSpeech();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [result, setResult] = useFeatureState<SituationsResult | null>("situations", "result", null);
+  const [loading, setLoading] = useFeatureState("situations", "loading", false);
+  const [error, setError] = useFeatureState<string | null>("situations", "error", null);
   const widget = mode === "widget";
   const [preset, setPreset] = useFeatureState<string>("situations", "preset", "supermarket");
   const [custom, setCustom] = useFeatureState("situations", "custom", "");
@@ -46,6 +58,22 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const ready = Boolean(custom.trim() || preset);
   const ref = useRef<HTMLTextAreaElement>(null);
   const k = (s: string) => s as TranslationKey;
+  const situationText = custom.trim() || t(k(`situations.${preset}`));
+  const globalLanguage = lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
+
+  const onExplore = async () => {
+    if (!ready || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      setResult(await run({ data: { situation: situationText, language, style: style as "everyday" | "simple" | "polite", explanationLanguage: globalLanguage } }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("style.error"));
+      setResult(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className={widget ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
@@ -94,15 +122,55 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           widget={widget}
           textareaClassName={widget ? "min-h-16" : "mt-6 min-h-24"}
           buttonClassName={widget ? "top-1" : "top-6"}
-          actionLabel={t(k("situations.explore"))}
-          onAction={() => {}}
-          actionDisabled={!ready}
+          actionLabel={loading ? t("style.exploring") : t(k("situations.explore"))}
+          onAction={() => void onExplore()}
+          actionDisabled={!ready || loading}
         />
 
-        <ResultCard className={widget ? "mt-4" : "mt-10"}>
-          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t(k("situations.results"))}</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(k("situations.empty"))}</p>
-        </ResultCard>
+        {error && <p className="mt-8 text-base text-destructive">{error}</p>}
+        {loading ? (
+          <div className={cn("space-y-3", widget ? "mt-4" : "mt-10")}>
+            <div className="h-5 w-2/3 animate-pulse rounded bg-secondary" />
+            <div className="h-5 w-1/2 animate-pulse rounded bg-secondary" />
+            <div className="h-5 w-3/5 animate-pulse rounded bg-secondary" />
+          </div>
+        ) : (
+          <ResultCard className={widget ? "mt-4" : "mt-10"}>
+            {!result ? (
+              <>
+                <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t(k("situations.results"))}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(k("situations.empty"))}</p>
+              </>
+            ) : (
+              <div className="space-y-8">
+                {result.groups.map((g, gi) => (
+                  <section key={gi}>
+                    {g.title && <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{g.title}</h2>}
+                    <ul className="mt-3 divide-y divide-border/60">
+                      {g.expressions.map((e, ei) => {
+                        const id = `situations:${gi}:${ei}`;
+                        return (
+                          <li key={ei} className="py-4 first:pt-0 last:pb-0">
+                            <p className="whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground">{e.text}</p>
+                            {e.transliteration && <p className="mt-1 text-sm text-muted-foreground">{e.transliteration}</p>}
+                            {e.meaning && <p className="mt-2 text-sm leading-relaxed text-foreground/80">{e.meaning}</p>}
+                            {e.note && <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{e.note}</p>}
+                            <div className="mt-3 flex flex-wrap items-center gap-4">
+                              <TextActions playing={speech.playingId === id} failed={speech.errorId === id} copied={copiedId === id}
+                                onListen={() => void speech.speak(id, e.text, result.language)}
+                                onCopy={() => void navigator.clipboard.writeText(e.text).then(() => { setCopiedId(id); setTimeout(() => setCopiedId(null), 1600); })} />
+                              <SaveButton item={{ kind: "translation", text: e.text, language: result.language, source: e.meaning, sourceLanguage: globalLanguage === "Simplified Chinese" ? "Chinese (Simplified)" : globalLanguage, ...(e.transliteration ? { transliteration: e.transliteration } : {}), ...(e.note ? { detail: e.note } : {}) }} />
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            )}
+          </ResultCard>
+        )}
       </div>
     </main>
   );
