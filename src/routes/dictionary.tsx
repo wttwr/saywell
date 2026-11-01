@@ -10,6 +10,7 @@ import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
 import { MultilingualTranslation } from "@/components/MultilingualTranslation";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 
@@ -345,6 +346,10 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               ))}
             </div>
           </section>
+        )}
+
+        {!entry && !loading && !error && suggestions.length === 0 && (
+          <EmptyResultCard title={t("dictionary.results")} hint={t("dictionary.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
         )}
 
         {entry && (

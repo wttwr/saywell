@@ -5,6 +5,7 @@ import { CircleCheck, Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { VoiceMemo } from "@/components/ds/VoiceMemo";
 import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
@@ -197,6 +198,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           }
         />
 
+        {!shown && !error && !busy && (
+          <EmptyResultCard title={t("listen.results")} hint={t("listen.resultsEmpty")} className={widget ? "mt-4" : "mt-10"} />
+        )}
         {(shown || error || busy) && (
         <ResultCard className={widget ? "mt-4" : "mt-10"}>
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>

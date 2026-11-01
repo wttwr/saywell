@@ -1,5 +1,6 @@
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -244,6 +245,10 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             <div className="h-5 w-1/2 animate-pulse rounded bg-secondary" />
             <div className="h-5 w-3/5 animate-pulse rounded bg-secondary" />
           </div>
+        )}
+
+        {!result && !loading && (
+          <EmptyResultCard title={t("style.results")} hint={t("style.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
         )}
 
         {!loading && result && (

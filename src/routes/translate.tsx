@@ -17,6 +17,7 @@ import {
 
 import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
@@ -408,6 +409,10 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             </div>
           </section>
         </div>
+
+        {!source.trim() && !loading && (
+          <EmptyResultCard title={t("translate.results")} hint={t("translate.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+        )}
 
         {languageMismatch && detectedLanguage && (
           <p className="mt-8 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">

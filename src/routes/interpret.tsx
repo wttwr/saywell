@@ -6,6 +6,7 @@ import { ChevronDown, Info, X } from "lucide-react";
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { TextActions } from "@/components/TextActions";
 import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
@@ -168,6 +169,10 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             <div className="h-5 w-1/2 animate-pulse rounded bg-secondary" />
             <div className="h-5 w-3/5 animate-pulse rounded bg-secondary" />
           </div>
+        )}
+
+        {!result && !loading && (
+          <EmptyResultCard title={t("interpret.results")} hint={t("interpret.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
         )}
 
         {!loading && result && (
