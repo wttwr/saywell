@@ -11,6 +11,7 @@
 
 - Treat input-language selectors as preferences: AI tools detect the actual language, preserve it, and show a localized mismatch notice when confidently different.
 - Listen uses ElevenLabs via a server route (key stays server-side); browser speech is only a fallback when the service fails.
+- ListenResults is the shared widget/focus presentation for recognition feedback; recognition-only matches remain unassessed so transcription is never mislabeled as pronunciation accuracy.
 - Saved multilingual rows use group-scoped IDs and are grouped before filtering; this keeps whole cards intact without overwriting standalone bookmarks. Dictionary saves carry a complete entry snapshot so definitions and examples survive navigation.
 - Saved detail screens use the Saved route's validated detail search parameter to retain list filters and search while enabling browser back navigation; full content lives in SavedContent, with shared TextActions for text-scoped Listen and Copy controls.
 
