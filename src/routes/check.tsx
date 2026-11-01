@@ -1,5 +1,6 @@
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";

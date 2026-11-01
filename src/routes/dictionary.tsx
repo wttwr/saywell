@@ -10,6 +10,7 @@ import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
 import { MultilingualTranslation } from "@/components/MultilingualTranslation";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 

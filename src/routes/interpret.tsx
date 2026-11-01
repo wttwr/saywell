@@ -6,6 +6,7 @@ import { ChevronDown, Info, X } from "lucide-react";
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { TextActions } from "@/components/TextActions";
 import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";

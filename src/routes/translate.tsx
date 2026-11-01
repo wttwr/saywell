@@ -17,6 +17,7 @@ import {
 
 import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { translateText } from "@/lib/translate.functions";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";

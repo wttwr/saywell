@@ -197,6 +197,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           }
         />
 
+        {!shown && !error && !busy && (
+          <EmptyResultCard title={t("listen.results")} hint={t("listen.resultsEmpty")} className={widget ? "mt-4" : "mt-10"} />
+        )}
         {(shown || error || busy) && (
         <ResultCard className={widget ? "mt-4" : "mt-10"}>
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
