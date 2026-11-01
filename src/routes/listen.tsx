@@ -5,6 +5,7 @@ import { CircleCheck, Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
+import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { VoiceMemo } from "@/components/ds/VoiceMemo";
 import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
