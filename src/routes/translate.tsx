@@ -410,6 +410,10 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </section>
         </div>
 
+        {!source.trim() && !loading && (
+          <EmptyResultCard title={t("translate.results")} hint={t("translate.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+        )}
+
         {languageMismatch && detectedLanguage && (
           <p className="mt-8 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
             <Info className="mt-0.5 size-4 shrink-0 text-primary" />

@@ -166,6 +166,10 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         )}
 
+        {!result && !loading && (
+          <EmptyResultCard title={t("check.results")} hint={t("check.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+        )}
+
         {result && !loading && (
           <section className="mt-10 space-y-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
             <div>

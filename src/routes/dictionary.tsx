@@ -348,6 +348,10 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </section>
         )}
 
+        {!entry && !loading && !error && suggestions.length === 0 && (
+          <EmptyResultCard title={t("dictionary.results")} hint={t("dictionary.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+        )}
+
         {entry && (
           <section className="mt-10">
             {(entry.languageMismatch || entry.correctedFrom) && (

@@ -247,6 +247,10 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         )}
 
+        {!result && !loading && (
+          <EmptyResultCard title={t("style.results")} hint={t("style.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+        )}
+
         {!loading && result && (
           <div className="mt-10">
             {showLanguageNotice && (

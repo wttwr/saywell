@@ -171,6 +171,10 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         )}
 
+        {!result && !loading && (
+          <EmptyResultCard title={t("interpret.results")} hint={t("interpret.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+        )}
+
         {!loading && result && (
           <div className="mt-10">
             {result.issue && (
