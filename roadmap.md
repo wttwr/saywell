@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Connect the redesigned Listen results and verify word feedback, recording playback, retry and mobile layout.
+
 - [x] Dictionary: dictionary entry / multilingual translations as tabs
 - [x] Stop button sized like the microphone button
 - [x] Multilingual translations: single card with divider lines (no nested cards)

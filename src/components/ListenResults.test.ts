@@ -11,4 +11,7 @@ describe("recognition-only feedback", () => {
   it("keeps words with no assessment neutral", () => {
     expect(recognitionFeedback()).toEqual({ status: "neutral", message: "listen.wordUnassessed" });
   });
+  it("marks an unrecognized word as a practice hint, not a scored error", () => {
+    expect(recognitionFeedback({ type: "missing", word: "hello" })).toEqual({ status: "practice", message: "listen.wordMissing" });
+  });
 });

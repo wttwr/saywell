@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { CircleCheck, Loader2, Mic, Play, Snail, Square, Volume2 } from "lucide-react";
+import { Snail, Volume2 } from "lucide-react";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
-import { VoiceMemo } from "@/components/ds/VoiceMemo";
+import { ListenResults } from "@/components/ListenResults";
 import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { SPEECH_LOCALES, useSpeech } from "@/lib/speech";
-import { compareWords, summarize, type DiffOp } from "@/lib/pronunciation";
+import { compareWords, type DiffOp } from "@/lib/pronunciation";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
@@ -31,13 +31,6 @@ export const Route = createFileRoute("/listen")({
 
 type Attempt = { reference: string; heard: string; ops: DiffOp[]; audioUrl: string };
 type Phase = "idle" | "recording" | "transcribing";
-
-const MARK: Record<DiffOp["type"], string> = {
-  match: "text-foreground",
-  missing: "rounded bg-destructive/10 px-1 text-destructive line-through decoration-destructive/50",
-  different: "rounded bg-primary/15 px-1 text-foreground underline decoration-primary decoration-2 underline-offset-4",
-  extra: "rounded bg-secondary px-1 text-muted-foreground italic",
-};
 
 const ghost = "inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40";
 
@@ -65,19 +58,15 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const recRef = useRef<MediaRecorder | null>(null);
-  const playerRef = useRef<HTMLAudioElement | null>(null);
-  const [playingMine, setPlayingMine] = useState(false);
   const shown = attempt && attempt.reference === trimmed ? attempt : null;
 
   useEffect(() => () => {
     const r = recRef.current;
     if (r && r.state !== "inactive") { r.onstop = null; r.stop(); r.stream.getTracks().forEach((tr) => tr.stop()); }
-    playerRef.current?.pause();
   }, []);
 
   const discard = () => {
-    playerRef.current?.pause();
-    setPlayingMine(false);
+    speech.stop();
     if (attempt) URL.revokeObjectURL(attempt.audioUrl);
     setAttempt(null);
     setError(null);
@@ -133,21 +122,8 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     }
   };
 
-  const playMine = () => {
-    if (!shown) return;
-    if (playingMine) { playerRef.current?.pause(); setPlayingMine(false); return; }
-    speech.stop();
-    const a = new Audio(shown.audioUrl);
-    playerRef.current = a;
-    a.onended = () => setPlayingMine(false);
-    setPlayingMine(true);
-    void a.play().catch(() => setPlayingMine(false));
-  };
-
   const recording = phase === "recording";
   const busy = phase === "transcribing";
-  const stats = shown ? summarize(shown.ops) : null;
-  const issues = stats ? stats.missing + stats.different : 0;
 
   return (
     <main className={widget ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
@@ -202,9 +178,7 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <EmptyResultCard title={t("listen.results")} hint={t("listen.resultsEmpty")} className={widget ? "mt-4" : "mt-10"} />
         )}
         {(shown || error || busy) && (
-        <ResultCard className={widget ? "mt-4" : "mt-10"}>
-          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
-          {shown && <VoiceMemo src={shown.audioUrl} className="mt-4" />}
+        <ResultCard className={widget ? "mt-4 p-4 md:p-4" : "mt-6 p-4 md:p-5"}>
           {busy ? (
             <div className="mt-5 space-y-3">
               <div className="h-5 w-2/3 animate-pulse rounded bg-secondary" />
@@ -212,34 +186,16 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             </div>
           ) : error ? (
             <p className="mt-4 text-sm leading-relaxed text-destructive">{error}</p>
-          ) : shown ? (
-            !shown.heard ? (
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("listen.nothingHeard")}</p>
-            ) : (
-              <div className="mt-5 space-y-5">
-                <p className="flex flex-wrap gap-x-1.5 gap-y-2 text-xl leading-relaxed">
-                  {shown.ops.map((o, i) => (
-                    <span key={i} className={MARK[o.type]} title={o.type === "match" ? undefined : o.type === "different" ? `${t("listen.different")}: “${o.heard}”` : t(`listen.${o.type}`)}>
-                      {o.word}
-                    </span>
-                  ))}
-                  {issues === 0 && stats!.extra === 0 && (
-                    <CircleCheck className="size-6 self-center text-primary" aria-label={t("listen.allMatched")} />
-                  )}
-                </p>
-                <div>
-                  <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.heard")}</h3>
-                  <p className="mt-1 text-base text-foreground">{shown.heard}</p>
-                </div>
-                {issues + stats!.extra > 0 && (
-                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                    {stats!.missing > 0 && <span className={MARK.missing}>{t("listen.missing")}</span>}
-                    {stats!.different > 0 && <span className={MARK.different}>{t("listen.different")}</span>}
-                    {stats!.extra > 0 && <span className={MARK.extra}>{t("listen.extra")}</span>}
-                  </div>
-                )}
-              </div>
-            )
+           ) : shown ? (
+             <ListenResults
+               key={shown.audioUrl}
+               reference={shown.reference}
+               heard={shown.heard}
+               ops={shown.ops}
+               audioUrl={shown.audioUrl}
+               onRetry={discard}
+               onListen={(word) => speech.speak(`listen:word:${word}`, word, lang)}
+             />
           ) : null}
         </ResultCard>
         )}
