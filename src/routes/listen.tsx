@@ -126,7 +126,7 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const busy = phase === "transcribing";
 
   return (
-    <main className={widget ? "flex min-h-full flex-1 flex-col bg-background px-4 pb-4" : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
+    <main className={widget ? `flex min-h-full flex-1 flex-col bg-background px-4 ${shown ? "pb-8" : "pb-4"}` : "min-h-screen bg-background px-5 py-10 md:px-10 md:py-16"}>
       <div className={widget ? "mx-auto flex w-full max-w-3xl flex-1 flex-col" : "mx-auto max-w-3xl"}>
         <header className={widget ? "sr-only" : "mb-8 md:mb-12"}>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("nav.listen")}</h1>
