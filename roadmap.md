@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Connect the redesigned Listen results and verify word feedback, recording playback, retry and mobile layout.
+- [x] Connect the redesigned Listen results and verify word feedback, recording playback, retry and mobile layout.
 
 - [x] Dictionary: dictionary entry / multilingual translations as tabs
 - [x] Stop button sized like the microphone button
