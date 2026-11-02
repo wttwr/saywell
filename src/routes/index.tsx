@@ -260,6 +260,7 @@ function WorkspacePage() {
               </div>
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
                 <Widget mode="widget" />
+                <div aria-hidden="true" className="h-6 shrink-0" />
               </div>
             </section>
           );
