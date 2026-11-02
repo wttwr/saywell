@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 
 const BARS = 40;
 
 /** Voice-memo style player: play button, waveform bars from the recording, and time. */
 export function VoiceMemo({ src, className }: { src: string; className?: string }) {
+  const { t } = useI18n();
   const [, setPeaks] = useState<number[]>(() => Array(BARS).fill(0.2));
   const [duration, setDuration] = useState(0);
   const [time, setTime] = useState(0);
@@ -60,10 +63,10 @@ export function VoiceMemo({ src, className }: { src: string; className?: string 
 
   return (
     <div className={cn("flex items-center gap-4 rounded-full border border-border/60 bg-background px-2 py-2", className)}>
-      <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"}
+      <Button type="button" size="icon" onClick={toggle} aria-label={t(playing ? "listen.pause" : "listen.playback")}
         className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90">
         {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
-      </button>
+      </Button>
       <div className="relative h-1 flex-1 cursor-pointer rounded-full bg-muted-foreground/25" onClick={seek}>
         <div className="absolute inset-y-0 left-0 rounded-full bg-primary" style={{ width: `${progress * 100}%` }} />
       </div>
