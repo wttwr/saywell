@@ -164,8 +164,8 @@ function WorkspacePage() {
           ))}
         </div>
           <Button variant={editingActive ? "default" : "secondary"}
-            onClick={() => { setQuery(""); setBrowsing(false); setEditing((e) => !editingActive && !e ? true : !editingActive); }}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
+            onClick={() => { setQuery(""); setBrowsing(false); setEditing(!editingActive); }}
+            className="rounded-full"
           >
             {editingActive ? t("workspace.done") : t("workspace.customize")}
           </Button>
