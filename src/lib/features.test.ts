@@ -14,7 +14,7 @@ describe("workspace layout", () => {
 describe("tool directory", () => {
   it("finds hidden Style and Dictionary by their localized names", () => {
     const layout = ["interpret", "check"];
-    for (const [style, dictionary] of [["Style", "Dictionary"], ["Stile", "Dizionario"], ["表达", "词典"]]) {
+    for (const [style, dictionary] of [["Style", "Dictionary"], ["Stile", "Dizionario"], ["表达", "词典"]] as const) {
       const label = (key: string) => key === "nav.style" ? style : key === "nav.vocabulary" ? dictionary : key;
       expect(searchTools(` ${style.toUpperCase()} `, label).map((f) => f.id)).toEqual(["style"]);
       expect(searchTools(dictionary, label).map((f) => f.id)).toEqual(["dictionary"]);
