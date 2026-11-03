@@ -24,6 +24,17 @@ export const FEATURES: FeatureDefinition[] = [
 
 export const DEFAULT_LAYOUT: FeatureId[] = ["translate", "check", "interpret"];
 
+/** The complete directory is independent of the user's visible cards. */
+export function searchTools(query: string, label: (key: TranslationKey) => string): FeatureDefinition[] {
+  const normalized = query.trim().toLocaleLowerCase();
+  return FEATURES.filter((feature) => label(feature.label).toLocaleLowerCase().includes(normalized));
+}
+
+/** Explicit additions append without moving or duplicating existing cards. */
+export function addToLayout(layout: FeatureId[], id: FeatureId): FeatureId[] {
+  return layout.includes(id) ? layout : [...layout, id];
+}
+
 /** Keeps only known ids, without duplicates. */
 export function sanitizeLayout(value: unknown): FeatureId[] {
   if (!Array.isArray(value)) return DEFAULT_LAYOUT;
@@ -35,6 +46,9 @@ export function moveItem<T>(list: T[], index: number, delta: number): T[] {
   const to = index + delta;
   if (to < 0 || to >= list.length) return list;
   const next = [...list];
-  [next[index], next[to]] = [next[to]!, next[index]!];
+  const current = next[index];
+  const destination = next[to];
+  if (current === undefined || destination === undefined) return list;
+  [next[index], next[to]] = [destination, current];
   return next;
 }
