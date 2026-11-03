@@ -194,7 +194,7 @@ function WorkspacePage() {
       </div>
       <div className="mb-6 flex flex-wrap gap-2">
         <Button variant={directory ? "secondary" : "ghost"} size="sm" onClick={() => { setQuery(""); setBrowsing(true); }}>
-          <Search /> {t("workspace.browse")}
+          {t("workspace.browse")}
         </Button>
         {directory && <Button variant="ghost" size="sm" onClick={() => { setQuery(""); setBrowsing(false); }}><ArrowRight /> {t("workspace.back")}</Button>}
       </div>
