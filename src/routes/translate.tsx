@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
+import { swapTargets } from "@/lib/translate-targets";
 import { translateText } from "@/lib/translate.functions";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { useI18n } from "@/lib/i18n";
@@ -130,10 +131,13 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const swapLanguages = () => {
     const lang = targets[active];
     if (!lang || from === AUTO_DETECT) return;
+    const swapped = swapTargets(targets, active, from);
+    if (!swapped) return;
     const translated = results[lang] ?? "";
     const previousSource = source;
     setFrom(lang);
-    setTargets((prev) => prev.map((l, i) => (i === active ? from : l)));
+    setTargets(swapped.targets);
+    setActive(swapped.active);
     setSource(translated);
     setResults(translated ? { [from]: previousSource } : {});
   };
