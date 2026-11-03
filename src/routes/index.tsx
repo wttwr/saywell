@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, Languages, LayoutGrid, List, MapPin, MessageCircleQuestion, Mic, Plus, Search, Sparkles, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, type FeatureId } from "@/lib/features";
+import { Button } from "@/components/ui/button";
+import { addToLayout, DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, searchTools, type FeatureId } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { TranslateFeature } from "./translate";
 import { StyleFeature } from "./style";
@@ -138,11 +139,14 @@ function WorkspacePage() {
   const [widths, setWidth] = useWidths();
   const [view, setView] = useView();
   const [query, setQuery] = useState("");
+  const [browsing, setBrowsing] = useState(false);
   const byId = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
   const available = FEATURES.filter((f) => !layout.includes(f.id));
   const q = query.trim().toLowerCase();
-  const shown = q ? layout.filter((id) => t(byId[id]!.label).toLowerCase().includes(q)) : layout;
-  const editingActive = editing && !q;
+  const directory = browsing || Boolean(q);
+  const results = searchTools(query, t);
+  const shown = layout;
+  const editingActive = editing && !directory;
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
@@ -159,14 +163,12 @@ function WorkspacePage() {
             </button>
           ))}
         </div>
-        {!q && (
-          <button
-            onClick={() => setEditing((e) => !e)}
+          <Button variant={editingActive ? "default" : "secondary"}
+            onClick={() => { setQuery(""); setBrowsing(false); setEditing((e) => !editingActive && !e ? true : !editingActive); }}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${editing ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}
           >
-            {editing ? t("workspace.done") : t("workspace.customize")}
-          </button>
-        )}
+            {editingActive ? t("workspace.done") : t("workspace.customize")}
+          </Button>
         </div>
       </header>
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-3">
@@ -182,13 +184,19 @@ function WorkspacePage() {
           <button
             type="button"
             onClick={() => setQuery("")}
-            aria-label="Clear search"
-            title="Clear search"
+            aria-label={t("workspace.clearSearch")}
+            title={t("workspace.clearSearch")}
             className="shrink-0 rounded-full bg-secondary p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <X className="size-4" />
           </button>
         )}
+      </div>
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Button variant={directory ? "secondary" : "ghost"} size="sm" onClick={() => { setQuery(""); setBrowsing(true); }}>
+          <Search /> {t("workspace.browse")}
+        </Button>
+        {directory && <Button variant="ghost" size="sm" onClick={() => { setQuery(""); setBrowsing(false); }}><ArrowRight /> {t("workspace.back")}</Button>}
       </div>
       {editingActive && available.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
@@ -196,7 +204,7 @@ function WorkspacePage() {
           {available.map((f) => (
             <button
               key={f.id}
-              onClick={() => setLayout([...layout, f.id])}
+              onClick={() => setLayout(addToLayout(layout, f.id))}
               className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
               <Plus className="size-3.5" /> {t(f.label)}
@@ -204,16 +212,39 @@ function WorkspacePage() {
           ))}
         </div>
       )}
-      {layout.length === 0 && (
-        <p className="py-16 text-center text-sm text-muted-foreground">{t("workspace.empty")}</p>
+      {(directory ? results.length === 0 : layout.length === 0) && (
+        <div className="py-12 text-center">
+          <p className="text-sm text-muted-foreground">{t(directory ? "workspace.noResults" : "workspace.empty")}</p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {q && <Button variant="outline" onClick={() => { setQuery(""); setBrowsing(false); }}><X /> {t("workspace.clearSearch")}</Button>}
+            <Button variant="secondary" onClick={() => { setQuery(""); setBrowsing(true); }}><Search /> {t("workspace.browse")}</Button>
+          </div>
+        </div>
       )}
-      {layout.length > 0 && shown.length === 0 && (
-        <p className="py-16 text-center text-sm text-muted-foreground">{t("workspace.noResults")}</p>
-      )}
-      {view === "list" && !editingActive ? (
+      {directory ? (
+        <ul className="flex flex-col gap-2">
+          {results.map((f) => {
+            const Icon = ICONS[f.id];
+            const visible = layout.includes(f.id);
+            return (
+              <li key={f.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border/60 bg-background p-4">
+                <span className="rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>
+                <h2 className="min-w-0 flex-1 text-base font-medium">{t(f.label)}</h2>
+                <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+                  <Button asChild variant="ghost" size="sm"><Link to={f.focusPath}><ArrowUpRight /> {t("workspace.openTool")}</Link></Button>
+                  <Button variant="secondary" size="sm" disabled={visible} onClick={() => setLayout(addToLayout(layout, f.id))}>
+                    {visible ? <Check /> : <Plus />} {t(visible ? "workspace.inWorkspace" : "workspace.addToWorkspace")}
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : view === "list" && !editingActive ? (
         <ul className="flex flex-col gap-2">
           {shown.map((id) => {
-            const f = byId[id]!;
+            const f = byId[id];
+            if (!f) return null;
             const Icon = ICONS[f.id];
             return (
               <li key={f.id}>
@@ -229,7 +260,8 @@ function WorkspacePage() {
       ) : (
       <div className="grid gap-4 lg:grid-cols-6">
         {shown.map((id, i) => {
-          const f = byId[id]!;
+          const f = byId[id];
+          if (!f) return null;
           const Widget = WIDGETS[f.id];
           return (
             <section key={f.id} className={`flex h-[540px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-background ${WIDTH_CLASS[widths[f.id] ?? defaultWidth(f.id)]}`}>
