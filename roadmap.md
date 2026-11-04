@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Bind Interpret results and actions to submitted text/settings; verify draft edits and late responses in Workspace and full view.
+
 - [x] Separate all-tool search and browsing from Workspace cards; verify hidden-tool actions and preference preservation.
 
 - [x] Connect the redesigned Listen results and verify word feedback, recording playback, retry and mobile layout.
