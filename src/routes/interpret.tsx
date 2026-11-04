@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Info } from "lucide-react";
+import { Info, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
@@ -14,7 +15,7 @@ import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
-import { matchesInterpretSubmission, type InterpretSubmission, type SubmittedInterpretResult } from "@/lib/interpret-submission";
+import { matchesInterpretContent, type InterpretSubmission, type SubmittedInterpretResult } from "@/lib/interpret-submission";
 import {
   interpretText,
   type InterpretExample,
@@ -71,7 +72,7 @@ function InterpretPage() {
 
 export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const run = useServerFn(interpretText);
-  const { t, lang } = useI18n();
+  const { t, lang, ln } = useI18n();
   const [text, setText] = useFeatureState("interpret", "text", "");
   const [context, setContext] = useFeatureState("interpret", "context", "");
   const [language, setLanguage] = useFeatureState("interpret", "language", AUTO_DETECT);
@@ -101,7 +102,9 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const latestDraft = useRef(draft);
   latestDraft.current = draft;
   // Never render a stale result, even before the cleanup effect runs.
-  const result = savedResult && matchesInterpretSubmission(savedResult.submission, draft) ? savedResult : null;
+  const result = savedResult && matchesInterpretContent(savedResult.submission, draft) ? savedResult : null;
+  const explanationMismatch = !!result && result.submission.explanationLanguage !== explanationLanguage;
+  const displayExplanationLanguage = (value: string) => ln(value === "Simplified Chinese" ? "Chinese (Simplified)" : value);
   const { stop } = speech;
   useEffect(() => {
     if (savedResult && !result) setResult(null);
@@ -112,22 +115,23 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     setError(null);
   }, [text, context, language, explanationLanguage, settings.voiceId, settings.speechSpeed, stop, setError]);
 
-  const onInterpret = async () => {
+  const onInterpret = async (regenerate = false) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
     setLoading(true);
     setError(null);
-    setResult(null);
-    const submission = { ...draft };
+    if (!regenerate) setResult(null);
+    const previous = regenerate ? result : null;
+    const submission = { ...(previous?.submission ?? draft), explanationLanguage };
     try {
-      const response = await run({ data: { text: trimmed, language: submission.language, explanationLanguage: submission.explanationLanguage, context: submission.context.trim() } });
-      if (matchesInterpretSubmission(submission, latestDraft.current)) {
-        setResult({ ...response, submission });
+      const response = await run({ data: { text: submission.text.trim(), language: previous?.detectedLanguage ?? submission.language, explanationLanguage: submission.explanationLanguage, context: submission.context.trim() } });
+      if (matchesInterpretContent(submission, latestDraft.current)) {
+        setResult({ ...response, detectedLanguage: previous?.detectedLanguage ?? response.detectedLanguage, submission });
       }
     } catch (e) {
-      if (matchesInterpretSubmission(submission, latestDraft.current)) {
+      if (matchesInterpretContent(submission, latestDraft.current)) {
         setError(e instanceof Error ? e.message : t("interpret.error"));
-        setResult(null);
+        if (!regenerate) setResult(null);
       }
     } finally {
       setLoading(false);
@@ -181,7 +185,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           textareaClassName={mode === "widget" ? "min-h-20" : "mt-8 min-h-32"}
           buttonClassName={mode === "widget" ? "top-1" : "top-8"}
           actionLabel={loading ? t("interpret.loading") : t("interpret.action")}
-          onAction={onInterpret}
+          onAction={() => onInterpret()}
           actionDisabled={!text.trim() || loading}
         />
 
@@ -199,8 +203,19 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <EmptyResultCard title={t("interpret.results")} hint={t("interpret.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
         )}
 
-        {!loading && result && (
+        {result && (
           <div className="mt-10">
+            {explanationMismatch && (
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-sm" role="status">
+                <p className="text-muted-foreground">
+                  {t("interpret.explanationLanguage").replace("{language}", displayExplanationLanguage(result.submission.explanationLanguage))}
+                </p>
+                <Button variant="outline" size="sm" disabled={loading} onClick={() => onInterpret(true)} className="h-auto min-h-8 whitespace-normal text-left">
+                  <RefreshCw className={loading ? "animate-spin" : undefined} />
+                  {t("interpret.regenerate").replace("{language}", displayExplanationLanguage(explanationLanguage))}
+                </Button>
+              </div>
+            )}
             {result.issue && (
               <p className="mb-6 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
                 <Info className="mt-0.5 size-4 shrink-0 text-primary" />

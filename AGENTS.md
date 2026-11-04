@@ -22,4 +22,4 @@
 - The home route renders the Workspace; each feature keeps its own focus route (Translate at /translate) and any moved or renamed route keeps its old path as a permanent redirect, so published addresses keep working.
 - Shared UI primitives used by several sections live in src/components/ds/ (e.g. LanguageSelectorBar) — so sections stay visually in sync and new sections like Listen reuse them.
 - Translate target swaps use a browser-safe pure helper with regression tests so merging tabs preserves unique language identities and the active target.
-- Interpret stores each result with an immutable submission snapshot and checks draft equality before rendering or accepting responses, so shared widget/focus results and text actions cannot mix submissions.
+- Interpret stores immutable submission snapshots and validates content equality in widget/focus views; App language differences retain labeled explanations with explicit regeneration, while text/context/source changes invalidate results.
