@@ -13,10 +13,15 @@ export type InterpretSubmission = {
 export type SubmittedInterpretResult = InterpretResult & { submission: InterpretSubmission };
 
 export function matchesInterpretSubmission(submitted: InterpretSubmission, draft: InterpretSubmission) {
+  return matchesInterpretContent(submitted, draft)
+    && submitted.explanationLanguage === draft.explanationLanguage;
+}
+
+/** App language changes label existing explanations instead of discarding them. */
+export function matchesInterpretContent(submitted: InterpretSubmission, draft: InterpretSubmission) {
   return submitted.text === draft.text
     && submitted.context === draft.context
     && submitted.language === draft.language
-    && submitted.explanationLanguage === draft.explanationLanguage
     && submitted.voiceId === draft.voiceId
     && submitted.speechSpeed === draft.speechSpeed;
 }
