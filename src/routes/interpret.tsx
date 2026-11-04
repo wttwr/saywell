@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useRef, useState } from "react";
-import { ChevronDown, Info, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Info } from "lucide-react";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
@@ -9,15 +9,15 @@ import { ResultCard } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { TextActions } from "@/components/TextActions";
-import { AUTO_DETECT, INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
+import { AUTO_DETECT } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { matchesInterpretSubmission, type InterpretSubmission, type SubmittedInterpretResult } from "@/lib/interpret-submission";
 import {
   interpretText,
   type InterpretExample,
-  type InterpretResult,
 } from "@/lib/interpret.functions";
 
 export const Route = createFileRoute("/interpret")({
@@ -71,7 +71,7 @@ function InterpretPage() {
 
 export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const run = useServerFn(interpretText);
-  const { t, lang, ln } = useI18n();
+  const { t, lang } = useI18n();
   const [text, setText] = useFeatureState("interpret", "text", "");
   const [context, setContext] = useFeatureState("interpret", "context", "");
   const [language, setLanguage] = useFeatureState("interpret", "language", AUTO_DETECT);
@@ -88,23 +88,47 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     setLanguage(settings.interpretLanguage);
     setShortcuts(settings.interpretShortcuts);
   });
-  const [result, setResult] = useFeatureState<InterpretResult | null>("interpret", "result", null);
+  const [savedResult, setResult] = useFeatureState<SubmittedInterpretResult | null>("interpret", "result", null);
   const [loading, setLoading] = useFeatureState("interpret", "loading", false);
   const [error, setError] = useFeatureState<string | null>("interpret", "error", null);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const explanationLanguage = lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
+  const draft: InterpretSubmission = {
+    text, context, language, explanationLanguage,
+    voiceId: settings.voiceId,
+    speechSpeed: settings.speechSpeed,
+  };
+  const latestDraft = useRef(draft);
+  latestDraft.current = draft;
+  // Never render a stale result, even before the cleanup effect runs.
+  const result = savedResult && matchesInterpretSubmission(savedResult.submission, draft) ? savedResult : null;
+  const { stop } = speech;
+  useEffect(() => {
+    if (savedResult && !result) setResult(null);
+  }, [savedResult, result, setResult]);
+  useEffect(() => {
+    stop();
+    setCopied(false);
+    setError(null);
+  }, [text, context, language, explanationLanguage, settings.voiceId, settings.speechSpeed, stop, setError]);
 
   const onInterpret = async () => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
     setLoading(true);
     setError(null);
+    setResult(null);
+    const submission = { ...draft };
     try {
-      const explanationLanguage =
-        lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
-      setResult(await run({ data: { text: trimmed, language, explanationLanguage, context: context.trim() } }));
+      const response = await run({ data: { text: trimmed, language: submission.language, explanationLanguage: submission.explanationLanguage, context: submission.context.trim() } });
+      if (matchesInterpretSubmission(submission, latestDraft.current)) {
+        setResult({ ...response, submission });
+      }
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("interpret.error"));
-      setResult(null);
+      if (matchesInterpretSubmission(submission, latestDraft.current)) {
+        setError(e instanceof Error ? e.message : t("interpret.error"));
+        setResult(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -187,7 +211,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             <ResultCard className="space-y-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="min-w-0">
-                  <p className="text-2xl leading-snug text-foreground">{text.trim()}</p>
+                  <p className="text-2xl leading-snug text-foreground">{result.submission.text.trim()}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
                   <TextActions
@@ -195,10 +219,10 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                     failed={speech.errorId === "interpret:input"}
                     copied={copied}
                     onListen={() =>
-                      speech.speak("interpret:input", text.trim(), result.detectedLanguage)
+                      speech.speak("interpret:input", result.submission.text.trim(), result.detectedLanguage, result.submission.voiceId, result.submission.speechSpeed)
                     }
                     onCopy={async () => {
-                      await navigator.clipboard.writeText(text.trim());
+                      await navigator.clipboard.writeText(result.submission.text.trim());
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1600);
                     }}
@@ -206,7 +230,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                   <SaveButton
                     item={{
                       kind: "interpret",
-                      text: text.trim(),
+                      text: result.submission.text.trim(),
                       language: result.detectedLanguage,
                       detail: result.explanation.meaning,
                     }}
