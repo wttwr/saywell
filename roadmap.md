@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Bind Interpret results and actions to submitted text/settings; verify draft edits and late responses in Workspace and full view.
+- [x] Bind Interpret results and actions to submitted text/settings; verify draft edits and late responses in Workspace and full view.
 
 - [x] Separate all-tool search and browsing from Workspace cards; verify hidden-tool actions and preference preservation.
 
