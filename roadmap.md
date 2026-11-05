@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Default first visits to List, preserve saved views, and verify descriptive clickable rows with search and customization intact.
+
 - [x] Preserve Interpret sentences/source on App language changes, label previous explanation language, and verify explicit regeneration in both views.
 
 - [x] Bind Interpret results and actions to submitted text/settings; verify draft edits and late responses in Workspace and full view.

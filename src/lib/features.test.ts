@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { addToLayout, FEATURES, moveItem, sanitizeLayout, searchTools } from "./features";
+import { addToLayout, FEATURES, moveItem, resolveWorkspaceView, sanitizeLayout, searchTools } from "./features";
+
+describe("workspace view preference", () => {
+  it("defaults first-time visitors to List", () => {
+    expect(resolveWorkspaceView(null)).toBe("list");
+    expect(resolveWorkspaceView(undefined)).toBe("list");
+    expect(resolveWorkspaceView("invalid")).toBe("list");
+  });
+  it("preserves a returning visitor's saved view", () => {
+    expect(resolveWorkspaceView("dashboard")).toBe("dashboard");
+    expect(resolveWorkspaceView("list")).toBe("list");
+  });
+});
 
 describe("workspace layout", () => {
   it("drops unknown and duplicate cards", () => {
