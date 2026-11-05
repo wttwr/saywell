@@ -24,6 +24,23 @@ export const FEATURES: FeatureDefinition[] = [
 
 export const DEFAULT_LAYOUT: FeatureId[] = ["translate", "check", "interpret"];
 
+export type WorkspaceView = "dashboard" | "list";
+
+/** First visits and invalid preferences use List; valid saved views win. */
+export function resolveWorkspaceView(saved: unknown): WorkspaceView {
+  return saved === "dashboard" ? "dashboard" : "list";
+}
+
+export const TOOL_DESCRIPTIONS: Record<FeatureId, TranslationKey> = {
+  translate: "workspace.descriptionTranslate",
+  check: "workspace.descriptionCheck",
+  style: "workspace.descriptionStyle",
+  interpret: "workspace.descriptionInterpret",
+  listen: "workspace.descriptionListen",
+  situations: "workspace.descriptionSituations",
+  dictionary: "workspace.descriptionDictionary",
+};
+
 /** The complete directory is independent of the user's visible cards. */
 export function searchTools(query: string, label: (key: TranslationKey) => string): FeatureDefinition[] {
   const normalized = query.trim().toLocaleLowerCase();

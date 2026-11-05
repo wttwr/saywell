@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, Languages, LayoutGrid, List, MapPin, MessageCircleQuestion, Mic, Plus, Search, Sparkles, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { addToLayout, DEFAULT_LAYOUT, FEATURES, moveItem, sanitizeLayout, searchTools, type FeatureId } from "@/lib/features";
+import { addToLayout, DEFAULT_LAYOUT, FEATURES, moveItem, resolveWorkspaceView, sanitizeLayout, searchTools, TOOL_DESCRIPTIONS, type FeatureId, type WorkspaceView } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { TranslateFeature } from "./translate";
 import { StyleFeature } from "./style";
@@ -39,15 +39,15 @@ const WIDGETS = {
 
 const KEY = "saywell.dashboard";
 const VIEW_KEY = "saywell.workspaceView";
-type View = "dashboard" | "list";
+type View = WorkspaceView;
 
 const ICONS = { translate: Languages, check: CheckCheck, style: Sparkles, interpret: MessageCircleQuestion, listen: Mic, situations: MapPin, dictionary: BookOpen } as const;
 
 function useView() {
-  const [view, setView] = useState<View>("dashboard");
+  const [view, setView] = useState<View>("list");
   useEffect(() => {
     const v = localStorage.getItem(VIEW_KEY);
-    if (v === "list" || v === "dashboard") setView(v);
+    setView(resolveWorkspaceView(v));
   }, []);
   const save = (v: View) => { setView(v); localStorage.setItem(VIEW_KEY, v); };
   return [view, save] as const;
@@ -157,10 +157,10 @@ function WorkspacePage() {
         <div className="flex items-center gap-2">
         <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
           {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
-            <button key={v} onClick={() => setView(v)} aria-pressed={view === v} aria-label={t(label)} title={t(label)}
-              className={`rounded-full p-1.5 transition-colors ${view === v ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+            <Button key={v} variant="ghost" size="icon" onClick={() => setView(v)} aria-pressed={view === v} aria-label={t(label)} title={t(label)}
+              className={`size-7 rounded-full p-1.5 transition-colors ${view === v ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground"}`}>
               <Icon className="size-4" />
-            </button>
+            </Button>
           ))}
         </div>
           <Button variant={editingActive ? "default" : "secondary"}
@@ -229,7 +229,10 @@ function WorkspacePage() {
             return (
               <li key={f.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border/60 bg-background p-4">
                 <span className="rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>
-                <h2 className="min-w-0 flex-1 text-base font-medium">{t(f.label)}</h2>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-medium">{t(f.label)}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">{t(TOOL_DESCRIPTIONS[f.id])}</p>
+                </div>
                 <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
                   <Button asChild variant="ghost" size="sm"><Link to={f.focusPath}><ArrowUpRight /> {t("workspace.openTool")}</Link></Button>
                   <Button variant="secondary" size="sm" disabled={visible} onClick={() => setLayout(addToLayout(layout, f.id))}>
@@ -249,9 +252,12 @@ function WorkspacePage() {
             return (
               <li key={f.id}>
                 <Link to={f.focusPath} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background px-4 py-4 transition-colors hover:bg-secondary/50">
-                  <span className="rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>
-                  <span className="flex-1 text-base font-medium">{t(f.label)}</span>
-                  <ArrowRight className="size-4 text-muted-foreground" />
+                  <span className="shrink-0 rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-medium">{t(f.label)}</span>
+                    <span className="mt-1 block text-sm text-muted-foreground">{t(TOOL_DESCRIPTIONS[f.id])}</span>
+                  </span>
+                  <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
                 </Link>
               </li>
             );
