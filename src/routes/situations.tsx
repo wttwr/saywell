@@ -1,19 +1,16 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowUpRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
-import { SaveButton } from "@/components/SaveButton";
-import { TextActions } from "@/components/TextActions";
+import { SituationsResults } from "@/components/SituationsResults";
 import { exploreSituations, type SituationsResult } from "@/lib/situations.functions";
-import { useSpeech } from "@/lib/speech";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { ResultCard } from "@/components/ds/ResultCard";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { markSeeded, sendToFeature, useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/situations")({
@@ -42,8 +39,6 @@ const chip = (on: boolean) =>
 export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const { t, lang } = useI18n();
   const run = useServerFn(exploreSituations);
-  const speech = useSpeech();
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [result, setResult] = useFeatureState<SituationsResult | null>("situations", "result", null);
   const [loading, setLoading] = useFeatureState("situations", "loading", false);
   const [error, setError] = useFeatureState<string | null>("situations", "error", null);
@@ -58,17 +53,11 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   ]);
   const [style, setStyle] = useFeatureState<string>("situations", "style", "everyday");
   const { settings } = useSettings();
-  const navigate = useNavigate();
   useDefaultOnce(() => {
     if (!markSeeded("situations")) return;
     setLanguage(settings.situationsLanguage);
     setShortcuts(settings.situationsShortcuts);
   });
-  const SEND = [
-    { feature: "interpret", to: "/interpret", label: "nav.interpret", shortcuts: settings.interpretShortcuts },
-    { feature: "style", to: "/style", label: "nav.style", shortcuts: settings.styleShortcuts },
-    { feature: "listen", to: "/listen", label: "nav.listen", shortcuts: settings.listenShortcuts },
-  ] as const;
   const ready = Boolean(custom.trim() || preset);
   const ref = useRef<HTMLTextAreaElement>(null);
   const k = (s: string) => s as TranslationKey;
@@ -156,41 +145,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(k("situations.empty"))}</p>
               </>
             ) : (
-              <div className="space-y-8">
-                {result.groups.map((g, gi) => (
-                  <section key={gi}>
-                    {g.title && <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{g.title}</h2>}
-                    <ul className="mt-3 divide-y divide-border/60">
-                      {g.expressions.map((e, ei) => {
-                        const id = `situations:${gi}:${ei}`;
-                        return (
-                          <li key={ei} className="py-4 first:pt-0 last:pb-0">
-                            <p className="whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground">{e.text}</p>
-                            {e.transliteration && <p className="mt-1 text-sm text-muted-foreground">{e.transliteration}</p>}
-                            {e.meaning && <p className="mt-2 text-sm leading-relaxed text-foreground/80">{e.meaning}</p>}
-                            {e.note && <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{e.note}</p>}
-                            <div className="mt-3 flex flex-wrap items-center gap-4">
-                              <TextActions playing={speech.playingId === id} failed={speech.errorId === id} copied={copiedId === id}
-                                onListen={() => void speech.speak(id, e.text, result.language)}
-                                onCopy={() => void navigator.clipboard.writeText(e.text).then(() => { setCopiedId(id); setTimeout(() => setCopiedId(null), 1600); })} />
-                              <SaveButton item={{ kind: "translation", text: e.text, language: result.language, source: e.meaning, sourceLanguage: globalLanguage === "Simplified Chinese" ? "Chinese (Simplified)" : globalLanguage, ...(e.transliteration ? { transliteration: e.transliteration } : {}), ...(e.note ? { detail: e.note } : {}) }} />
-                            </div>
-                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                              {SEND.map((s) => (
-                                <button key={s.feature} type="button"
-                                  onClick={() => { sendToFeature(s.feature, { text: e.text, language: result.language, shortcuts: [...s.shortcuts] }); void navigate({ to: s.to }); }}
-                                  className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
-                                  <ArrowUpRight className="size-3.5" />{t(k(s.label))}
-                                </button>
-                              ))}
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </section>
-                ))}
-              </div>
+              <SituationsResults result={result} explanationLanguage={globalLanguage === "Simplified Chinese" ? "Chinese (Simplified)" : globalLanguage} />
             )}
           </ResultCard>
         )}

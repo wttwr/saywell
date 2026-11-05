@@ -24,3 +24,4 @@
 - Shared UI primitives used by several sections live in src/components/ds/ (e.g. LanguageSelectorBar) — so sections stay visually in sync and new sections like Listen reuse them.
 - Translate target swaps use a browser-safe pure helper with regression tests so merging tabs preserves unique language identities and the active target.
 - Interpret stores immutable submission snapshots and validates content equality in widget/focus views; App language differences retain labeled explanations with explicit regeneration, while text/context/source changes invalidate results.
+- SituationsResults is shared by widget/focus views and binds all phrase controls to the rendered expression and result language, so menus and feature handoffs cannot target another row.
