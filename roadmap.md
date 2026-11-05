@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Align Situations phrase layout with Dictionary, group secondary actions, and verify phrase-specific actions and Listen handoff.
+
 - [x] Default first visits to List, preserve saved views, and verify descriptive clickable rows with search and customization intact.
 
 - [x] Preserve Interpret sentences/source on App language changes, label previous explanation language, and verify explicit regeneration in both views.
