@@ -149,11 +149,7 @@ function WorkspacePage() {
   const editingActive = editing && !directory;
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
-        <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("workspace.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t("workspace.subtitle")}</p>
-        </div>
+      <header className="mb-8 flex flex-wrap items-end justify-end gap-3">
         <div className="flex items-center gap-2">
         <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
           {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
