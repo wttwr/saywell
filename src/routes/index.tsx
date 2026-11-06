@@ -149,8 +149,31 @@ function WorkspacePage() {
   const editingActive = editing && !directory;
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
-      <header className="mb-8 flex flex-wrap items-end justify-end gap-3">
-        <div className="flex items-center gap-2">
+      <header className="mb-6 flex items-center gap-3 overflow-x-auto pb-3">
+        <div className="flex min-w-32 flex-1 items-center gap-2 border-b border-border py-2">
+          <Search className="size-4 shrink-0 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("workspace.search")}
+            aria-label={t("workspace.search")}
+            className="min-w-0 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
+          />
+          {query && (
+            <Button type="button" variant="ghost" size="icon"
+              onClick={() => setQuery("")}
+              aria-label={t("workspace.clearSearch")}
+              title={t("workspace.clearSearch")}
+              className="size-6 shrink-0 rounded-full text-muted-foreground">
+              <X className="size-4" />
+            </Button>
+          )}
+        </div>
+        <Button className="shrink-0" variant={directory ? "secondary" : "ghost"} size="sm" onClick={() => { setQuery(""); setBrowsing(true); }}>
+          {t("workspace.browse")}
+        </Button>
+        {directory && <Button className="shrink-0" variant="ghost" size="sm" onClick={() => { setQuery(""); setBrowsing(false); }}><ArrowRight /> {t("workspace.back")}</Button>}
+        <div className="flex shrink-0 items-center gap-2">
         <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
           {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
             <Button key={v} variant="ghost" size="icon" onClick={() => setView(v)} aria-pressed={view === v} aria-label={t(label)} title={t(label)}
@@ -167,33 +190,6 @@ function WorkspacePage() {
           </Button>
         </div>
       </header>
-      <div className="mb-6 flex items-center gap-3 border-b border-border pb-3">
-        <Search className="size-4 shrink-0 text-muted-foreground" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("workspace.search")}
-          aria-label={t("workspace.search")}
-          className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
-        />
-        {query && (
-          <button
-            type="button"
-            onClick={() => setQuery("")}
-            aria-label={t("workspace.clearSearch")}
-            title={t("workspace.clearSearch")}
-            className="shrink-0 rounded-full bg-secondary p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <X className="size-4" />
-          </button>
-        )}
-      </div>
-      <div className="mb-6 flex flex-wrap justify-end gap-2">
-        <Button variant={directory ? "secondary" : "ghost"} size="sm" onClick={() => { setQuery(""); setBrowsing(true); }}>
-          {t("workspace.browse")}
-        </Button>
-        {directory && <Button variant="ghost" size="sm" onClick={() => { setQuery(""); setBrowsing(false); }}><ArrowRight /> {t("workspace.back")}</Button>}
-      </div>
       {editingActive && available.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("workspace.add")}</span>
