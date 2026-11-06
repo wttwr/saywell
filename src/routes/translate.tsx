@@ -17,6 +17,7 @@ import {
 
 import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { swapTargets } from "@/lib/translate-targets";
+import { handleTextShortcut } from "@/lib/text-shortcuts";
 import { translateText } from "@/lib/translate.functions";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { useI18n } from "@/lib/i18n";
@@ -100,6 +101,8 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const [error, setError] = useFeatureState<string | null>("translate", "error", null);
   const [copiedLang, setCopiedLang] = useState<string | null>(null);
   const addRef = useRef<HTMLDivElement>(null);
+  const immediate = useRef(false);
+  const [submitVersion, setSubmitVersion] = useState(0);
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
@@ -153,6 +156,8 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     }
 
     let cancelled = false;
+    const delay = immediate.current ? 0 : 400;
+    immediate.current = false;
     const timeout = setTimeout(() => {
       const run = async () => {
         setLoading(true);
@@ -172,13 +177,13 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         }
       };
       run();
-    }, 400);
+    }, delay);
 
     return () => {
       cancelled = true;
       clearTimeout(timeout);
     };
-  }, [source, from, targets, translate]);
+  }, [source, from, targets, translate, submitVersion]);
 
   const onCopy = async (lang: string, value: string) => {
     if (!value) return;
@@ -320,6 +325,7 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               <textarea
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
+                onKeyDown={(e) => handleTextShortcut(e, () => { immediate.current = true; setSubmitVersion((v) => v + 1); }, loading || !source.trim() || targets.length === 0, setSource)}
                 placeholder={t("translate.placeholder")}
                 className={`w-full resize-none bg-transparent pr-8 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 ${mode === "widget" ? "min-h-24 flex-1" : "min-h-40"}`}
               />

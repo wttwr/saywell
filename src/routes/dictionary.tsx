@@ -1,7 +1,8 @@
 import { DictateButton } from "@/components/DictateButton";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { handleTextShortcut } from "@/lib/text-shortcuts";
 import { ChevronDown, Info, Loader2, Search, X } from "lucide-react";
 import { TextActions } from "@/components/TextActions";
 
@@ -154,6 +155,8 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     "Chinese (Simplified)",
   ]);
   const [query, setQuery] = useFeatureState("dictionary", "query", "");
+  const immediate = useRef(false);
+  const [submitVersion, setSubmitVersion] = useState(0);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [entry, setEntry] = useFeatureState<DictionaryEntry | null>("dictionary", "entry", null);
   const [suggestions, setSuggestions] = useFeatureState<string[]>("dictionary", "suggestions", []);
@@ -184,6 +187,8 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     }
 
     let cancelled = false;
+    const delay = immediate.current ? 0 : 400;
+    immediate.current = false;
 
     const timer = setTimeout(() => {
       if (looksLikeSentence(text)) {
@@ -214,13 +219,13 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           if (cancelled) return;
           setLoading(false);
         });
-    }, 400);
+    }, delay);
 
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [query, language, lang]);
+  }, [query, language, lang, submitVersion]);
 
   const onCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
@@ -304,6 +309,7 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => handleTextShortcut(e, () => { immediate.current = true; setSubmitVersion((v) => v + 1); }, loading || !query.trim())}
             placeholder={t("vocab.searchPlaceholder")}
             aria-label={t("vocab.searchPlaceholder")}
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Add and verify Enter submission and Alt+Enter newlines in widget and full text tools.
+
 - [x] Keep customization in the selected List/Dashboard view with shared ordering and visibility; make Browse toggle back to Workspace.
 
 - [ ] Align Situations phrase layout with Dictionary, group secondary actions, and verify phrase-specific actions and Listen handoff.
