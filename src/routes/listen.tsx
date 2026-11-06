@@ -155,6 +155,7 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           buttonClassName={widget ? "top-1" : "top-8"}
           actionLabel={recording ? t("listen.stop") : busy ? t("listen.transcribing") : t("listen.record")}
           onAction={toggleRecord}
+          submitOnEnter={false}
           actionDisabled={!trimmed || busy}
           actionsBefore={
             <>

@@ -4,6 +4,7 @@ import type { RefObject } from "react";
 import { DictateButton } from "@/components/DictateButton";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { handleTextShortcut } from "@/lib/text-shortcuts";
 
 /** Shared writing box: textarea, clear ✕ / mic, character count and main action. */
 export function TextInputSurface({
@@ -21,6 +22,7 @@ export function TextInputSurface({
   onAction,
   actionDisabled,
   actionsBefore,
+  submitOnEnter = true,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -36,6 +38,7 @@ export function TextInputSurface({
   onAction: () => void;
   actionDisabled: boolean;
   actionsBefore?: React.ReactNode;
+  submitOnEnter?: boolean;
 }) {
   const { t } = useI18n();
   return (
@@ -45,6 +48,9 @@ export function TextInputSurface({
           ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (submitOnEnter || e.altKey) handleTextShortcut(e, onAction, actionDisabled, onChange);
+          }}
           placeholder={placeholder}
           className={cn(
             "w-full resize-none bg-transparent pr-10 text-xl leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60",
