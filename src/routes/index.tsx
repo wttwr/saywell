@@ -169,10 +169,9 @@ function WorkspacePage() {
             </Button>
           )}
         </div>
-        <Button className="shrink-0" variant={directory ? "secondary" : "ghost"} size="sm" onClick={() => { setQuery(""); setBrowsing(true); }}>
-          {t("workspace.browse")}
+        <Button className="shrink-0" variant={directory ? "secondary" : "ghost"} size="sm" aria-pressed={directory} onClick={() => { setQuery(""); setBrowsing(!directory); }}>
+          {t(directory ? "workspace.back" : "workspace.browse")}
         </Button>
-        {directory && <Button className="shrink-0" variant="ghost" size="sm" onClick={() => { setQuery(""); setBrowsing(false); }}><ArrowRight /> {t("workspace.back")}</Button>}
         <div className="flex shrink-0 items-center gap-2">
         <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
           {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
@@ -235,22 +234,29 @@ function WorkspacePage() {
             );
           })}
         </ul>
-      ) : view === "list" && !editingActive ? (
+      ) : view === "list" ? (
         <ul className="flex flex-col gap-2">
-          {shown.map((id) => {
+          {shown.map((id, i) => {
             const f = byId[id];
             if (!f) return null;
             const Icon = ICONS[f.id];
             return (
-              <li key={f.id}>
-                <Link to={f.focusPath} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background px-4 py-4 transition-colors hover:bg-secondary/50">
+              <li key={f.id} className="flex items-center rounded-2xl border border-border/60 bg-background pr-2">
+                <Link to={f.focusPath} className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-4 transition-colors hover:bg-secondary/50">
                   <span className="shrink-0 rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-base font-medium">{t(f.label)}</span>
                     <span className="mt-1 block text-sm text-muted-foreground">{t(TOOL_DESCRIPTIONS[f.id])}</span>
                   </span>
-                  <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                  {!editingActive && <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />}
                 </Link>
+                {editingActive && (
+                  <div className="flex shrink-0 items-center">
+                    <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveUp")} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></Button>
+                    <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveDown")} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></Button>
+                    <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.remove")} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></Button>
+                  </div>
+                )}
               </li>
             );
           })}
