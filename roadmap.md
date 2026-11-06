@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Keep customization in the selected List/Dashboard view with shared ordering and visibility; make Browse toggle back to Workspace.
+- [x] Keep customization in the selected List/Dashboard view with shared ordering and visibility; make Browse toggle back to Workspace.
 
 - [ ] Align Situations phrase layout with Dictionary, group secondary actions, and verify phrase-specific actions and Listen handoff.
 
