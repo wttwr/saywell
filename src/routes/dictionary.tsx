@@ -309,7 +309,7 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => handleTextShortcut(e, () => { immediate.current = true; setSubmitVersion((v) => v + 1); }, loading || !query.trim()))}
+            onKeyDown={(e) => handleTextShortcut(e, () => { immediate.current = true; setSubmitVersion((v) => v + 1); }, loading || !query.trim())}
             placeholder={t("vocab.searchPlaceholder")}
             aria-label={t("vocab.searchPlaceholder")}
             className="w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60"
