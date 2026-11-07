@@ -47,9 +47,9 @@ export function searchTools(query: string, label: (key: TranslationKey) => strin
   return FEATURES.filter((feature) => label(feature.label).toLocaleLowerCase().includes(normalized));
 }
 
-/** Explicit additions append without moving or duplicating existing cards. */
+/** Explicit additions prepend so the new card is visible at the top; never duplicates. */
 export function addToLayout(layout: FeatureId[], id: FeatureId): FeatureId[] {
-  return layout.includes(id) ? layout : [...layout, id];
+  return layout.includes(id) ? layout : [id, ...layout];
 }
 
 /** Keeps only known ids, without duplicates. */

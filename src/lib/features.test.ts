@@ -37,9 +37,9 @@ describe("tool directory", () => {
     expect(searchTools("", (key) => key).map((f) => f.id)).toEqual(FEATURES.map((f) => f.id));
     expect(searchTools("nonexistent-tool", (key) => key)).toEqual([]);
   });
-  it("adds only the chosen tool at the end and preserves existing order", () => {
+  it("adds only the chosen tool at the top and preserves existing order", () => {
     const layout = ["interpret", "check"] as const;
-    expect(addToLayout([...layout], "style")).toEqual(["interpret", "check", "style"]);
+    expect(addToLayout([...layout], "style")).toEqual(["style", "interpret", "check"]);
     expect(addToLayout([...layout], "check")).toEqual(["interpret", "check"]);
   });
 });
