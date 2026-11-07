@@ -59,6 +59,14 @@ export function sanitizeLayout(value: unknown): FeatureId[] {
   return [...new Set(value)].filter((v): v is FeatureId => known.has(v as FeatureId));
 }
 
+/** Moves the item at index to the start (edge -1) or end (edge 1). */
+export function moveToEdge<T>(list: T[], index: number, edge: -1 | 1): T[] {
+  const item = list[index];
+  if (item === undefined) return list;
+  const rest = list.filter((_, i) => i !== index);
+  return edge === -1 ? [item, ...rest] : [...rest, item];
+}
+
 export function moveItem<T>(list: T[], index: number, delta: number): T[] {
   const to = index + delta;
   if (to < 0 || to >= list.length) return list;

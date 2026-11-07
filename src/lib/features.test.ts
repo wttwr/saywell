@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addToLayout, FEATURES, moveItem, resolveWorkspaceView, sanitizeLayout, searchTools } from "./features";
+import { addToLayout, FEATURES, moveItem, moveToEdge, resolveWorkspaceView, sanitizeLayout, searchTools } from "./features";
 
 describe("workspace view preference", () => {
   it("defaults first-time visitors to List", () => {
@@ -20,6 +20,11 @@ describe("workspace layout", () => {
   it("moves a card and ignores moves past the edge", () => {
     expect(moveItem(["a", "b", "c"], 0, 1)).toEqual(["b", "a", "c"]);
     expect(moveItem(["a", "b"], 0, -1)).toEqual(["a", "b"]);
+  });
+  it("moves a card to the top or bottom", () => {
+    expect(moveToEdge(["a", "b", "c"], 1, -1)).toEqual(["b", "a", "c"]);
+    expect(moveToEdge(["a", "b", "c"], 0, 1)).toEqual(["b", "c", "a"]);
+    expect(moveToEdge(["a", "b"], 0, -1)).toEqual(["a", "b"]);
   });
 });
 
