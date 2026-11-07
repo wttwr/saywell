@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, Languages, LayoutGrid, List, MapPin, MessageCircleQuestion, Mic, Plus, Search, Sparkles, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BookOpen, Check, CheckCheck, ChevronDown, ChevronsDown, ChevronsUp, Languages, LayoutGrid, List, MapPin, MessageCircleQuestion, Mic, Plus, Search, Sparkles, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { addToLayout, DEFAULT_LAYOUT, FEATURES, moveItem, resolveWorkspaceView, sanitizeLayout, searchTools, TOOL_DESCRIPTIONS, type FeatureId, type WorkspaceView } from "@/lib/features";
+import { addToLayout, DEFAULT_LAYOUT, FEATURES, moveItem, moveToEdge, resolveWorkspaceView, sanitizeLayout, searchTools, TOOL_DESCRIPTIONS, type FeatureId, type WorkspaceView } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { TranslateFeature } from "./translate";
 import { StyleFeature } from "./style";
@@ -249,8 +249,10 @@ function WorkspacePage() {
                 </Link>
                 {editingActive && (
                   <div className="flex shrink-0 items-center">
+                    <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveTop")} aria-label={t("workspace.moveTop")} disabled={i === 0} onClick={() => setLayout(moveToEdge(layout, i, -1))}><ChevronsUp className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveUp")} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveDown")} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></Button>
+                    <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveBottom")} aria-label={t("workspace.moveBottom")} disabled={i === layout.length - 1} onClick={() => setLayout(moveToEdge(layout, i, 1))}><ChevronsDown className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.remove")} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></Button>
                   </div>
                 )}
@@ -275,8 +277,10 @@ function WorkspacePage() {
                 {editingActive ? (
                   <>
                     <WidthMenu value={widths[f.id] ?? defaultWidth(f.id)} onChange={(w) => setWidth(f.id, w)} />
-                    <button className={iconBtn} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
-                    <button className={iconBtn} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
+                    <button className={iconBtn} title={t("workspace.moveTop")} aria-label={t("workspace.moveTop")} disabled={i === 0} onClick={() => setLayout(moveToEdge(layout, i, -1))}><ChevronsUp className="size-4" /></button>
+                    <button className={iconBtn} title={t("workspace.moveUp")} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
+                    <button className={iconBtn} title={t("workspace.moveDown")} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
+                    <button className={iconBtn} title={t("workspace.moveBottom")} aria-label={t("workspace.moveBottom")} disabled={i === layout.length - 1} onClick={() => setLayout(moveToEdge(layout, i, 1))}><ChevronsDown className="size-4" /></button>
                     <button className={iconBtn} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
                   </>
                 ) : (
