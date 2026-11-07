@@ -130,6 +130,8 @@ function WidthMenu({ value, onChange }: { value: Width; onChange: (w: Width) => 
 }
 
 const iconBtn =
+  "rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30";
+const removeBtn =
   "rounded-full bg-secondary p-2 text-foreground transition-colors hover:bg-secondary/70 disabled:opacity-30";
 
 function WorkspacePage() {
@@ -253,7 +255,7 @@ function WorkspacePage() {
                     <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveUp")} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveDown")} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.moveBottom")} aria-label={t("workspace.moveBottom")} disabled={i === layout.length - 1} onClick={() => setLayout(moveToEdge(layout, i, 1))}><ChevronsDown className="size-4" /></Button>
-                    <Button variant="ghost" size="icon" className={iconBtn} title={t("workspace.remove")} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></Button>
+                    <Button variant="ghost" size="icon" className={removeBtn} title={t("workspace.remove")} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></Button>
                   </div>
                 )}
               </li>
@@ -281,7 +283,7 @@ function WorkspacePage() {
                     <button className={iconBtn} title={t("workspace.moveUp")} aria-label={t("workspace.moveUp")} disabled={i === 0} onClick={() => setLayout(moveItem(layout, i, -1))}><ArrowUp className="size-4" /></button>
                     <button className={iconBtn} title={t("workspace.moveDown")} aria-label={t("workspace.moveDown")} disabled={i === layout.length - 1} onClick={() => setLayout(moveItem(layout, i, 1))}><ArrowDown className="size-4" /></button>
                     <button className={iconBtn} title={t("workspace.moveBottom")} aria-label={t("workspace.moveBottom")} disabled={i === layout.length - 1} onClick={() => setLayout(moveToEdge(layout, i, 1))}><ChevronsDown className="size-4" /></button>
-                    <button className={iconBtn} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
+                    <button className={removeBtn} aria-label={t("workspace.remove")} onClick={() => setLayout(layout.filter((x) => x !== id))}><X className="size-4" /></button>
                   </>
                 ) : (
                 <Link
