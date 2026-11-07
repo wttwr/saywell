@@ -130,7 +130,7 @@ function WidthMenu({ value, onChange }: { value: Width; onChange: (w: Width) => 
 }
 
 const iconBtn =
-  "rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30";
+  "rounded-full bg-secondary p-2 text-foreground transition-colors hover:bg-secondary/70 disabled:opacity-30";
 
 function WorkspacePage() {
   const { t } = useI18n();
