@@ -169,9 +169,6 @@ function WorkspacePage() {
             </Button>
           )}
         </div>
-        <Button className="shrink-0" variant={directory ? "secondary" : "ghost"} size="sm" aria-pressed={directory} onClick={() => { setQuery(""); setBrowsing(!directory); }}>
-          {t(directory ? "workspace.back" : "workspace.browse")}
-        </Button>
         <div className="flex shrink-0 items-center gap-2">
         <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
           {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
@@ -182,10 +179,10 @@ function WorkspacePage() {
           ))}
         </div>
           <Button variant={editingActive ? "default" : "secondary"}
-            onClick={() => { setQuery(""); setBrowsing(false); setEditing(!editingActive); }}
+            onClick={() => { setQuery(""); setBrowsing(false); setEditing(!(editing || directory)); }}
             className="rounded-full"
           >
-            {editingActive ? t("workspace.done") : t("workspace.customize")}
+            {editing || directory ? t("workspace.done") : t("workspace.customize")}
           </Button>
         </div>
       </header>
@@ -208,7 +205,7 @@ function WorkspacePage() {
           <p className="text-sm text-muted-foreground">{t(directory ? "workspace.noResults" : "workspace.empty")}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {q && <Button variant="outline" onClick={() => { setQuery(""); setBrowsing(false); }}><X /> {t("workspace.clearSearch")}</Button>}
-            <Button variant="secondary" onClick={() => { setQuery(""); setBrowsing(true); }}><Search /> {t("workspace.browse")}</Button>
+            <Button variant="secondary" onClick={() => { setQuery(""); setBrowsing(false); setEditing(true); }}>{t("workspace.customize")}</Button>
           </div>
         </div>
       )}
@@ -226,7 +223,7 @@ function WorkspacePage() {
                 </div>
                 <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
                   <Button asChild variant="ghost" size="sm"><Link to={f.focusPath}><ArrowUpRight /> {t("workspace.openTool")}</Link></Button>
-                  <Button variant="secondary" size="sm" disabled={visible} onClick={() => setLayout(addToLayout(layout, f.id))}>
+                  <Button variant={visible ? "default" : "secondary"} size="sm" aria-pressed={visible} onClick={() => setLayout(visible ? layout.filter((x) => x !== f.id) : addToLayout(layout, f.id))}>
                     {visible ? <Check /> : <Plus />} {t(visible ? "workspace.inWorkspace" : "workspace.addToWorkspace")}
                   </Button>
                 </div>
