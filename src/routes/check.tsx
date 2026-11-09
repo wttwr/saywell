@@ -2,18 +2,32 @@ import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Info, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Info, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { TextActions } from "@/components/TextActions";
 import { useSpeech } from "@/lib/speech";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
+import {
+  correctionSummary,
+  diffCorrected,
+  findIssueForSegment,
+  matchesCheckSubmission,
+  type SubmittedCheckResult,
+} from "@/lib/check-diff";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
-import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { markSeeded, sendToFeature, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -36,6 +50,8 @@ export const Route = createFileRoute("/check")({
   }),
   component: CheckPage,
 });
+
+const CJK_BOUNDARY = /[぀-ヿ㐀-䶿一-鿿豈-﫿가-힯]/;
 
 function statusTone(status: CheckResult["status"]) {
   if (status === "Looks good") return "bg-accent text-accent-foreground";
@@ -61,11 +77,17 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const [text, setText] = useFeatureState("check", "text", "");
   const [language, setLanguage] = useFeatureState("check", "language", "English");
   const [shortcuts, setShortcuts] = useFeatureState<string[]>("check", "shortcuts", []);
-  const [result, setResult] = useFeatureState<CheckResult | null>("check", "result", null);
+  const [result, setResult] = useFeatureState<SubmittedCheckResult | null>("check", "result", null);
   const [loading, setLoading] = useFeatureState("check", "loading", false);
   const [error, setError] = useFeatureState<string | null>("check", "error", null);
   const [copied, setCopied] = useState(false);
+  const [openIssue, setOpenIssue] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const navigate = useNavigate();
+
+  // A result only applies to the exact submitted text and language, never to a later draft.
+  const validResult =
+    result && matchesCheckSubmission(result.submission, text, language) ? result : null;
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
@@ -92,7 +114,8 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
       const data = await runCheck({ data: { text: trimmed, language, explanationLanguage } });
-      setResult(data);
+      setResult({ ...data, submission: { text: trimmed, language } });
+      setOpenIssue(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("check.error"));
     } finally {
@@ -101,10 +124,20 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   const onCopy = async () => {
-    if (!result?.corrected) return;
-    await navigator.clipboard.writeText(result.corrected);
+    if (!validResult) return;
+    await navigator.clipboard.writeText(validResult.corrected ?? validResult.submission.text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
+  };
+
+  const openIn = (feature: "interpret" | "style") => {
+    if (!validResult) return;
+    sendToFeature(feature, {
+      text: validResult.corrected ?? validResult.submission.text,
+      language: validResult.detectedLanguage ?? validResult.submission.language,
+      shortcuts: [...settings[`${feature}Shortcuts`]],
+    });
+    void navigate({ to: feature === "interpret" ? "/interpret" : "/style" });
   };
 
   return (
@@ -147,12 +180,12 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
 
         {error && <p className="mt-10 text-base text-destructive">{error}</p>}
 
-        {result?.languageMismatch && result.detectedLanguage && (
+        {validResult?.languageMismatch && validResult.detectedLanguage && (
           <p className="mt-8 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
             <Info className="mt-0.5 size-4 shrink-0 text-primary" />
             <span>
               {t("check.languageMismatch")
-                .replaceAll("{detected}", ln(result.detectedLanguage))
+                .replaceAll("{detected}", ln(validResult.detectedLanguage))
                 .replaceAll("{selected}", ln(language))}
             </span>
           </p>
@@ -166,97 +199,194 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         )}
 
-        {!result && !loading && (
+        {!validResult && !loading && (
           <EmptyResultCard title={t("check.results")} hint={t("check.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
         )}
 
-        {result && !loading && (
-          <section className="mt-10 space-y-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
-            <div>
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(result.status)}`}
-              >
-                {t(`status.${result.status}` as TranslationKey)}
-              </span>
-              {result.summary && (
-                <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                  {result.summary}
-                </p>
-              )}
-            </div>
-
-            {result.corrected && (
-              <div>
-                  <h2 className="text-sm font-medium text-muted-foreground">
-                    {t("check.suggestedVersion")}
-                  </h2>
-                <p className="mt-3 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
-                  {result.corrected}
-                </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-4">
-                    <TextActions
-                      playing={speech.playingId === "check:corrected"}
-                      failed={speech.errorId === "check:corrected"}
-                      copied={copied}
-                      onListen={() => void speech.speak("check:corrected", result.corrected ?? "", result.detectedLanguage ?? language)}
-                      onCopy={() => void onCopy()}
-                    />
-                    <SaveButton
-                      item={{
-                        kind: "check",
-                        text: result.corrected,
-                        language: result.detectedLanguage ?? language,
-                        detail: result.summary,
-                        ...(text.trim() !== result.corrected ? { source: text.trim() } : {}),
-                      }}
-                    />
+        {validResult && !loading && (
+          <section className="mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
+            {(() => {
+              const { corrections, suggestions } = correctionSummary(validResult.issues);
+              const countParts: string[] = [];
+              if (corrections === 1) countParts.push(t("check.correctionOne"));
+              else if (corrections > 1)
+                countParts.push(t("check.correctionsMany").replace("{count}", String(corrections)));
+              if (suggestions === 1) countParts.push(t("check.suggestionOne"));
+              else if (suggestions > 1)
+                countParts.push(t("check.suggestionsMany").replace("{count}", String(suggestions)));
+              const actionText = validResult.corrected ?? validResult.submission.text;
+              const actionLanguage = validResult.detectedLanguage ?? validResult.submission.language;
+              const segments = validResult.corrected
+                ? diffCorrected(validResult.submission.text, validResult.corrected)
+                : [];
+              return (
+                <div className="divide-y divide-border/60">
+                  {/* Header: status + compact correction count */}
+                  <div className="flex flex-wrap items-center gap-3 pb-5">
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(validResult.status)}`}
+                    >
+                      {t(`status.${validResult.status}` as TranslationKey)}
+                    </span>
+                    {countParts.length > 0 && (
+                      <span className="text-sm text-muted-foreground">{countParts.join(" · ")}</span>
+                    )}
                   </div>
-              </div>
-            )}
 
-            {result.issues.length > 0 && (
-              <div>
-                <h2 className="text-sm font-medium text-muted-foreground">{t("check.reasons")}</h2>
-                <ul className="mt-4 space-y-8">
-                  {result.issues.map((issue, i) => (
-                    <li key={i} className="border-t border-border pt-6">
-                      <div className="flex flex-wrap gap-2">
-                        {(issue.labels ?? []).map((label) => (
-                          <span
-                            key={label}
-                            className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${labelTone(label)}`}
+                  {/* Original sentence, subtly separated above the corrected version */}
+                  {validResult.corrected && (
+                    <div className="py-5">
+                      <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        {t("check.yourSentence")}
+                      </h2>
+                      <p className="mt-2 whitespace-pre-wrap text-base leading-relaxed text-muted-foreground">
+                        {validResult.submission.text}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Corrected sentence: primary focus, changed words highlighted and clickable */}
+                  <div className="py-5">
+                    {validResult.corrected ? (
+                      <>
+                        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          {t("check.suggestedVersion")}
+                        </h2>
+                        <p className="mt-2 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
+                          {segments.map((seg, i) => {
+                            const prev = segments[i - 1]?.text ?? "";
+                            const glue =
+                              i > 0 &&
+                              !CJK_BOUNDARY.test(prev[prev.length - 1] ?? "") &&
+                              !CJK_BOUNDARY.test(seg.text[0] ?? "")
+                                ? " "
+                                : "";
+                            return seg.changed ? (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => {
+                                  const match = findIssueForSegment(validResult.issues, seg.text);
+                                  setOpenIssue((prevOpen) => (prevOpen === match ? null : match));
+                                }}
+                                className="rounded bg-accent px-0.5 font-medium text-accent-foreground underline decoration-primary/40 underline-offset-4 transition-colors hover:bg-accent/70"
+                              >
+                                {glue}
+                                {seg.text}
+                              </button>
+                            ) : (
+                              <span key={i}>
+                                {glue}
+                                {seg.text}
+                              </span>
+                            );
+                          })}
+                        </p>
+                        {validResult.issues.length > 0 && (
+                          <p className="mt-2 text-xs text-muted-foreground">{t("check.tapHighlight")}</p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-xl font-medium leading-relaxed text-foreground">
+                        {t("check.looksGood")}
+                      </p>
+                    )}
+                    {validResult.summary && (
+                      <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                        {validResult.summary}
+                      </p>
+                    )}
+                    <div className="mt-4 flex flex-wrap items-center gap-4">
+                      <TextActions
+                        playing={speech.playingId === "check:corrected"}
+                        failed={speech.errorId === "check:corrected"}
+                        copied={copied}
+                        onListen={() => void speech.speak("check:corrected", actionText, actionLanguage)}
+                        onCopy={() => void onCopy()}
+                      />
+                      <SaveButton
+                        item={{
+                          kind: "check",
+                          text: actionText,
+                          language: actionLanguage,
+                          detail: validResult.summary,
+                          ...(validResult.corrected &&
+                          validResult.submission.text !== validResult.corrected
+                            ? { source: validResult.submission.text }
+                            : {}),
+                        }}
+                      />
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="h-auto gap-1.5 p-0 font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
                           >
-                            {t(`label.${label}` as TranslationKey)}
-                          </span>
-                        ))}
-                      </div>
-                      <dl className="mt-4 space-y-3 text-base leading-relaxed">
-                        <div>
-                          <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                            {t("check.original")}
-                          </dt>
-                          <dd className="text-foreground/70 line-through decoration-muted-foreground/40">
-                            {issue.original}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                            {t("check.suggestion")}
-                          </dt>
-                          <dd className="font-medium text-foreground">{issue.suggestion}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                            {t("check.reason")}
-                          </dt>
-                          <dd className="text-muted-foreground">{issue.reason}</dd>
-                        </div>
-                      </dl>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                            <MoreHorizontal />
+                            {t("check.moreActions")}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" aria-label={t("check.moreActions")}>
+                          <DropdownMenuItem onSelect={() => openIn("interpret")}>
+                            <ArrowUpRight />
+                            {t("nav.interpret")}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => openIn("style")}>
+                            <ArrowUpRight />
+                            {t("nav.style")}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+
+                  {/* Explanations: collapsed by default, one per correction */}
+                  {validResult.issues.length > 0 && (
+                    <ul className="divide-y divide-border/60">
+                      {validResult.issues.map((issue, i) => {
+                        const open = openIssue === i;
+                        return (
+                          <li key={i}>
+                            <button
+                              type="button"
+                              onClick={() => setOpenIssue(open ? null : i)}
+                              aria-expanded={open}
+                              className="flex w-full items-center gap-3 py-4 text-left"
+                            >
+                              <span className="flex flex-1 flex-wrap items-center gap-2">
+                                {(issue.labels ?? []).map((label) => (
+                                  <span
+                                    key={label}
+                                    className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${labelTone(label)}`}
+                                  >
+                                    {t(`label.${label}` as TranslationKey)}
+                                  </span>
+                                ))}
+                                <span className="text-base text-muted-foreground">
+                                  <span className="line-through decoration-muted-foreground/40">
+                                    {issue.original}
+                                  </span>
+                                  {" → "}
+                                  <span className="font-medium text-foreground">{issue.suggestion}</span>
+                                </span>
+                              </span>
+                              <ChevronDown
+                                className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {open && (
+                              <p className="pb-4 text-base leading-relaxed text-muted-foreground">
+                                {issue.reason}
+                              </p>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              );
+            })()}
           </section>
         )}
       </div>
