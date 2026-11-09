@@ -178,12 +178,12 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
 
         {error && <p className="mt-10 text-base text-destructive">{error}</p>}
 
-        {result?.languageMismatch && result.detectedLanguage && (
+        {validResult?.languageMismatch && validResult.detectedLanguage && (
           <p className="mt-8 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
             <Info className="mt-0.5 size-4 shrink-0 text-primary" />
             <span>
               {t("check.languageMismatch")
-                .replaceAll("{detected}", ln(result.detectedLanguage))
+                .replaceAll("{detected}", ln(validResult.detectedLanguage))
                 .replaceAll("{selected}", ln(language))}
             </span>
           </p>
@@ -197,7 +197,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           </div>
         )}
 
-        {!result && !loading && (
+        {!validResult && !loading && (
           <EmptyResultCard title={t("check.results")} hint={t("check.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
         )}
 
