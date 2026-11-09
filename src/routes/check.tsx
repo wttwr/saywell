@@ -112,7 +112,8 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
       const explanationLanguage =
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
       const data = await runCheck({ data: { text: trimmed, language, explanationLanguage } });
-      setResult(data);
+      setResult({ ...data, submission: { text: trimmed, language } });
+      setOpenIssue(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("check.error"));
     } finally {
@@ -121,10 +122,20 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   };
 
   const onCopy = async () => {
-    if (!result?.corrected) return;
-    await navigator.clipboard.writeText(result.corrected);
+    if (!validResult) return;
+    await navigator.clipboard.writeText(validResult.corrected ?? validResult.submission.text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
+  };
+
+  const openIn = (feature: "interpret" | "style") => {
+    if (!validResult) return;
+    sendToFeature(feature, {
+      text: validResult.corrected ?? validResult.submission.text,
+      language: validResult.detectedLanguage ?? validResult.submission.language,
+      shortcuts: [...settings[`${feature}Shortcuts`]],
+    });
+    void navigate({ to: feature === "interpret" ? "/interpret" : "/style" });
   };
 
   return (
