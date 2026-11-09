@@ -2,18 +2,32 @@ import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Info, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Info, MoreHorizontal, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { TextActions } from "@/components/TextActions";
 import { useSpeech } from "@/lib/speech";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText, type CheckResult } from "@/lib/check.functions";
+import {
+  correctionSummary,
+  diffCorrected,
+  findIssueForSegment,
+  matchesCheckSubmission,
+  type SubmittedCheckResult,
+} from "@/lib/check-diff";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
-import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
+import { markSeeded, sendToFeature, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 
 export const Route = createFileRoute("/check")({
   head: () => ({
@@ -61,11 +75,17 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const [text, setText] = useFeatureState("check", "text", "");
   const [language, setLanguage] = useFeatureState("check", "language", "English");
   const [shortcuts, setShortcuts] = useFeatureState<string[]>("check", "shortcuts", []);
-  const [result, setResult] = useFeatureState<CheckResult | null>("check", "result", null);
+  const [result, setResult] = useFeatureState<SubmittedCheckResult | null>("check", "result", null);
   const [loading, setLoading] = useFeatureState("check", "loading", false);
   const [error, setError] = useFeatureState<string | null>("check", "error", null);
   const [copied, setCopied] = useState(false);
+  const [openIssue, setOpenIssue] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const navigate = useNavigate();
+
+  // A result only applies to the exact submitted text and language, never to a later draft.
+  const validResult =
+    result && matchesCheckSubmission(result.submission, text, language) ? result : null;
 
   const { settings } = useSettings();
   useDefaultOnce(() => {
