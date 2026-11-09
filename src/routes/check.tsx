@@ -51,6 +51,8 @@ export const Route = createFileRoute("/check")({
   component: CheckPage,
 });
 
+const CJK_BOUNDARY = /[぀-ヿ㐀-䶿一-鿿豈-﫿가-힯]/;
+
 function statusTone(status: CheckResult["status"]) {
   if (status === "Looks good") return "bg-accent text-accent-foreground";
   if (status === "A few issues found") return "bg-secondary text-secondary-foreground";
@@ -251,23 +253,34 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                           {t("check.suggestedVersion")}
                         </h2>
                         <p className="mt-2 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
-                          {segments.map((seg, i) =>
-                            seg.changed ? (
+                          {segments.map((seg, i) => {
+                            const prev = segments[i - 1]?.text ?? "";
+                            const glue =
+                              i > 0 &&
+                              !CJK_BOUNDARY.test(prev[prev.length - 1] ?? "") &&
+                              !CJK_BOUNDARY.test(seg.text[0] ?? "")
+                                ? " "
+                                : "";
+                            return seg.changed ? (
                               <button
                                 key={i}
                                 type="button"
                                 onClick={() => {
                                   const match = findIssueForSegment(validResult.issues, seg.text);
-                                  setOpenIssue((prev) => (prev === match ? null : match));
+                                  setOpenIssue((prevOpen) => (prevOpen === match ? null : match));
                                 }}
                                 className="rounded bg-accent px-0.5 font-medium text-accent-foreground underline decoration-primary/40 underline-offset-4 transition-colors hover:bg-accent/70"
                               >
+                                {glue}
                                 {seg.text}
                               </button>
                             ) : (
-                              <span key={i}> {seg.text}</span>
-                            ),
-                          )}
+                              <span key={i}>
+                                {glue}
+                                {seg.text}
+                              </span>
+                            );
+                          })}
                         </p>
                         {validResult.issues.length > 0 && (
                           <p className="mt-2 text-xs text-muted-foreground">{t("check.tapHighlight")}</p>
