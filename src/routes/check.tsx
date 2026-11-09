@@ -5,7 +5,7 @@ import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ChevronDown, Info, MoreHorizontal, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Info, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
