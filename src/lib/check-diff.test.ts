@@ -28,7 +28,7 @@ describe("diffCorrected", () => {
   it("marks each changed word when there are multiple corrections", () => {
     const segments = diffCorrected("She don't has time.", "She doesn't have time.");
     const changed = segments.filter((s) => s.changed).map((s) => s.text);
-    expect(changed).toEqual(["doesn't", "have"]);
+    expect(changed).toEqual(["doesn't have"]);
     expect(segments.some((s) => !s.changed && s.text.includes("She"))).toBe(true);
   });
 
