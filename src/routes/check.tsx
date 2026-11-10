@@ -255,9 +255,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                             );
                           })}
                         </p>
-                        {validResult.issues.length > 0 && (
-                          <p className="mt-2 text-xs text-muted-foreground">{t("check.tapHighlight")}</p>
-                        )}
                       </>
                     ) : (
                       <p className="text-xl font-medium leading-relaxed text-foreground">
