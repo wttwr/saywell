@@ -342,11 +342,11 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
 
                   {/* Explanations: collapsed by default, one per correction */}
                   {validResult.issues.length > 0 && (
-                    <ul className="divide-y divide-border/60">
+                    <ul>
                       {validResult.issues.map((issue, i) => {
                         const open = openIssue === i;
                         return (
-                          <li key={i}>
+                          <li key={i} className="border-b border-border/60">
                             <button
                               type="button"
                               onClick={() => setOpenIssue(open ? null : i)}
