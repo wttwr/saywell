@@ -227,6 +227,10 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                         </h2>
                         <p className="mt-2 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
                           {segments.map((seg, i) => {
+                            const issueIndex = seg.changed
+                              ? findIssueForSegment(validResult.issues, seg.text)
+                              : -1;
+                            const expanded = issueIndex >= 0 && openIssue === issueIndex;
                             const prev = segments[i - 1]?.text ?? "";
                             const glue =
                               i > 0 &&
@@ -235,18 +239,24 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                 ? " "
                                 : "";
                             return seg.changed ? (
-                              <button
+                              <Button
                                 key={i}
                                 type="button"
+                                variant="ghost"
+                                aria-expanded={expanded}
                                 onClick={() => {
-                                  const match = findIssueForSegment(validResult.issues, seg.text);
-                                  setOpenIssue((prevOpen) => (prevOpen === match ? null : match));
+                                  if (issueIndex < 0) return;
+                                  setOpenIssue((prevOpen) => (prevOpen === issueIndex ? null : issueIndex));
                                 }}
-                                className="rounded bg-accent px-0.5 font-medium text-accent-foreground underline decoration-primary/40 underline-offset-4 transition-colors hover:bg-accent/70"
+                                className="inline h-auto gap-1 rounded bg-accent px-0.5 py-0 align-baseline text-xl font-medium text-accent-foreground hover:bg-accent/70"
                               >
                                 {glue}
-                                {seg.text}
-                              </button>
+                                <span className="underline decoration-primary/40 underline-offset-4">{seg.text}</span>
+                                <ChevronDown
+                                  aria-hidden="true"
+                                  className={`ml-1 inline-block align-middle transition-transform ${expanded ? "rotate-180" : ""}`}
+                                />
+                              </Button>
                             ) : (
                               <span key={i}>
                                 {glue}
