@@ -17,9 +17,8 @@ import { TextActions } from "@/components/TextActions";
 import { useSpeech } from "@/lib/speech";
 
 import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
-import { checkText, type CheckResult } from "@/lib/check.functions";
+import { checkText } from "@/lib/check.functions";
 import {
-  correctionSummary,
   diffCorrected,
   findIssueForSegment,
   matchesCheckSubmission,
@@ -52,12 +51,6 @@ export const Route = createFileRoute("/check")({
 });
 
 const CJK_BOUNDARY = /[぀-ヿ㐀-䶿一-鿿豈-﫿가-힯]/;
-
-function statusTone(status: CheckResult["status"]) {
-  if (status === "Looks good") return "bg-accent text-accent-foreground";
-  if (status === "A few issues found") return "bg-secondary text-secondary-foreground";
-  return "bg-secondary text-secondary-foreground";
-}
 
 function labelTone(label: string) {
   if (label === "Typo") return "border-border bg-muted text-muted-foreground";
@@ -206,14 +199,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         {validResult && !loading && (
           <section className="mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
             {(() => {
-              const { corrections, suggestions } = correctionSummary(validResult.issues);
-              const countParts: string[] = [];
-              if (corrections === 1) countParts.push(t("check.correctionOne"));
-              else if (corrections > 1)
-                countParts.push(t("check.correctionsMany").replace("{count}", String(corrections)));
-              if (suggestions === 1) countParts.push(t("check.suggestionOne"));
-              else if (suggestions > 1)
-                countParts.push(t("check.suggestionsMany").replace("{count}", String(suggestions)));
               const actionText = validResult.corrected ?? validResult.submission.text;
               const actionLanguage = validResult.detectedLanguage ?? validResult.submission.language;
               const segments = validResult.corrected
@@ -221,18 +206,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 : [];
               return (
                 <div className="divide-y divide-border/60">
-                  {/* Header: status + compact correction count */}
-                  <div className="flex flex-wrap items-center gap-3 pb-5">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${statusTone(validResult.status)}`}
-                    >
-                      {t(`status.${validResult.status}` as TranslationKey)}
-                    </span>
-                    {countParts.length > 0 && (
-                      <span className="text-sm text-muted-foreground">{countParts.join(" · ")}</span>
-                    )}
-                  </div>
-
                   {/* Original sentence, subtly separated above the corrected version */}
                   {validResult.corrected && (
                     <div className="py-5">
