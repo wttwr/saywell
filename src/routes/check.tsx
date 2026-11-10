@@ -239,8 +239,9 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                 ? " "
                                 : "";
                             return seg.changed ? (
+                              <span key={i}>
+                                {glue}
                               <Button
-                                key={i}
                                 type="button"
                                 variant="ghost"
                                 aria-expanded={expanded}
@@ -250,13 +251,13 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                 }}
                                 className="inline h-auto gap-1 rounded bg-primary/10 px-0.5 py-0 align-baseline text-xl font-medium text-primary hover:bg-primary/15 hover:text-primary"
                               >
-                                {glue}
                                 <span className="underline decoration-primary underline-offset-4">{seg.text}</span>
                                 <ChevronDown
                                   aria-hidden="true"
                                   className={`ml-1 inline-block align-middle transition-transform ${expanded ? "rotate-180" : ""}`}
                                 />
                               </Button>
+                              </span>
                             ) : (
                               <span key={i}>
                                 {glue}
