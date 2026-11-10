@@ -334,7 +334,16 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                               aria-expanded={open}
                               className="flex w-full items-center gap-3 py-4 text-left"
                             >
-                              <span className="flex flex-1 flex-wrap items-center gap-2">
+                              <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                                <span className="text-base text-muted-foreground">
+                                  <span className="line-through decoration-muted-foreground/40">
+                                    {issue.original}
+                                  </span>
+                                  {" → "}
+                                  <span className="font-medium text-foreground">{issue.suggestion}</span>
+                                </span>
+                              </span>
+                              <span className="flex shrink-0 flex-wrap justify-end gap-2">
                                 {(issue.labels ?? []).map((label) => (
                                   <span
                                     key={label}
@@ -343,13 +352,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                     {t(`label.${label}` as TranslationKey)}
                                   </span>
                                 ))}
-                                <span className="text-base text-muted-foreground">
-                                  <span className="line-through decoration-muted-foreground/40">
-                                    {issue.original}
-                                  </span>
-                                  {" → "}
-                                  <span className="font-medium text-foreground">{issue.suggestion}</span>
-                                </span>
                               </span>
                               <ChevronDown
                                 className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
