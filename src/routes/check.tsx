@@ -248,10 +248,10 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                   if (issueIndex < 0) return;
                                   setOpenIssue((prevOpen) => (prevOpen === issueIndex ? null : issueIndex));
                                 }}
-                                className="inline h-auto gap-1 rounded bg-accent px-0.5 py-0 align-baseline text-xl font-medium text-accent-foreground hover:bg-accent/70"
+                                className="inline h-auto gap-1 rounded bg-primary/10 px-0.5 py-0 align-baseline text-xl font-medium text-primary hover:bg-primary/15 hover:text-primary"
                               >
                                 {glue}
-                                <span className="underline decoration-primary/40 underline-offset-4">{seg.text}</span>
+                                <span className="underline decoration-primary underline-offset-4">{seg.text}</span>
                                 <ChevronDown
                                   aria-hidden="true"
                                   className={`ml-1 inline-block align-middle transition-transform ${expanded ? "rotate-180" : ""}`}
