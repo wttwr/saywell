@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Remove the bottom divider from Check reason rows.
+- [x] Remove the bottom divider from Check reason rows.
 
 - [ ] Add and verify Enter submission and Alt+Enter newlines in widget and full text tools.
 
