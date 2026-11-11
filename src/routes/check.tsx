@@ -5,7 +5,7 @@ import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ChevronDown, Info, MoreHorizontal } from "lucide-react";
+import { ArrowUpRight, Info, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,7 +20,6 @@ import { INPUT_LANGUAGES, LANGUAGES } from "@/lib/languages";
 import { checkText } from "@/lib/check.functions";
 import {
   diffCorrected,
-  findIssueForSegment,
   matchesCheckSubmission,
   type SubmittedCheckResult,
 } from "@/lib/check-diff";
@@ -68,7 +67,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const [loading, setLoading] = useFeatureState("check", "loading", false);
   const [error, setError] = useFeatureState<string | null>("check", "error", null);
   const [copied, setCopied] = useState(false);
-  const [openIssue, setOpenIssue] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
 
@@ -102,7 +100,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         lang === "it" ? "Italian" : lang === "zh" ? "Simplified Chinese" : "English";
       const data = await runCheck({ data: { text: trimmed, language, explanationLanguage } });
       setResult({ ...data, submission: { text: trimmed, language } });
-      setOpenIssue(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("check.error"));
     } finally {
@@ -212,7 +209,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                     </div>
                   )}
 
-                  {/* Corrected sentence: primary focus, changed words highlighted and clickable */}
+                  {/* Corrected sentence: primary focus, changed words highlighted. */}
                   <div className="py-5">
                     {validResult.corrected ? (
                       <>
@@ -221,10 +218,6 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                         </h2>
                         <p className="mt-2 whitespace-pre-wrap text-xl leading-relaxed text-foreground">
                           {segments.map((seg, i) => {
-                            const issueIndex = seg.changed
-                              ? findIssueForSegment(validResult.issues, seg.text)
-                              : -1;
-                            const expanded = issueIndex >= 0 && openIssue === issueIndex;
                             const prev = segments[i - 1]?.text ?? "";
                             const glue =
                               i > 0 &&
@@ -235,22 +228,11 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                             return seg.changed ? (
                               <span key={i}>
                                 {glue}
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                aria-expanded={expanded}
-                                onClick={() => {
-                                  if (issueIndex < 0) return;
-                                  setOpenIssue((prevOpen) => (prevOpen === issueIndex ? null : issueIndex));
-                                }}
-                                className="inline h-auto gap-1 rounded bg-primary/10 px-0.5 py-0 align-baseline text-xl font-medium text-primary hover:bg-primary/15 hover:text-primary"
+                              <span
+                                className="rounded bg-primary/10 px-0.5 font-medium text-primary"
                               >
                                 <span className="underline decoration-primary underline-offset-4">{seg.text}</span>
-                                <ChevronDown
-                                  aria-hidden="true"
-                                  className={`ml-1 inline-block align-middle transition-transform ${expanded ? "rotate-180" : ""}`}
-                                />
-                              </Button>
+                              </span>
                               </span>
                             ) : (
                               <span key={i}>
@@ -315,7 +297,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                     </div>
                   </div>
 
-                  {/* Reasons share the existing highlight/accordion interaction in both views. */}
+                  {/* All reasons remain visible in both views. */}
                   {validResult.issues.length > 0 && (
                     <div className="py-5">
                       <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -323,15 +305,10 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                       </h2>
                     <ul className="mt-3 space-y-3">
                       {validResult.issues.map((issue, i) => {
-                        const open = openIssue === i;
                         return (
-                          <li key={i} className="rounded-lg bg-secondary p-4">
-                            <Button
-                              variant="ghost"
-                              type="button"
-                              onClick={() => setOpenIssue(open ? null : i)}
-                              aria-expanded={open}
-                              className="flex h-auto w-full items-center justify-between gap-3 whitespace-normal p-0 text-left font-normal hover:bg-transparent"
+                          <li key={i} className="border-b border-border/60 py-4 last:border-b-0">
+                            <div
+                              className="flex w-full items-center gap-3 text-left"
                             >
                               <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
                                 <span className="text-base text-muted-foreground">
@@ -352,15 +329,10 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                 ))}
                                 </span>
                               </span>
-                              <ChevronDown
-                                className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
-                              />
-                            </Button>
-                            {open && (
+                            </div>
                               <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                                 {issue.reason}
                               </p>
-                            )}
                           </li>
                         );
                       })}
