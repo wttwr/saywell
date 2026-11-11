@@ -306,7 +306,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                     <ul className="mt-3 space-y-3">
                       {validResult.issues.map((issue, i) => {
                         return (
-                          <li key={i} className="border-b border-border/60 py-4 last:border-b-0">
+                          <li key={i} className="py-4">
                             <div
                               className="flex w-full items-center gap-3 text-left"
                             >

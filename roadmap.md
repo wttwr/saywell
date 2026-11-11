@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Remove the bottom divider from Check reason rows.
+
 - [ ] Add and verify Enter submission and Alt+Enter newlines in widget and full text tools.
 
 - [x] Keep customization in the selected List/Dashboard view with shared ordering and visibility; make Browse toggle back to Workspace.
