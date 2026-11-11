@@ -336,8 +336,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                   {" → "}
                                   <span className="font-medium text-foreground">{issue.suggestion}</span>
                                 </span>
-                              </span>
-                              <span className="flex shrink-0 flex-wrap justify-end gap-2">
+                                <span className="flex flex-wrap items-center gap-2">
                                 {(issue.labels ?? []).map((label) => (
                                   <span
                                     key={label}
@@ -346,6 +345,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                     {t(`label.${label}` as TranslationKey)}
                                   </span>
                                 ))}
+                                </span>
                               </span>
                               <ChevronDown
                                 className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
