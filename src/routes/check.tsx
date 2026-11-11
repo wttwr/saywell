@@ -191,7 +191,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {validResult && !loading && (
-          <section className="mt-10">
+          <section className="mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
             {(() => {
               const actionText = validResult.corrected ?? validResult.submission.text;
               const actionLanguage = validResult.detectedLanguage ?? validResult.submission.language;
