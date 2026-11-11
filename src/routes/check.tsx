@@ -52,12 +52,6 @@ export const Route = createFileRoute("/check")({
 
 const CJK_BOUNDARY = /[぀-ヿ㐀-䶿一-鿿豈-﫿가-힯]/;
 
-function labelTone(label: string) {
-  if (label === "Typo") return "border-border bg-muted text-muted-foreground";
-  if (label === "Naturalness") return "border-primary/25 bg-primary/10 text-primary";
-  return "border-border bg-secondary text-secondary-foreground";
-}
-
 function CheckPage() {
   return <CheckFeature mode="focus" />;
 }
@@ -347,7 +341,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                 {(issue.labels ?? []).map((label) => (
                                   <span
                                     key={label}
-                                    className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${labelTone(label)}`}
+                                    className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary"
                                   >
                                     {t(`label.${label}` as TranslationKey)}
                                   </span>
