@@ -199,7 +199,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 <div className="divide-y divide-border/60">
                   {/* Original sentence, subtly separated above the corrected version */}
                   {validResult.corrected && (
-                    <div className="py-5">
+                    <div className="pb-5">
                       <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         {t("check.yourSentence")}
                       </h2>
@@ -210,7 +210,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                   )}
 
                   {/* Corrected sentence: primary focus, changed words highlighted. */}
-                  <div className="py-5">
+                  <div className="py-5 first:pt-0 last:pb-0">
                     {validResult.corrected ? (
                       <>
                         <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -299,14 +299,14 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
 
                   {/* All reasons remain visible in both views. */}
                   {validResult.issues.length > 0 && (
-                    <div className="py-5">
+                    <div className="pt-5">
                       <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         {t(validResult.issues.length === 1 ? "check.reason" : "check.reasons")}
                       </h2>
                     <ul className="mt-3 space-y-3">
                       {validResult.issues.map((issue, i) => {
                         return (
-                          <li key={i} className="py-4">
+                          <li key={i} className="py-4 first:pt-0 last:pb-0">
                             <div
                               className="flex w-full items-center gap-3 text-left"
                             >
