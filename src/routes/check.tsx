@@ -191,7 +191,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {validResult && !loading && (
-          <section className="mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
+          <section className="mt-10">
             {(() => {
               const actionText = validResult.corrected ?? validResult.submission.text;
               const actionLanguage = validResult.detectedLanguage ?? validResult.submission.language;
@@ -315,18 +315,23 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                     </div>
                   </div>
 
-                  {/* Explanations: collapsed by default, one per correction */}
+                  {/* Reasons share the existing highlight/accordion interaction in both views. */}
                   {validResult.issues.length > 0 && (
-                    <ul>
+                    <div className="py-5">
+                      <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        {t(validResult.issues.length === 1 ? "check.reason" : "check.reasons")}
+                      </h2>
+                    <ul className="mt-3 space-y-3">
                       {validResult.issues.map((issue, i) => {
                         const open = openIssue === i;
                         return (
-                          <li key={i} className="border-b border-border/60">
-                            <button
+                          <li key={i} className="rounded-lg bg-secondary p-4">
+                            <Button
+                              variant="ghost"
                               type="button"
                               onClick={() => setOpenIssue(open ? null : i)}
                               aria-expanded={open}
-                              className="flex w-full items-center gap-3 py-4 text-left"
+                              className="flex h-auto w-full items-center justify-between gap-3 whitespace-normal p-0 text-left font-normal hover:bg-transparent"
                             >
                               <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
                                 <span className="text-base text-muted-foreground">
@@ -350,9 +355,9 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                               <ChevronDown
                                 className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
                               />
-                            </button>
+                            </Button>
                             {open && (
-                              <p className="pb-4 text-base leading-relaxed text-muted-foreground">
+                              <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                                 {issue.reason}
                               </p>
                             )}
@@ -360,6 +365,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                         );
                       })}
                     </ul>
+                    </div>
                   )}
                 </div>
               );
