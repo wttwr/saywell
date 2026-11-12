@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Standardize result-card padding, section gaps and row spacing across tools and Saved; verify desktop and mobile.
+
 - [x] Remove the bottom divider from Check reason rows.
 
 - [ ] Add and verify Enter submission and Alt+Enter newlines in widget and full text tools.
