@@ -132,7 +132,7 @@ function WidthMenu({ value, onChange }: { value: Width; onChange: (w: Width) => 
 const iconBtn =
   "rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30";
 const removeBtn =
-  "rounded-full bg-secondary p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30";
+  "inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30";
 
 function WorkspacePage() {
   const { t } = useI18n();
