@@ -187,10 +187,11 @@ function AppNav() {
                   key={l.to}
                   to={l.to}
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-4 py-3 text-base text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-base text-muted-foreground hover:bg-secondary hover:text-foreground"
                   activeProps={active}
                   activeOptions={{ exact: "exact" in l }}
                 >
+                  <l.icon className="size-4 shrink-0" aria-hidden="true" />
                   {l.label}
                 </Link>
               ))}
