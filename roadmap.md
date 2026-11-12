@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Standardize result-card padding, section gaps and row spacing across tools and Saved; verify desktop and mobile.
+- [x] Standardize result-card padding, section gaps and row spacing across tools and Saved; verify desktop and mobile.
 
 - [x] Remove the bottom divider from Check reason rows.
 
