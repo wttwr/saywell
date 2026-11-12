@@ -22,6 +22,7 @@
 - Top navigation lists only Workspace, Saved and Settings: Workspace is the home page and feature sections are reached from their Workspace card, so nav stays calm as features are added.
 - The home route renders the Workspace; each feature keeps its own focus route (Translate at /translate) and any moved or renamed route keeps its old path as a permanent redirect, so published addresses keep working.
 - Shared UI primitives used by several sections live in src/components/ds/ (e.g. LanguageSelectorBar) — so sections stay visually in sync and new sections like Listen reuse them.
+- Result surfaces reuse ResultCard or RESULT_CARD_STYLE and resultSpacing; section gaps are 20px and repeated rows use 16px with no edge padding, so all tools and Saved stay consistent.
 - Text-entry keyboard behavior uses the browser-safe text-shortcuts helper in shared surfaces and standalone inputs, so composition and submission guards stay consistent; recording is never started by a results shortcut.
 - Translate target swaps use a browser-safe pure helper with regression tests so merging tabs preserves unique language identities and the active target.
 - Interpret stores immutable submission snapshots and validates content equality in widget/focus views; App language differences retain labeled explanations with explicit regeneration, while text/context/source changes invalidate results.

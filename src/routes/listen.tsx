@@ -176,17 +176,17 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         />
 
         {!shown && !error && !busy && (
-          <EmptyResultCard title={t("listen.results")} hint={t("listen.resultsEmpty")} className={widget ? "mt-4" : "mt-10"} />
+          <EmptyResultCard title={t("listen.results")} hint={t("listen.resultsEmpty")} mode={mode} />
         )}
         {(shown || error || busy) && (
-        <ResultCard className={widget ? "mt-4 p-4 md:p-4" : "mt-6 p-4 md:p-5"}>
+        <ResultCard mode={mode}>
           {busy ? (
-            <div className="mt-5 space-y-3">
+            <div className="space-y-3">
               <div className="h-5 w-2/3 animate-pulse rounded bg-secondary" />
               <div className="h-5 w-1/2 animate-pulse rounded bg-secondary" />
             </div>
           ) : error ? (
-            <p className="mt-4 text-sm leading-relaxed text-destructive">{error}</p>
+            <p className="text-sm leading-relaxed text-destructive">{error}</p>
            ) : shown ? (
              <ListenResults
                key={shown.audioUrl}

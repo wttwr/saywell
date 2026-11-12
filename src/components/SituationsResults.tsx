@@ -25,7 +25,7 @@ export function SituationsResults({ result, explanationLanguage }: { result: Sit
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {result.groups.map((group, gi) => (
         <section key={gi}>
           {group.title && <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{group.title}</h2>}
@@ -36,7 +36,7 @@ export function SituationsResults({ result, explanationLanguage }: { result: Sit
               const isSaved = saved.isSaved("translation", expression.text, result.language);
               const playLabel = playing ? t("translate.stop") : t("situations.playAudio");
               return (
-                <li key={id} aria-label={expression.text} className="py-5 first:pt-0 last:pb-0">
+                <li key={id} aria-label={expression.text} className="py-4 first:pt-0 last:pb-0">
                   <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
                     <p className="shrink-0 text-xs font-medium text-muted-foreground sm:w-24 sm:pt-1">{ln(result.language)}</p>
                     <div className="min-w-0 flex-1">

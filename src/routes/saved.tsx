@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { RESULT_CARD_STYLE } from "@/components/ds/ResultCard";
 import { SavedContent } from "@/components/SavedContent";
 import { groupSavedItems, useSavedStore, type SavedKind } from "@/lib/saved-store";
 import { cn } from "@/lib/utils";
@@ -251,7 +252,7 @@ function SavedPage() {
                   tabIndex={0}
                   onClick={open}
                   onKeyDown={(e) => { if (e.key === "Enter") open(); }}
-                  className="cursor-pointer rounded-2xl bg-secondary/40 p-5 transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:p-6"
+                  className={cn(RESULT_CARD_STYLE, "cursor-pointer transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring")}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">

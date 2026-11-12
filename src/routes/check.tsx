@@ -1,5 +1,6 @@
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
+import { ResultCard } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -184,11 +185,11 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {!validResult && !loading && (
-          <EmptyResultCard title={t("check.results")} hint={t("check.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+          <EmptyResultCard title={t("check.results")} hint={t("check.empty")} mode={mode} />
         )}
 
         {validResult && !loading && (
-          <section className="mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6">
+          <ResultCard mode={mode}>
             {(() => {
               const actionText = validResult.corrected ?? validResult.submission.text;
               const actionLanguage = validResult.detectedLanguage ?? validResult.submission.language;
@@ -342,7 +343,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 </div>
               );
             })()}
-          </section>
+          </ResultCard>
         )}
       </div>
     </main>

@@ -19,6 +19,7 @@ import { AUTO_DETECT, LANGUAGES, SOURCE_LANGUAGES } from "@/lib/languages";
 import { swapTargets } from "@/lib/translate-targets";
 import { handleTextShortcut } from "@/lib/text-shortcuts";
 import { translateText } from "@/lib/translate.functions";
+import { ResultCard } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { useI18n } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
@@ -398,9 +399,10 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </div>
             </div>
 
-            <div className={mode === "widget" ? "mt-4 min-h-24 flex-1" : "mt-6 min-h-56 md:min-h-72"}>{resultBody(activeLang)}</div>
+            <ResultCard className={mode === "widget" ? "mt-4 flex flex-1 flex-col" : "mt-6 flex flex-1 flex-col"}>
+            <div className={mode === "widget" ? "min-h-24 flex-1" : "min-h-56 flex-1 md:min-h-72"}>{resultBody(activeLang)}</div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-end gap-4">
+            <div className="mt-4 flex flex-wrap items-center justify-end gap-4">
               {listenButton(
                 `target:${activeLang ?? ""}`,
                 activeLang ? (results[activeLang] ?? "") : "",
@@ -417,11 +419,12 @@ export function TranslateFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 }}
               />
             </div>
+            </ResultCard>
           </section>
         </div>
 
         {!source.trim() && !loading && (
-          <EmptyResultCard title={t("translate.results")} hint={t("translate.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+          <EmptyResultCard title={t("translate.results")} hint={t("translate.empty")} mode={mode} />
         )}
 
         {languageMismatch && detectedLanguage && (

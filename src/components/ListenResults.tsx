@@ -36,7 +36,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
   const practice = referenceOps.some((op) => recognitionFeedback(op).status === "practice");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
         {practice && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-practice" />{t("listen.practiceHint")}</span>}
         <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-muted-foreground/40" />{t("listen.unassessed")}</span>
@@ -51,7 +51,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
         ) : <span key={index} className="text-lg text-foreground">{word}</span>)}
       </div>
       {active && (
-        <div className="border-t border-border/70 pt-3" aria-live="polite">
+        <div className="border-t border-border/70 pt-5" aria-live="polite">
           <div className="flex items-center justify-between gap-3">
             <h3 className="min-w-0 break-words text-base font-semibold text-foreground">{active.word}</h3>
             <Button variant="ghost" size="icon" aria-label={t("translate.listen")} title={t("translate.listen")} onClick={() => onListen(active.word)}><Volume2 /></Button>
@@ -61,11 +61,11 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
         </div>
       )}
       {!heard && <p className="text-sm text-muted-foreground">{t("listen.nothingHeard")}</p>}
-      {heard && <details className="group border-t border-border/70 pt-3">
+      {heard && <details className="group border-t border-border/70 pt-5">
         <summary className="flex cursor-pointer list-none items-center gap-2 text-xs text-muted-foreground"><ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />{t("listen.heard")}</summary>
         <p className="mt-2 break-words text-sm leading-relaxed text-foreground">{heard}</p>
       </details>}
-      <div className="flex flex-wrap items-center gap-2 border-t border-border/70 pt-3">
+      <div className="flex flex-wrap items-center gap-2 border-t border-border/70 pt-5">
         <VoiceMemo src={audioUrl} className="min-w-0 basis-40 flex-1" />
         <Button variant="ghost" size="sm" onClick={onRetry} className="text-muted-foreground"><RotateCcw />{t("listen.tryAgain")}</Button>
       </div>
