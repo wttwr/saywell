@@ -11,6 +11,7 @@ import { useI18n, type AppLanguage, type TranslationKey } from "@/lib/i18n";
 import { useSpeech } from "@/lib/speech";
 import { lookUpWord, type DictionaryEntry } from "@/lib/dictionary.functions";
 import { MultilingualTranslation } from "@/components/MultilingualTranslation";
+import { ResultCard, resultSpacing } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
@@ -355,11 +356,11 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {!entry && !loading && !error && suggestions.length === 0 && (
-          <EmptyResultCard title={t("dictionary.results")} hint={t("dictionary.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+          <EmptyResultCard title={t("dictionary.results")} hint={t("dictionary.empty")} mode={mode} />
         )}
 
         {entry && (
-          <section className="mt-10">
+          <section className={resultSpacing(mode)}>
             {(entry.languageMismatch || entry.correctedFrom) && (
               <p className="mb-4 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
                 <Info className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -398,7 +399,7 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               ))}
             </div>
             {tab === "entry" && (
-              <div className="mt-3 rounded-2xl bg-secondary/40 p-5 md:p-6">
+              <ResultCard className="mt-4">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="min-w-0">
@@ -481,12 +482,12 @@ export function DictionaryFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               )}
 
               {entry.note && <p className="mt-4 text-sm text-muted-foreground">{entry.note}</p>}
-              </div>
+              </ResultCard>
             )}
             {/* Always mounted so translations load with the search and persist across tab switches. */}
             <MultilingualTranslation
               entry={entry}
-              className={tab === "multilingual" ? "mt-3" : "mt-3 hidden"}
+              className={tab === "multilingual" ? "mt-4" : "mt-4 hidden"}
             />
           </section>
         )}

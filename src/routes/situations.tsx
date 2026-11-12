@@ -138,7 +138,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             <div className="h-5 w-3/5 animate-pulse rounded bg-secondary" />
           </div>
         ) : (
-          <ResultCard className={widget ? "mt-4" : "mt-10"}>
+          <ResultCard mode={mode}>
             {!result ? (
               <>
                 <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t(k("situations.results"))}</h2>

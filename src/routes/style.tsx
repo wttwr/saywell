@@ -1,5 +1,6 @@
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
+import { ResultCard, resultSpacing } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { createFileRoute } from "@tanstack/react-router";
@@ -248,11 +249,11 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {!result && !loading && (
-          <EmptyResultCard title={t("style.results")} hint={t("style.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+          <EmptyResultCard title={t("style.results")} hint={t("style.empty")} mode={mode} />
         )}
 
         {!loading && result && (
-          <div className="mt-10">
+          <div className={resultSpacing(mode)}>
             {showLanguageNotice && (
               <p className="mb-6 flex items-start gap-2 rounded-xl border border-primary/40 bg-secondary/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
                 <Info className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -263,7 +264,7 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                 </span>
               </p>
             )}
-            <div className="rounded-2xl bg-secondary/40 p-5 md:p-6">
+            <ResultCard>
             <section>
               <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("style.primary")}
@@ -272,11 +273,11 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
             </section>
 
             {result.alternatives.length > 0 ? (
-              <section className="mt-10 border-t border-border pt-6">
+              <section className="mt-5 border-t border-border pt-5">
                 <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {t("style.alternatives")}
                 </h2>
-                <div className="mt-5 space-y-8">
+                <div className="mt-3 space-y-4">
                   {result.alternatives.map((alt, i) => (
                     <div key={`${alt.text}-${i}`}>{variantBlock(alt, `style:alt:${i}`)}</div>
                   ))}
@@ -284,10 +285,10 @@ export function StyleFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </section>
             ) : (
               result.note && (
-                <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{result.note}</p>
+                <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{result.note}</p>
               )
             )}
-            </div>
+            </ResultCard>
           </div>
         )}
       </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { LanguageSelectorBar } from "@/components/ds/LanguageSelectorBar";
 import { TextInputSurface } from "@/components/ds/TextInputSurface";
-import { ResultCard } from "@/components/ds/ResultCard";
+import { ResultCard, resultSpacing } from "@/components/ds/ResultCard";
 import { EmptyResultCard } from "@/components/ds/EmptyResultCard";
 import { SaveButton } from "@/components/SaveButton";
 import { TextActions } from "@/components/TextActions";
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/interpret")({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="border-t border-border pt-6 first:border-t-0 first:pt-0">
+    <section className="border-t border-border pt-5 first:border-t-0 first:pt-0">
       <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
@@ -200,11 +200,11 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
         )}
 
         {!result && !loading && (
-          <EmptyResultCard title={t("interpret.results")} hint={t("interpret.empty")} className={mode === "widget" ? "mt-4" : "mt-10"} />
+          <EmptyResultCard title={t("interpret.results")} hint={t("interpret.empty")} mode={mode} />
         )}
 
         {result && (
-          <div className="mt-10">
+          <div className={resultSpacing(mode)}>
             {explanationMismatch && (
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-sm" role="status">
                 <p className="text-muted-foreground">
@@ -223,7 +223,7 @@ export function InterpretFeature({ mode = "focus" }: { mode?: FeatureMode }) {
               </p>
             )}
 
-            <ResultCard className="space-y-8">
+            <ResultCard className="space-y-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="min-w-0">
                   <p className="text-2xl leading-snug text-foreground">{result.submission.text.trim()}</p>

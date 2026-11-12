@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Loader2, RotateCw, Volume2, VolumeX, X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { ResultCard } from "@/components/ds/ResultCard";
 
 import { LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
@@ -143,7 +143,7 @@ export function MultilingualTranslation({
   });
 
   return (
-    <section className={cn("mt-10 rounded-2xl bg-secondary/40 p-5 md:p-6", className)}>
+    <ResultCard className={className}>
 
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
@@ -283,6 +283,6 @@ export function MultilingualTranslation({
           })}
         </div>
       )}
-    </section>
+    </ResultCard>
   );
 }
