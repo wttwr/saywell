@@ -304,10 +304,10 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                       <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         {t(validResult.issues.length === 1 ? "check.reason" : "check.reasons")}
                       </h2>
-                    <ul className="mt-3 space-y-3">
+                    <ul className="mt-3 space-y-4">
                       {validResult.issues.map((issue, i) => {
                         return (
-                          <li key={i} className="py-4 first:pt-0 last:pb-0">
+                          <li key={i}>
                             <div
                               className="flex w-full items-center gap-3 text-left"
                             >
@@ -317,7 +317,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                     {issue.original}
                                   </span>
                                   {" → "}
-                                  <span className="font-medium text-foreground">{issue.suggestion}</span>
+                                  <span className="rounded bg-primary/10 px-0.5 font-medium text-primary underline decoration-primary underline-offset-4">{issue.suggestion}</span>
                                 </span>
                                 <span className="flex flex-wrap items-center gap-2">
                                 {(issue.labels ?? []).map((label) => (
