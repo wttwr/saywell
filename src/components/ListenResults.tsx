@@ -15,6 +15,12 @@ export function recognitionFeedback(op?: DiffOp) {
   } as const;
 }
 
+export function overallRecognitionFeedback(heard: string, ops: DiffOp[]) {
+  if (!heard.trim()) return "listen.nothingHeard";
+  if (!ops.length) return "listen.overallUnassessed";
+  return ops.some((op) => op.type !== "match") ? "listen.overallDifferent" : "listen.overallMatched";
+}
+
 export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onListen }: {
   reference: string;
   heard: string;
@@ -36,6 +42,10 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
 
   return (
     <div className="space-y-5">
+      <div className="space-y-2">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.overallFeedback")}</h2>
+        <p className="text-sm leading-relaxed text-foreground">{t(overallRecognitionFeedback(heard, ops))}</p>
+      </div>
       <div className="flex flex-wrap items-center gap-2" aria-label={t("listen.reference")}>
         {words.map(({ word, op }, index) => normalize(word) ? (
           <Button key={index} variant="ghost" aria-pressed={selected === index}
@@ -45,6 +55,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
               selected === index && "ring-2 ring-ring ring-offset-2 ring-offset-background")}>{word}</Button>
         ) : <span key={index} className="text-lg text-foreground">{word}</span>)}
       </div>
+      <p className="text-sm leading-relaxed text-muted-foreground">{t("listen.wordFeedbackHint")}</p>
       {active && (
         <div className="border-t border-border/70 pt-5" aria-live="polite">
           <div className="flex items-center justify-between gap-3">
@@ -55,7 +66,6 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("listen.practiceAdvice")}</p>
         </div>
       )}
-      {!heard && <p className="text-sm text-muted-foreground">{t("listen.nothingHeard")}</p>}
       {heard && <details className="group border-t border-border/70 pt-5">
         <summary className="flex cursor-pointer list-none items-center gap-2 text-xs text-muted-foreground"><ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />{t("listen.heard")}</summary>
         <p className="mt-2 break-words text-sm leading-relaxed text-foreground">{heard}</p>
