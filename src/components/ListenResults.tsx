@@ -63,7 +63,6 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
             <Button variant="ghost" size="icon" aria-label={t("translate.listen")} title={t("translate.listen")} onClick={() => onListen(active.word)}><Volume2 /></Button>
           </div>
           <p className="text-sm leading-relaxed text-muted-foreground">{t(recognitionFeedback(active.op).message)}{active.op?.type === "different" && <> “{active.op.heard}”.</>}</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("listen.practiceAdvice")}</p>
         </div>
       )}
       {heard && <details className="group border-t border-border/70 pt-5">
