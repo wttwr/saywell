@@ -69,15 +69,17 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           <p className="text-sm leading-relaxed text-muted-foreground">{t(recognitionFeedback(active.op).message)}{active.op?.type === "different" && <> “{active.op.heard}”.</>}</p>
         </div>
       )}
-      {heard && <section className="border-t border-border/70 pt-5">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.heard")}</h2>
-        <p className="mt-2 break-words text-sm leading-relaxed text-foreground">{heard}</p>
-      </section>}
-      <section className="space-y-2 border-t border-border/70 pt-5">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.yourAudio")}</h2>
-        <div className="flex flex-wrap items-center gap-2">
-          <VoiceMemo src={audioUrl} className="min-w-0 basis-40 flex-1" />
-          <Button variant="ghost" size="sm" onClick={onRetry} className="text-muted-foreground"><RotateCcw />{t("listen.tryAgain")}</Button>
+      <section className="space-y-5 border-t border-border/70 pt-5">
+        {heard && <div className="space-y-2">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.heard")}</h2>
+          <p className="break-words text-sm leading-relaxed text-foreground">{heard}</p>
+        </div>}
+        <div className="space-y-2">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.yourAudio")}</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <VoiceMemo src={audioUrl} className="min-w-0 basis-40 flex-1" />
+            <Button variant="ghost" size="sm" onClick={onRetry} className="text-muted-foreground"><RotateCcw />{t("listen.tryAgain")}</Button>
+          </div>
         </div>
       </section>
     </div>
