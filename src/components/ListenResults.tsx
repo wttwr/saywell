@@ -33,14 +33,9 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
     op: normalize(word) ? referenceOps[position++] : undefined,
   }));
   const active = selected === null ? undefined : words[selected];
-  const practice = referenceOps.some((op) => recognitionFeedback(op).status === "practice");
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-        {practice && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-practice" />{t("listen.practiceHint")}</span>}
-        <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-muted-foreground/40" />{t("listen.unassessed")}</span>
-      </div>
       <div className="flex flex-wrap items-center gap-2" aria-label={t("listen.reference")}>
         {words.map(({ word, op }, index) => normalize(word) ? (
           <Button key={index} variant="ghost" aria-pressed={selected === index}
