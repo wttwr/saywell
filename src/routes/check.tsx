@@ -317,7 +317,7 @@ export function CheckFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                                     {issue.original}
                                   </span>
                                   {" → "}
-                                  <span className="rounded bg-primary/10 px-0.5 font-medium text-primary underline decoration-primary underline-offset-4">{issue.suggestion}</span>
+                                  <span className="font-medium text-foreground">{issue.suggestion}</span>
                                 </span>
                                 <span className="flex flex-wrap items-center gap-2">
                                 {(issue.labels ?? []).map((label) => (

@@ -39,6 +39,11 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
     op: normalize(word) ? referenceOps[position++] : undefined,
   }));
   const active = selected === null ? undefined : words[selected];
+  const feedbackWords = words.flatMap((entry, index) =>
+    recognitionFeedback(entry.op).status === "practice" || (selected === index && active)
+      ? [{ ...entry, index }]
+      : [],
+  );
   const overallFeedback = overallRecognitionFeedback(heard, ops);
 
   return (
@@ -60,14 +65,21 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
         ) : <span key={index} className="text-lg text-foreground">{word}</span>)}
       </div>
       <p className="text-sm leading-relaxed text-muted-foreground">{t("listen.wordFeedbackHint")}</p>
-      {active && (
-        <div className="border-t border-border/70 pt-5" aria-live="polite">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="min-w-0 break-words text-base font-semibold text-foreground">{active.word}</h3>
-            <Button variant="ghost" size="icon" aria-label={t("translate.listen")} title={t("translate.listen")} onClick={() => onListen(active.word)}><Volume2 /></Button>
+      {feedbackWords.length > 0 && (
+        <section className="space-y-5 border-t border-border/70 pt-5" aria-live="polite">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("check.reasons")}</h2>
+          <div className="space-y-4">
+            {feedbackWords.map(({ word, op, index }) => (
+              <div key={index}>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className={cn("min-w-0 break-words text-base font-semibold", recognitionFeedback(op).status === "practice" ? "text-practice" : "text-foreground")}>{word}</h3>
+                  <Button variant="ghost" size="icon" aria-label={`${t("translate.listen")}: ${word}`} title={t("translate.listen")} onClick={() => onListen(word)}><Volume2 /></Button>
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">{t(recognitionFeedback(op).message)}{op?.type === "different" && <> “{op.heard}”.</>}</p>
+              </div>
+            ))}
           </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">{t(recognitionFeedback(active.op).message)}{active.op?.type === "different" && <> “{active.op.heard}”.</>}</p>
-        </div>
+        </section>
       )}
       <section className="space-y-5 border-t border-border/70 pt-5">
         <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
