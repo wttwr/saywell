@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Check, RotateCcw, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VoiceMemo } from "@/components/ds/VoiceMemo";
@@ -30,7 +29,6 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
   onListen: (word: string) => void;
 }) {
   const { t } = useI18n();
-  const [selected, setSelected] = useState<number | null>(null);
   const referenceOps = ops.filter((op) => op.type !== "extra");
   let position = 0;
   // Keep the original punctuation; use the same character boundaries as comparison.
@@ -38,9 +36,8 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
     word,
     op: normalize(word) ? referenceOps[position++] : undefined,
   }));
-  const active = selected === null ? undefined : words[selected];
   const feedbackWords = words.flatMap((entry, index) =>
-    recognitionFeedback(entry.op).status === "practice" || (selected === index && active)
+    recognitionFeedback(entry.op).status === "practice"
       ? [{ ...entry, index }]
       : [],
   );
@@ -57,14 +54,11 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
       </div>
       <div className="flex flex-wrap items-center gap-2" aria-label={t("listen.reference")}>
         {words.map(({ word, op }, index) => normalize(word) ? (
-          <Button key={index} variant="ghost" aria-pressed={selected === index}
-            onClick={() => setSelected(index)}
-            className={cn("h-auto min-h-10 max-w-full whitespace-normal break-words rounded-lg border px-3 py-2 text-lg font-medium",
-              recognitionFeedback(op).status === "practice" ? "border-practice/20 bg-practice/10 text-practice hover:bg-practice/15 hover:text-practice" : "border-border/60 bg-background/70 text-foreground",
-              selected === index && "ring-2 ring-ring ring-offset-2 ring-offset-background")}>{word}</Button>
+          <span key={index}
+            className={cn("inline-flex min-h-10 max-w-full items-center whitespace-normal break-words rounded-lg border px-3 py-2 text-lg font-medium",
+              recognitionFeedback(op).status === "practice" ? "border-practice/20 bg-practice/10 text-practice" : "border-border/60 bg-background/70 text-foreground")}>{word}</span>
         ) : <span key={index} className="text-lg text-foreground">{word}</span>)}
       </div>
-      <p className="text-sm leading-relaxed text-muted-foreground">{t("listen.wordFeedbackHint")}</p>
       {feedbackWords.length > 0 && (
         <section className="space-y-5 border-t border-border/70 pt-5" aria-live="polite">
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("check.reasons")}</h2>
