@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Snail, Volume2 } from "lucide-react";
 
@@ -14,6 +15,8 @@ import { compareWords, type DiffOp } from "@/lib/pronunciation";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { useDefaultOnce, useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import { getListenTips } from "@/lib/listen-tips.functions";
+import type { LocalizedTips } from "@/lib/listen-tips";
 
 export const Route = createFileRoute("/listen")({
   head: () => ({
@@ -29,13 +32,14 @@ export const Route = createFileRoute("/listen")({
   component: () => <ListenFeature mode="focus" />,
 });
 
-type Attempt = { reference: string; heard: string; ops: DiffOp[]; audioUrl: string };
+type Attempt = { reference: string; heard: string; ops: DiffOp[]; audioUrl: string; language: string; tips: LocalizedTips };
 type Phase = "idle" | "recording" | "transcribing";
 
 const ghost = "inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40";
 
 export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
-  const { t } = useI18n();
+  const { t, lang: appLanguage } = useI18n();
+  const fetchTips = useServerFn(getListenTips);
   const widget = mode === "widget";
   const [text, setText] = useFeatureState("listen", "text", "");
   const [language, setLanguage] = useFeatureState("listen", "language", AUTO_DETECT);
@@ -72,6 +76,26 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
     setError(null);
   };
 
+  const loadTips = async (current: Attempt) => {
+    const explanationLanguage = appLanguage;
+    setAttempt((prev) => prev?.audioUrl === current.audioUrl
+      ? { ...prev, tips: { ...prev.tips, [explanationLanguage]: { status: "loading" } } } : prev);
+    try {
+      const response = await fetchTips({ data: {
+        reference: current.reference, heard: current.heard,
+        language: current.language, explanationLanguage,
+      } });
+      setAttempt((prev) => prev?.audioUrl === current.audioUrl ? {
+        ...prev, tips: { ...prev.tips, [explanationLanguage]: response.result
+          ? { status: "ready", result: response.result } : { status: "error", error: response.error ?? "unavailable" } },
+      } : prev);
+    } catch {
+      setAttempt((prev) => prev?.audioUrl === current.audioUrl ? {
+        ...prev, tips: { ...prev.tips, [explanationLanguage]: { status: "error", error: "unavailable" } },
+      } : prev);
+    }
+  };
+
   const transcribe = async (blob: Blob, reference: string) => {
     setPhase("transcribing");
     try {
@@ -82,7 +106,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
       const res = await fetch("/api/stt", { method: "POST", body: fd });
       if (!res.ok) throw new Error(await res.text());
       const { text: heard } = (await res.json()) as { text: string };
-      setAttempt({ reference, heard, ops: heard ? compareWords(reference, heard) : [], audioUrl: URL.createObjectURL(blob) });
+      const current: Attempt = { reference, heard, ops: heard ? compareWords(reference, heard) : [], audioUrl: URL.createObjectURL(blob), language, tips: {} };
+      setAttempt(current);
+      if (heard.trim()) void loadTips(current);
     } catch (e) {
       console.error("Listen transcription failed", e);
       setError(t("listen.failed"));
@@ -194,6 +220,9 @@ export function ListenFeature({ mode = "focus" }: { mode?: FeatureMode }) {
                heard={shown.heard}
                ops={shown.ops}
                audioUrl={shown.audioUrl}
+               tips={shown.tips[appLanguage]}
+               selectedLanguage={shown.language}
+               onGetTips={() => void loadTips(shown)}
                onRetry={discard}
                onListen={(word) => speech.speak(`listen:word:${word}`, word, lang)}
              />
