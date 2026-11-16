@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Add general pronunciation tips to Listen Reasons, preserve recognition-only feedback, and verify a real AI response plus recording controls.
+
 - [x] Restore Check correction styling and show each Listen recognition difference with its explanation under Reasons; verify shared presentation on desktop and mobile with simulated transcription.
 
 - [x] Standardize result-card padding, section gaps and row spacing across tools and Saved; verify desktop and mobile.
