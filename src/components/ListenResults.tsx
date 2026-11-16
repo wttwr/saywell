@@ -28,7 +28,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
   audioUrl: string;
   onRetry: () => void;
   onListen: (word: string) => void;
-  tips?: TipsState;
+  tips?: TipsState | undefined;
   selectedLanguage?: string;
   onGetTips?: () => void;
 }) {
