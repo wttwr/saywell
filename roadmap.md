@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Add general pronunciation tips to Listen Reasons, preserve recognition-only feedback, and verify a real AI response plus recording controls.
+- [x] Add general pronunciation tips to Listen Reasons, preserve recognition-only feedback, and verify real AI output and retry on desktop/mobile with simulated transcription; human recording remains unverified.
 
 - [x] Restore Check correction styling and show each Listen recognition difference with its explanation under Reasons; verify shared presentation on desktop and mobile with simulated transcription.
 
