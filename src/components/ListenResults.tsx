@@ -36,9 +36,9 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
   const referenceOps = ops.filter((op) => op.type !== "extra");
   let position = 0;
   // Keep the original punctuation; use the same character boundaries as comparison.
-  const words = (reference.match(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]|[^\s\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]+/gu) ?? []).map((word) => ({
+  const words = (reference.match(/\s+|[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]|[^\s\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]+/gu) ?? []).map((word) => ({
     word,
-    op: normalize(word) ? referenceOps[position++] : undefined,
+    op: normalize(word).trim() ? referenceOps[position++] : undefined,
   }));
   const feedbackWords = words.flatMap((entry, index) =>
     recognitionFeedback(entry.op).status === "practice"
@@ -56,13 +56,13 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           <p className="text-sm leading-relaxed text-foreground">{t(overallFeedback)}</p>
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-2" aria-label={t("listen.reference")}>
-        {words.map(({ word, op }, index) => normalize(word) ? (
-          <span key={index}
-            className={cn("inline-flex min-h-10 max-w-full items-center whitespace-normal break-words rounded-lg border px-3 py-2 text-lg font-medium",
-              recognitionFeedback(op).status === "practice" ? "border-practice/20 bg-practice/10 text-practice" : "border-border/60 bg-background/70 text-foreground")}>{word}</span>
-        ) : <span key={index} className="text-lg text-foreground">{word}</span>)}
-      </div>
+      <p className="whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground" aria-label={t("listen.reference")}>
+        {words.map(({ word, op }, index) => (
+          <span key={index} className={cn(
+            recognitionFeedback(op).status === "practice" && "font-medium text-destructive underline decoration-destructive underline-offset-4",
+          )}>{word}</span>
+        ))}
+      </p>
       {(feedbackWords.length > 0 || heard.trim()) && (
         <section className="space-y-5 border-t border-border/70 pt-5" aria-live="polite">
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("check.reasons")}</h2>
@@ -70,7 +70,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
             {feedbackWords.map(({ word, op, index }) => (
               <div key={index}>
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className={cn("min-w-0 break-words text-base font-semibold", recognitionFeedback(op).status === "practice" ? "text-practice" : "text-foreground")}>{word}</h3>
+                   <h3 className={cn("min-w-0 break-words text-base font-semibold", recognitionFeedback(op).status === "practice" ? "text-destructive" : "text-foreground")}>{word}</h3>
                   <Button variant="ghost" size="icon" aria-label={`${t("translate.listen")}: ${word}`} title={t("translate.listen")} onClick={() => onListen(word)}><Volume2 /></Button>
                 </div>
                 <p className="text-sm leading-relaxed text-muted-foreground">{t(recognitionFeedback(op).message)}{op?.type === "different" && <> “{op.heard}”.</>}</p>
