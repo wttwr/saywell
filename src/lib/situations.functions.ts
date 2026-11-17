@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { AUTO_DETECT, LANGUAGES } from "@/lib/languages";
 
 const schema = z.object({
   situation: z.string().min(1).max(300),
@@ -27,13 +28,16 @@ export const exploreSituations = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("The situations service is not configured.");
 
     const system = [
-      `Generate 6-10 practical expressions in ${data.language} that a person would actually say in this real-life situation.`,
+      data.language === AUTO_DETECT
+        ? "Detect the language of the situation text and generate 6-10 practical expressions in that language."
+        : `Generate 6-10 practical expressions in ${data.language} that a person would actually say in this real-life situation.`,
+      `Return the actual expression language in "language", using exactly one of these names: ${LANGUAGES.join(", ")}. Never return "Auto-detect" as the result language.`,
       `Style: ${STYLE[data.style]}.`,
       "Prefer natural, commonly used full expressions over literal translations or isolated vocabulary. Avoid repetitive or overly generic suggestions.",
       `Group them into 2-4 groups by conversation stage or purpose (e.g. arriving, asking, paying). Group titles are short and in ${data.explanationLanguage}.`,
       `For each expression give "meaning" in ${data.explanationLanguage}, and an optional one-sentence "note" in ${data.explanationLanguage} only when it adds useful usage context.`,
       "If the language uses a non-Latin script, add a transliteration (pinyin, romaji, etc.); otherwise omit it.",
-      'Reply with ONLY JSON: {"groups":[{"title":"...","expressions":[{"text":"...","meaning":"...","transliteration":"...","note":"..."}]}]}. No markdown.',
+      'Reply with ONLY JSON: {"language":"...","groups":[{"title":"...","expressions":[{"text":"...","meaning":"...","transliteration":"...","note":"..."}]}]}. No markdown.',
     ].join(" ");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -78,5 +82,9 @@ export const exploreSituations = createServerFn({ method: "POST" })
       .filter((g) => g.expressions.length > 0);
 
     if (groups.length === 0) throw new Error("Could not read the result. Please try again.");
-    return { language: data.language, groups };
+    const detected = z.enum(LANGUAGES).safeParse(parsed["language"]);
+    if (data.language === AUTO_DETECT && !detected.success) {
+      throw new Error("Could not detect the expression language. Please try again.");
+    }
+    return { language: data.language === AUTO_DETECT && detected.success ? detected.data : data.language, groups };
   });
