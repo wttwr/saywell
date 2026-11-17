@@ -45,7 +45,7 @@ export const DEFAULT_SETTINGS: Settings = {
   interpretShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   listenLanguage: AUTO_DETECT,
   listenShortcuts: ["English", "Italian", "Chinese (Simplified)"],
-  situationsLanguage: "Italian",
+  situationsLanguage: AUTO_DETECT,
   situationsShortcuts: ["English", "Italian", "Chinese (Simplified)"],
   dictionaryLanguage: AUTO_DETECT,
   dictionaryShortcuts: ["English", "Italian", "Chinese (Simplified)"],

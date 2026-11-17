@@ -12,6 +12,7 @@ import { ResultCard } from "@/components/ds/ResultCard";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { markSeeded, useFeatureState, type FeatureMode } from "@/lib/feature-state";
 import { cn } from "@/lib/utils";
+import { AUTO_DETECT } from "@/lib/languages";
 
 export const Route = createFileRoute("/situations")({
   head: () => ({
@@ -44,7 +45,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const widget = mode === "widget";
   const [preset] = useFeatureState<string>("situations", "preset", "supermarket");
   const [custom, setCustom] = useFeatureState("situations", "custom", "");
-  const [language, setLanguage] = useFeatureState("situations", "language", "Italian");
+  const [language, setLanguage] = useFeatureState("situations", "language", AUTO_DETECT);
   const [shortcuts, setShortcuts] = useFeatureState<string[]>("situations", "shortcuts", [
     "English",
     "Italian",
