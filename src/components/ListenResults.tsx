@@ -38,7 +38,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
   // Keep the original punctuation; use the same character boundaries as comparison.
   const words = (reference.match(/\s+|[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]|[^\s\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af]+/gu) ?? []).map((word) => ({
     word,
-    op: normalize(word) ? referenceOps[position++] : undefined,
+    op: normalize(word).trim() ? referenceOps[position++] : undefined,
   }));
   const feedbackWords = words.flatMap((entry, index) =>
     recognitionFeedback(entry.op).status === "practice"
