@@ -27,7 +27,6 @@ export const Route = createFileRoute("/situations")({
   component: () => <SituationsFeature mode="focus" />,
 });
 
-const PRESETS = ["supermarket", "transport", "restaurant", "hotel", "doctor", "shopping"] as const;
 const STYLES = ["everyday", "simple", "polite"] as const;
 
 const chip = (on: boolean) =>
@@ -43,7 +42,7 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
   const [loading, setLoading] = useFeatureState("situations", "loading", false);
   const [error, setError] = useFeatureState<string | null>("situations", "error", null);
   const widget = mode === "widget";
-  const [preset, setPreset] = useFeatureState<string>("situations", "preset", "supermarket");
+  const [preset] = useFeatureState<string>("situations", "preset", "supermarket");
   const [custom, setCustom] = useFeatureState("situations", "custom", "");
   const [language, setLanguage] = useFeatureState("situations", "language", "Italian");
   const [shortcuts, setShortcuts] = useFeatureState<string[]>("situations", "shortcuts", [
@@ -101,16 +100,6 @@ export function SituationsFeature({ mode = "focus" }: { mode?: FeatureMode }) {
           {STYLES.map((s) => (
             <button key={s} type="button" aria-pressed={style === s} onClick={() => setStyle(s)} className={chip(style === s)}>
               {t(k(`situations.${s}`))}
-            </button>
-          ))}
-        </div>
-
-        <div className={cn("flex flex-wrap items-center gap-2 md:gap-3", widget ? "hidden" : "mt-6")}>
-          <span className="text-sm text-muted-foreground">{t(k("situations.situation"))}</span>
-          {PRESETS.map((p) => (
-            <button key={p} type="button" aria-pressed={!custom.trim() && preset === p}
-              onClick={() => { setPreset(p); setCustom(""); }} className={chip(!custom.trim() && preset === p)}>
-              {t(k(`situations.${p}`))}
             </button>
           ))}
         </div>
