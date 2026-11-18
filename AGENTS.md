@@ -18,6 +18,7 @@
 
 - Feature state that must survive switching between workspace widget and Focus Mode lives in useFeatureState (src/lib/feature-state.ts); features expose a `<XFeature mode>` component and are listed in src/lib/features.ts — so views share one implementation.
 - Workspace card layout is a list of FeatureIds in localStorage (saywell.dashboard), validated by sanitizeLayout in src/lib/features.ts — so unknown/removed features never break saved layouts.
+- Workspace cards omit trailing scroll spacers; Translate grows below the desktop breakpoint so stacked empty panels fit without internal scrolling.
 - Workspace tool search and browsing read the complete FEATURES registry independently of saved layout; explicit additions use addToLayout to prepend without duplicates, so a newly added card appears at the top and discovery never resets visibility or order.
 - Workspace view preferences are resolved by a browser-safe helper and tool descriptions share a typed registry mapping, so saved views remain valid and list/directory wording stays aligned.
 - Top navigation lists only Workspace, Saved and Settings: Workspace is the home page and feature sections are reached from their Workspace card, so nav stays calm as features are added.

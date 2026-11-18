@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Remove extra Workspace card bottom spacing and add 4 px below card headers; verify all seven default cards have no internal scrolling on desktop and mobile.
+
 - [x] Match Listen's reference sentence to Check's inline presentation, with red underlines for recognition differences rather than word chips.
 
 - [x] Add general pronunciation tips to Listen Reasons, preserve recognition-only feedback, and verify real AI output and retry on desktop/mobile with simulated transcription; human recording remains unverified.

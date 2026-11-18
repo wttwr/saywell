@@ -269,8 +269,8 @@ function WorkspacePage() {
           if (!f) return null;
           const Widget = WIDGETS[f.id];
           return (
-            <section key={f.id} className={`flex h-[540px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-background ${WIDTH_CLASS[widths[f.id] ?? defaultWidth(f.id)]}`}>
-              <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <section key={f.id} className={`flex ${f.id === "translate" ? "min-h-[540px] md:h-[540px]" : "h-[540px]"} flex-col overflow-hidden rounded-2xl border border-border/60 bg-background ${WIDTH_CLASS[widths[f.id] ?? defaultWidth(f.id)]}`}>
+              <div className="flex items-center justify-between px-4 pt-4 pb-3">
                 <h2 className="flex items-center gap-2.5 text-base font-medium">
                   {(() => { const Icon = ICONS[f.id]; return <span className="rounded-full bg-secondary p-2 text-foreground"><Icon className="size-4" /></span>; })()}
                   {t(f.label)}
@@ -299,7 +299,6 @@ function WorkspacePage() {
               </div>
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
                 <Widget mode="widget" />
-                <div aria-hidden="true" className="h-6 shrink-0" />
               </div>
             </section>
           );
