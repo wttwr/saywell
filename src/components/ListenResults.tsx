@@ -49,6 +49,19 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
 
   return (
     <div className="space-y-5">
+      <section className="space-y-5 border-b border-border/70 pb-5">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
+        {heard && <div className="space-y-2">
+          <p className="text-xs text-muted-foreground">{t("listen.heard")}</p>
+          <p className="break-words text-sm leading-relaxed text-foreground">{heard}</p>
+        </div>}
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <VoiceMemo src={audioUrl} className="min-w-0 basis-40 flex-1" />
+            <Button variant="ghost" size="sm" onClick={onRetry} className="text-muted-foreground"><RotateCcw />{t("listen.tryAgain")}</Button>
+          </div>
+        </div>
+      </section>
       <div className="space-y-2">
         <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.overallFeedback")}</h2>
         <div className="flex items-start gap-2">
@@ -100,19 +113,6 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           </div>
         </section>
       )}
-      <section className="space-y-5 border-t border-border/70 pt-5">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.results")}</h2>
-        {heard && <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">{t("listen.heard")}</p>
-          <p className="break-words text-sm leading-relaxed text-foreground">{heard}</p>
-        </div>}
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <VoiceMemo src={audioUrl} className="min-w-0 basis-40 flex-1" />
-            <Button variant="ghost" size="sm" onClick={onRetry} className="text-muted-foreground"><RotateCcw />{t("listen.tryAgain")}</Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
