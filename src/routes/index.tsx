@@ -182,7 +182,7 @@ function WorkspacePage() {
         </div>
           <Button variant={editingActive ? "default" : "secondary"}
             onClick={() => { setQuery(""); setBrowsing(false); setEditing(!(editing || directory)); }}
-            className="rounded-full"
+            className="rounded-full shadow-none"
           >
             {editing || directory ? t("workspace.done") : t("workspace.customize")}
           </Button>
