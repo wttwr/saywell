@@ -78,7 +78,7 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           )}>{word}</span>
         ))}
       </p>
-      {(feedbackWords.length > 0 || heard.trim()) && (
+      {feedbackWords.length > 0 && (
         <section className="space-y-5 border-t border-border/70 pt-5" aria-live="polite">
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("check.reasons")}</h2>
           <div className="space-y-4">
@@ -95,9 +95,13 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           {tips?.result && selectedLanguage && tipsLanguageMismatch(tips.result, selectedLanguage) && (
             <p className="text-sm leading-relaxed text-muted-foreground">{t("listen.languageMismatch").replaceAll("{detected}", ln(tips.result.detectedLanguage)).replaceAll("{selected}", ln(selectedLanguage))}</p>
           )}
+        </section>
+      )}
+      {heard.trim() && (
+        <section className="space-y-5 border-t border-border/70 pt-5">
           <div className="space-y-4">
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-foreground">{t("listen.tipsTitle")}</h3>
+              <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.tipsTitle")}</h2>
               <p className="text-xs leading-relaxed text-muted-foreground">{t("listen.tipsDisclaimer")}</p>
             </div>
             {tips?.status === "loading" ? <p role="status" className="text-sm text-muted-foreground">{t("listen.tipsLoading")}</p>
