@@ -62,13 +62,15 @@ export function ListenResults({ reference, heard, ops, audioUrl, onRetry, onList
           </div>
         </div>
       </section>
-      <div className="space-y-2">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.overallFeedback")}</h2>
-        <div className="flex items-start gap-2">
-          {overallFeedback === "listen.overallMatched" && <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />}
-          <p className="text-sm leading-relaxed text-foreground">{t(overallFeedback)}</p>
+      {overallFeedback !== "listen.overallDifferent" && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("listen.overallFeedback")}</h2>
+          <div className="flex items-start gap-2">
+            {overallFeedback === "listen.overallMatched" && <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />}
+            <p className="text-sm leading-relaxed text-foreground">{t(overallFeedback)}</p>
+          </div>
         </div>
-      </div>
+      )}
       <p className="whitespace-pre-wrap break-words text-xl leading-relaxed text-foreground" aria-label={t("listen.reference")}>
         {words.map(({ word, op }, index) => (
           <span key={index} className={cn(

@@ -4,6 +4,8 @@
 
 - [x] Match Listen's reference sentence to Check's inline presentation, with red underlines for recognition differences rather than word chips.
 
+- [x] Remove the recognition-difference summary from Listen results while retaining highlighted words, recognition details and pronunciation tips.
+
 - [x] Add general pronunciation tips to Listen Reasons, preserve recognition-only feedback, and verify real AI output and retry on desktop/mobile with simulated transcription; human recording remains unverified.
 
 - [x] Restore Check correction styling and show each Listen recognition difference with its explanation under Reasons; verify shared presentation on desktop and mobile with simulated transcription.
@@ -12,11 +14,11 @@
 
 - [x] Remove the bottom divider from Check reason rows.
 
-- [ ] Add and verify Enter submission and Alt+Enter newlines in widget and full text tools.
+- [x] Add and verify Enter submission and Alt+Enter newlines in widget and full text tools.
 
 - [x] Keep customization in the selected List/Dashboard view with shared ordering and visibility; make Browse toggle back to Workspace.
 
-- [ ] Align Situations phrase layout with Dictionary, group secondary actions, and verify phrase-specific actions and Listen handoff.
+- [x] Align Situations phrase layout with Dictionary, group secondary actions, and verify phrase-specific actions and Listen handoff.
 
 - [x] Default first visits to List, preserve saved views, and verify descriptive clickable rows with search and customization intact.
 
