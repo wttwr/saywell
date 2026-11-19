@@ -175,14 +175,14 @@ function WorkspacePage() {
         <div role="group" aria-label={t("workspace.view")} className="flex rounded-full bg-secondary p-1">
           {([["dashboard", LayoutGrid, "workspace.viewDashboard"], ["list", List, "workspace.viewList"]] as const).map(([v, Icon, label]) => (
             <Button key={v} variant="ghost" size="icon" onClick={() => setView(v)} aria-pressed={view === v} aria-label={t(label)} title={t(label)}
-              className={`size-7 rounded-full p-1.5 transition-colors ${view === v ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground"}`}>
+              className={`size-7 rounded-full p-1.5 transition-colors ${view === v ? "bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground"}`}>
               <Icon className="size-4" />
             </Button>
           ))}
         </div>
           <Button variant={editingActive ? "default" : "secondary"}
             onClick={() => { setQuery(""); setBrowsing(false); setEditing(!(editing || directory)); }}
-            className="rounded-full shadow-none"
+            className="rounded-full"
           >
             {editing || directory ? t("workspace.done") : t("workspace.customize")}
           </Button>
